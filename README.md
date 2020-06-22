@@ -1,1 +1,1 @@
-This repo contains Kevin's portfolio and STEP projects.
+This repo contains Kevin's portfolio and STEP projects!
