@@ -7,3 +7,12 @@
 #greeting-container {
   margin-top: 20px;
 }
+
+#fact-container {
+  margin-top: 20px;
+}
+
+#portrait {
+    height: 100px;
+    width: auto;
+}
