@@ -2,6 +2,7 @@
   margin-left: auto;
   margin-right: auto;
   width: 650px;
+  text-align: center;
 }
 
 /* intro container */
@@ -43,7 +44,7 @@ h1 {
 
 /* about me container */
 #about-container {
-    text-align: center;
+    
 }
 
 #about-container img{
@@ -51,6 +52,20 @@ h1 {
     width: auto;
 }
 
-#photo-container {
-    text-align: center;
+#album {
+    display: flex;
+}
+
+.photo-container {
+    display:block;
+    margin: 25px;
+    border: 2px black solid;
+    border-radius: 5px;
+    height: auto;
+    width: 300px;
+}
+
+.photo-container img{
+    height: auto;
+    width: 100%;
 }
