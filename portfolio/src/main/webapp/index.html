@@ -9,12 +9,35 @@
   <body>
     <div id="content">
       <h1>Kevin's Portfolio</h1>
-      <img id="portrait" src="images/portrait.jpg">
-      
+      <div id="intro-container">
+        <div id=quick-info-container>
+            <div id="profiles-container">
+                <a target="_blank" href="https://github.com/kev1n80">
+                    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                            alt="github icon">
+                </a>
+                <a target="_blank" href="https://www.linkedin.com/in/kevin-cam">
+                    <img src="https://cdn2.iconfinder.com/data/icons/on-point-social-media/141/LinkedIn-512.png"
+                            alt="linkedin icon">
+                </a>
+                <a target="_blank" href="https://www.instagram.com/kevin_cam.era/">
+                    <img src="https://www.parkviewbaptist.com/wp-content/uploads/2019/09/Instagram-Icon.png"
+                            alt="instagram icon">
+                </a>
+            </div>
+
+            
+            <p> Click here to get a random fact about me</p>
+            <button onclick="addRandomFact()">Random Fact</button>  
+            <div id="fact-container"></div>  
+            
+        </div>
+        <img id="portrait" src="https://scontent-mia3-1.cdninstagram.com/v/t51.2885-15/sh0.08/e35/s640x640/67170084_179020229792560_1830601699365842495_n.jpg?_nc_ht=scontent-mia3-1.cdninstagram.com&_nc_cat=104&_nc_ohc=twRPCgqyUjYAX_bgz3n&oh=94a4cf38e94e52312ab574496541025e&oe=5F1CE3EE"
+                alt="portrait picture">
+      </div>
+
       <h3>About Me</h3>
-      <p> Click here to get a random fact about me</p>
-      <button onclick="addRandomFact()">Random Facts About Me</button>
-      <div id="fact-container"></div>
+      
       <p>I grew up in Miami, Florida surrounded by a Latinx community and playing video games such as Starcraft 2 and Call of Duty. 
           I am currently a rising Sophomore at Northeastern University studying computer science. 
           During my time at Northeastern I joined a salsa/bachata dance club called Kaliente in order to maintain some resemblace of home while I was away studying in Boston. 
@@ -23,8 +46,6 @@
       </p>
 
       <h3>Projects</h3>
-      <a target="_blank" href="https://github.com/kev1n80">Visit my Github!</a>
-      <a target="_blank" href="https://www.linkedin.com/in/kevin-cam">Visit my LinkedIn!</a>
       <ul>
           <li>Schedify</li>
           <li>Pharmd-tracker</li>

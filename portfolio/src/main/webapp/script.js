@@ -29,7 +29,8 @@ function addRandomGreeting() {
 
 function addRandomFact() {
   const facts =
-      ['I love to dance!', 'I am a lefty', 'I use to fence foil', 'I am Peruvian!', 'I reached Plat in SC2', 'I have never been outside of the Americas'];
+      ['I love to dance!', 'I am a lefty', 'I use to fence foil', 'I am Peruvian!', 'I reached Plat in SC2', 
+      'I have never been outside of the Americas', 'My quarantine hobby is photography'];
 
   // Pick a random greeting.
   const fact = facts[Math.floor(Math.random() * facts.length)];
