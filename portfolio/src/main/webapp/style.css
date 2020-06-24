@@ -21,6 +21,8 @@ h1 {
 
 #quick-info-container {
   margin: 30px;
+  width: 50%;
+  height: auto;
 }
 
 #profiles-container {
@@ -72,4 +74,15 @@ h1 {
 .photo-container img{
   height: auto;
   width: 100%;
+}
+
+#blog-post-container {
+  text-align: left;
+  padding: 10px;
+  border: 2px black solid;
+  background-color: beige;
+}
+
+#blog-post-container p{
+  margin: 0;
 }
