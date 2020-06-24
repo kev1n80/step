@@ -1,11 +1,10 @@
 #content {
   margin-left: auto;
   margin-right: auto;
-  width: 650px;
   text-align: center;
+  width: 100vw;
 }
 
-/* intro section */
 h1 {
   margin-top: 0;
 }
@@ -15,12 +14,17 @@ h2 {
   margin-top: 0;
 }
 
+p {
+  margin: auto;
+}
+
+/* intro section */
 #intro-container {
   display: flex;
 }
 
-#intro-container img{
-  height: 300px;
+/* portrait img */
+#intro-container img {
   width: auto;
 }
 
@@ -35,20 +39,20 @@ h2 {
   margin: auto;
 }
 
+/* icons with links to personal accounts */
 #profiles-container {
   display: block;
 }
 
-#profiles-container a{
+#profiles-container a {
   margin: 5px;
 }
 
-#profiles-container img{
-  height: 50px;
+#profiles-container img {
   width: auto;
 }
 
-#profiles-container img:hover{
+#profiles-container img:hover { 
   opacity: 0.7;
 }
 
@@ -62,19 +66,17 @@ h2 {
   background-color: black;
 }
 
-#about-container h2{
+#about-container h2 {
   color: wheat;
 }
 
-#about-container img{
-  height: 250px;
+#about-container img {
   width: auto;
 }
 
-#about-container p{
+#about-container p {
   color: whitesmoke;
   padding: 15px;
-  margin: 0;
 }
 
 /* projects section */
@@ -88,13 +90,14 @@ h2 {
   display: inline-block;
 }
 
-#project-content ul{
+#project-content ul {
   text-align: left;
 }
 
 /* photography section */
 #album {
   display: flex;
+  justify-content: center;
 }
 
 .photo-container {
@@ -103,23 +106,20 @@ h2 {
   border: 2px black solid;
   border-radius: 5px;
   height: auto;
-  width: 300px;
 }
 
-.photo-container img{
+.photo-container img {  
   height: auto;
   width: 100%;
 }
 
-.photo-container p{
-  padding: 0 5px;
-}
-
+/* blog section */
 #blog-post-container {
   background-color: #f2f2f2;
 }
 
 #blog-post {
+  display: inline-block;
   margin: 15px;
   text-align: left;
   padding: 10px;
@@ -127,6 +127,66 @@ h2 {
   background-color: beige;
 }
 
-#blog-post p{
-  margin: 0;
+/* phones */
+@media (max-width: 600px) {
+   /* intro section */
+  #intro-container img {
+    height: 300px;
+  }
+
+  #profiles-container img { 
+    height: 50px;
+    width: auto;
+  }
+
+  /* photography section */
+  .photo-container {
+    width: 300px;
+  }
+
+  .photo-container p {
+    padding: 0 5px;
+  }
+
+  /* about me section */
+  #about-container img {
+    height: 250px;
+  }  
+}
+
+@media (min-width: 600px) {
+  p {
+    width: 50vw;
+  }
+
+  /* intro section */
+  #intro-container img {
+    height: 90vh;
+  }
+ 
+  #profiles-container img { 
+    height: 100px;
+    width: auto;
+    margin: 15px;
+  }
+    
+  /* about me section */
+  #about-container img {
+    height: 60vh;
+  }    
+
+  /* photography section */
+  .photo-container {
+    width: 350px;
+  }
+
+  .photo-container p {
+    width: auto;
+    padding: 15px;
+  }
+
+  /* blog section */
+  #blog-post p {
+    width: 40vw;
+  }
 }
