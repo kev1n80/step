@@ -7,34 +7,37 @@
 
 /* intro section */
 h1 {
-    margin-left: 30px;
+  margin-left: 30px;
 }
 
 #intro-container {
-    display: flex;
+  display: flex;
 }
 
 #intro-container img{
-    height: 300px;
-    width: auto;
+  height: 300px;
+  width: auto;
 }
 
 #quick-info-container {
-    margin: 30px;
+  margin: 30px;
 }
 
 #profiles-container {
-    display: block;
+  display: block;
+}
+
+#profiles-container a{
+  margin: 5px;
 }
 
 #profiles-container img{
-    height: 50px;
-    width: auto;
-    margin: 5px;
+  height: 50px;
+  width: auto;
 }
 
-#profiles-container img: hover{
-    opacity: 0.7;
+#profiles-container img:hover{
+  opacity: 0.7;
 }
 
 #fact-container {
@@ -42,34 +45,31 @@ h1 {
 }
 
 /* about me section */
-
 #about-container img{
-    height: 250px;
-    width: auto;
+  height: 250px;
+  width: auto;
 }
 
 /* projects section */
-
 #project-container {
-    text-align: left;
+  text-align: left;
 }
 
 /* photography section */
-
 #album {
-    display: flex;
+  display: flex;
 }
 
 .photo-container {
-    display:block;
-    margin: 25px;
-    border: 2px black solid;
-    border-radius: 5px;
-    height: auto;
-    width: 300px;
+  display:block;
+  margin: 25px;
+  border: 2px black solid;
+  border-radius: 5px;
+  height: auto;
+  width: 300px;
 }
 
 .photo-container img{
-    height: auto;
-    width: 100%;
+  height: auto;
+  width: 100%;
 }
