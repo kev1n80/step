@@ -93,17 +93,31 @@ p {
 
 /* projects section */
 #project-container {
-  background-color: #999999;
+  background-color: lightgrey;
 }
 
-#project-content {
-  margin-left: auto;
-  margin-right: auto;
-  display: inline-block;
+.project {
+  display: inline-flex;
+  padding-bottom: 50px;
 }
 
-#project-content ul {
-  text-align: left;
+.project img {
+  width: 35vw;
+}
+
+.project-info {
+  width: 30vw;
+  margin: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+}
+
+.project-info button {
+  background-color: white;
+  border-radius: 10px;
+
 }
 
 /* photography section */
