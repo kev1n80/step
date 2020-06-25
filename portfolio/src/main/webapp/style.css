@@ -114,10 +114,19 @@ p {
   justify-content: center;
 }
 
-.project-info button {
+.project-info a {
   background-color: white;
   border-radius: 10px;
+  font-size: 1.2rem;
+  padding: 5px;
+  margin: inherit;
+  text-decoration: none;
+  color: black;
+  border: 2px solid black;
+}
 
+.project-info a:hover {
+  background-color: mintcream;
 }
 
 /* photography section */
