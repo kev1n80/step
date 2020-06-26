@@ -201,7 +201,7 @@ p {
     width: 300px;
   }
 
-  .photo-container p {
+  .photo-container figcaption {
     padding: 0 5px;
   }
 
@@ -279,7 +279,7 @@ p {
     width: 350px;
   }
 
-  .photo-container p {
+  .photo-container figcaption {
     width: auto;
     padding: 15px;
     font-size: 20px;
