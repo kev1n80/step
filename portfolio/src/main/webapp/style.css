@@ -228,7 +228,6 @@ p {
   }
 
   p {
-    width: 50%;
     font-size: 25px;
   }
 
@@ -262,12 +261,20 @@ p {
     height: 60vh;
   }    
 
+  #about-container p {
+    width: 50%;
+  }
+
   /* projects section */
   .project-info a {
     font-size: 1.5rem;
   }
 
   /* photography section */
+  .photography-container p {
+    width: 50%;
+  }
+
   .photo-container {
     width: 350px;
   }
@@ -279,7 +286,13 @@ p {
   }
 
   /* blog section */
-  .blog-post p {
-    width: 40%;
-  }
+  /* .blog-post p {
+    width: 800px;
+  } */
 }
+
+@media (min-width: 870px) {
+  .blog-post p {
+    width: 800px;
+  }
+}  
