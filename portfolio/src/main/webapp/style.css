@@ -22,49 +22,49 @@ p {
 }
 
 /* intro section */
-#intro-container {
+.intro-container {
   display: flex;
 }
 
 /* portrait img */
-#intro-container img {
+.intro-container img {
   width: auto;
 }
 
-#quick-info-container {
+.quick-info-container {
   margin: 30px;
   width: 50%;
   height: auto;
   display: inherit;
 }
 
-#quick-info-content {
+.quick-info-content {
   margin: auto;
 }
 
-#quick-info-content button { 
+.quick-info-content button { 
   border-radius: 10px;
   background-color: white;
 }
 
-#quick-info-content button:hover { 
+.quick-info-content button:hover { 
   background-color: deepskyblue;
 }
 
 /* icons with links to personal accounts */
-#profiles-container {
+.profiles-container {
   display: block;
 }
 
-#profiles-container a {
+.profiles-container a {
   margin: 5px;
 }
 
-#profiles-container img {
+.profiles-container img {
   width: auto;
 }
 
-#profiles-container img:hover { 
+.profiles-container img:hover { 
   opacity: 0.7;
 }
 
@@ -75,25 +75,25 @@ p {
 }
 
 /* about me section */
-#about-container {
+.about-container {
   background-color: black;
 }
 
-#about-container h2 {
+.about-container h2 {
   color: wheat;
 }
 
-#about-container img {
+.about-container img {
   width: auto;
 }
 
-#about-container p {
+.about-container p {
   color: whitesmoke;
   padding: 15px;
 }
 
 /* projects section */
-#project-container {
+.project-container {
   background-color: lightgrey;
 }
 
@@ -135,7 +135,7 @@ p {
 }
 
 /* photography section */
-#album {
+.album {
   display: flex;
   justify-content: center;
 }
@@ -154,11 +154,11 @@ p {
 }
 
 /* blog section */
-#blog-post-container {
+.blog-post-container {
   background-color: #f2f2f2;
 }
 
-#blogs {
+.blogs {
   display: inline-flex;
   flex-direction: column;
 }
@@ -182,11 +182,11 @@ p {
   }
 
   /* intro section */
-  #intro-container img {
+  .intro-container img {
     height: 300px;
   }
 
-  #profiles-container img { 
+  .profiles-container img { 
     height: 50px;
     width: auto;
   }
@@ -206,7 +206,7 @@ p {
   }
 
   /* about me section */
-  #about-container img {
+  .about-container img {
     height: 250px;
   }  
 }
@@ -236,17 +236,17 @@ p {
   }
 
   /* intro section */
-  #intro-container img {
+  .intro-container img {
     height: 90vh;
   }
  
-  #profiles-container img { 
+  .profiles-container img { 
     height: 100px;
     width: auto;
     margin: 15px;
   }
 
-  #quick-info-content button { 
+  .quick-info-content button { 
     font-size: 20px;
     padding: 7px;
     margin-top: 10px;
@@ -257,11 +257,11 @@ p {
   }
     
   /* about me section */
-  #about-container img {
+  .about-container img {
     height: 60vh;
   }    
 
-  #about-container p {
+  .about-container p {
     width: 50%;
   }
 
