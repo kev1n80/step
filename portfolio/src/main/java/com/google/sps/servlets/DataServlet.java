@@ -26,22 +26,22 @@ import com.google.gson.Gson;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  private ArrayList<String> comments = new ArrayList<String> ();
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    ArrayList<String> comments = new ArrayList<String> ();
-    Gson gson = new Gson();
-
-    // Create comments
-    comments.add("Me too!");
-    comments.add("How are you?");
-    comments.add("That's awesome!");
-
-    // Convert comments into JSON using Gson
-    String jsonComments = gson.toJson(comments);
-
+    String jsonComments = new Gson().toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(jsonComments);
+  }
+
+  @Override 
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+  throws IOException {
+    String comment = request.getParameter("comment");
+    comments.add(comment);
+    response.sendRedirect("/index.html");
   }
 }
 
