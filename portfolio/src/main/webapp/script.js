@@ -17,7 +17,7 @@
  */
 function addRandomGreeting() {
   const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
+    ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
 
   // Pick a random greeting.
   const greeting = greetings[Math.floor(Math.random() * greetings.length)];
@@ -29,7 +29,10 @@ function addRandomGreeting() {
 
 function addRandomFact() {
   const facts =
-      ['I love to dance!', 'I am a lefty', 'I use to fence foil', 'I am Peruvian!', 'I reached Plat in SC2', 'I have never been outside of the Americas'];
+    ['I love to dance!', 'I am a lefty', 'I use to fence foil', 
+    'I am Peruvian!', 'I reached Plat in SC2', 
+    'I have never left the Americas', 
+    'My quarantine hobby is photography'];
 
   // Pick a random greeting.
   const fact = facts[Math.floor(Math.random() * facts.length)];
