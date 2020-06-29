@@ -41,3 +41,24 @@ function addRandomFact() {
   const factContainer = document.getElementById('fact-container');
   factContainer.innerText = fact;
 }
+
+function getGreeting() {
+  console.log("Retrieving comments");
+  fetch('/data').then(response => response.json()).then((comments) => {
+    const commentListElement = document.getElementById('greeting-container');
+
+    console.log("Printing comments")
+    commentListElement.innerHTML = '';
+    for (var i = 0;  i < comments.length; i++) {
+      commentListElement.appendChild(
+        createListElement(comments[i]));
+    };
+  });
+}
+
+/** Creates an <li> element containing text. */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
+}
