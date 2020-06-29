@@ -43,7 +43,22 @@ function addRandomFact() {
 }
 
 function getGreeting() {
-  fetch('/data').then(response => response.text()).then((greeting) => {
-    document.getElementById('greeting-container').innerText = greeting;
+  console.log("Retrieving Comments");
+  fetch('/data').then(response => response.json()).then((comments) => {
+    const commentListElement = document.getElementById('greeting-container');
+    // commentListElement.innerHTML = comments[0];
+
+    commentListElement.innerHTML = '';
+    for (var i = 0;  i < comments.length; i++) {
+      commentListElement.appendChild(
+        createListElement(comments[i]));
+    };
   });
+}
+
+/** Creates an <li> element containing text. */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
 }
