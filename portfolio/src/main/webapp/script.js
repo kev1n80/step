@@ -43,11 +43,11 @@ function addRandomFact() {
 }
 
 function getGreeting() {
-  console.log("Retrieving Comments");
+  console.log("Retrieving comments");
   fetch('/data').then(response => response.json()).then((comments) => {
     const commentListElement = document.getElementById('greeting-container');
-    // commentListElement.innerHTML = comments[0];
 
+    console.log("Printing comments")
     commentListElement.innerHTML = '';
     for (var i = 0;  i < comments.length; i++) {
       commentListElement.appendChild(
