@@ -21,6 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.sps.data.Comment;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
@@ -28,20 +35,40 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
 
-    ArrayList<String> comments = new ArrayList<String> ();
-    Gson gson = new Gson();
+    List<Comment> comments = new ArrayList<> ();
+    for (Entity entity : results.asIterable()) {
+      long id = entity.getKey().getId();
+      String content = (String) entity.getProperty("content");
+      long timestamp = (long) entity.getProperty("timestamp");
 
-    // Create comments
-    comments.add("Me too!");
-    comments.add("How are you?");
-    comments.add("That's awesome!");
+      Comment comment = new Comment(id, content, timestamp);
+      comments.add(comment);
+    }
 
-    // Convert comments into JSON using Gson
-    String jsonComments = gson.toJson(comments);
-
+    String jsonComments = new Gson().toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(jsonComments);
+  }
+
+  @Override 
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+  throws IOException {
+    String comment = request.getParameter("comment");
+    long timestamp = System.currentTimeMillis();
+
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("content", comment);
+    commentEntity.setProperty("timestamp", timestamp);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+
+    response.sendRedirect("/index.html");
   }
 }
 

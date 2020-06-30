@@ -49,10 +49,10 @@ function getGreeting() {
 
     console.log("Printing comments")
     commentListElement.innerHTML = '';
-    for (var i = 0;  i < comments.length; i++) {
+    comments.forEach((comment) => {
       commentListElement.appendChild(
-        createListElement(comments[i]));
-    };
+        createListElement(comment.content));
+    })
   });
 }
 
