@@ -7,13 +7,21 @@
     <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
     <script src="script.js"></script>
   </head>
-  <body onload="getGreeting()">
+  <body onload="getComment()">
     <div id="content">
-      <div id="greeting-container"></div>
-      <form action="/data" method="POST">
+      <div id="comment-container"></div>
+      <form action="/new-comment" method="POST">
         <p>Enter a comment which can be up to 264 characters!</p>
-        <label for="comment"><br>
+        <label for="comment">Comment:</labe><br>
         <input type="text" name="comment" maxlength="264"><br>
+        <input type="submit" />
+      </form>
+
+      <form action="/list-comments" method="POST">
+        <label for="num-comments">
+          Number of Comments Displayed (max 5):
+        </label><br>
+        <input type="number" name="num-comments" min="1" max="5" value="3"><br>
         <input type="submit" />
       </form>
 

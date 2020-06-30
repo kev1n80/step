@@ -30,8 +30,8 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
-@WebServlet("/data")
-public class DataServlet extends HttpServlet {
+@WebServlet("/list-comments")
+public class ListCommentsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -41,14 +41,6 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     List<Comment> comments = new ArrayList<> ();
-    // for (Entity entity : results.asIterable()) {
-    //   long id = entity.getKey().getId();
-    //   String content = (String) entity.getProperty("content");
-    //   long timestamp = (long) entity.getProperty("timestamp");
-
-    //   Comment comment = new Comment(id, content, timestamp);
-    //   comments.add(comment);
-    // }
     Iterator<Entity> commentsIterator = results.asIterator();
     for (int i = 0; i < 3; i++) {
       if (commentsIterator.hasNext()) {
@@ -73,31 +65,9 @@ public class DataServlet extends HttpServlet {
   @Override 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
   throws IOException {
-    int minCommentLen = 1;
-    int maxCommentLen = 264;
     int minNumComments = 1;
     int maxNumComments = 5;
 
-    // Receive input from the create a comment form
-    String comment = request.getParameter("comment");
-    int commentLen = comment.length();
-    if (commentLen >= minCommentLen || commentLen <= maxCommentLen) {
-      long timestamp = System.currentTimeMillis();
-
-      Entity commentEntity = new Entity("Comment");
-      commentEntity.setProperty("content", comment);
-      commentEntity.setProperty("timestamp", timestamp);
-
-      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      datastore.put(commentEntity);
-    }
-    else {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter a comment with " + 
-      minCommentLen + " to " + maxCommentLen + " characters.");
-      return;
-    }
-    
     // Receive input from the modify number of comments shown form
     int numComments = getNumComments(request, maxNumComments);
     if (numComments == -1) {

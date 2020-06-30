@@ -42,10 +42,10 @@ function addRandomFact() {
   factContainer.innerText = fact;
 }
 
-function getGreeting() {
+function getComment() {
   console.log("Retrieving comments");
-  fetch('/data').then(response => response.json()).then((comments) => {
-    const commentListElement = document.getElementById('greeting-container');
+  fetch('/list-comments').then(response => response.json()).then((comments) => {
+    const commentListElement = document.getElementById('comment-container');
 
     console.log("Printing comments")
     commentListElement.innerHTML = '';
