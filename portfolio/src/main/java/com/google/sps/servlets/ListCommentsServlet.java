@@ -29,12 +29,28 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that returns some example content. TODO: modify this file to handle 
+comments data */
 @WebServlet("/list-comments")
 public class ListCommentsServlet extends HttpServlet {
 
+  private int numCommentsShown = 3;
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    int minNumComments = 1;
+    int maxNumComments = 5;
+    // Receive input from the modify number of comments shown form
+    int numComments = getNumComments(request, minNumComments, maxNumComments);
+    if (numComments == -1) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter an integer between " +  
+      minNumComments + " to " + maxNumComments + ".");
+      return;
+    }
+    numCommentsShown = numComments;
+
+    // Retrieve Comments from Datastore
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -42,7 +58,7 @@ public class ListCommentsServlet extends HttpServlet {
 
     List<Comment> comments = new ArrayList<> ();
     Iterator<Entity> commentsIterator = results.asIterator();
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < numCommentsShown; i++) {
       if (commentsIterator.hasNext()) {
         Entity entity = commentsIterator.next();
         long id = entity.getKey().getId();
@@ -69,21 +85,34 @@ public class ListCommentsServlet extends HttpServlet {
     int maxNumComments = 5;
 
     // Receive input from the modify number of comments shown form
-    int numComments = getNumComments(request, maxNumComments);
+    int numComments = getNumComments(request, minNumComments, maxNumComments);
     if (numComments == -1) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between " +  
       minNumComments + " to " + maxNumComments + ".");
       return;
     }
+    numCommentsShown = numComments;
 
     // Redirect back to the HTML page.
     response.sendRedirect("/index.html");
   }
 
   /** Returns the number of comments shown entered by the user, or -1 if the 
-  comment was invalid. */
-  private int getNumComments(HttpServletRequest request, int max) {
+  comment was invalid. Min must be greater than -1 and Max must be greater than 
+  or equal to min */
+  private int getNumComments(HttpServletRequest request, int min, int max) {
+    if (min <= -1) {
+      System.err.println("Min (" + min + ") must be greater than -1 ");
+      return -1;
+    }
+    
+    if (max < min) {
+      System.err.println("Max (" + max + ") must be greater than or equal to" + 
+      " Min (" + min + ")");
+      return -1;
+    }
+
     // Get the input from the form.
     String numCommentsString = request.getParameter("num-comments");
 
@@ -97,7 +126,7 @@ public class ListCommentsServlet extends HttpServlet {
     }
 
     // Check that the input is between 0 and max.
-    if (numComments < 0 || numComments > max) {
+    if (numComments < min || numComments > max) {
       System.err.println("Number of comments shown is out of range: " + 
       numCommentsString);
       return -1;

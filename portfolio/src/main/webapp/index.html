@@ -14,16 +14,24 @@
         <p>Enter a comment which can be up to 264 characters!</p>
         <label for="comment">Comment:</labe><br>
         <input type="text" name="comment" maxlength="264"><br>
-        <input type="submit" />
+        <input type="submit" /><br>
       </form>
 
-      <form action="/list-comments" method="POST">
-        <label for="num-comments">
-          Number of Comments Displayed (max 5):
-        </label><br>
-        <input type="number" name="num-comments" min="1" max="5" value="3"><br>
-        <input type="submit" />
-      </form>
+      <label for="num-comments">
+        Number of Comments Displayed:
+      </label>
+      <select id="num-comments" name="num-comments" onchange="getComment()">
+        <option value="3" selected disaled hidden>
+          Select a value
+        </option>  
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>  
+
+      <button type="button" onclick="deleteAllComments()">Delete All Comments</button>
 
       <div class="intro-container">
         <div class="quick-info-container">
@@ -41,7 +49,7 @@
               </a>
             </div>
             <p>Click here to get a random fact about me</p>
-            <button onclick="addRandomFact()">Random Fact</button>  
+            <button type="button" onclick="addRandomFact()">Random Fact</button>  
             <div id="fact-container"></div>  
           </div>
         </div>

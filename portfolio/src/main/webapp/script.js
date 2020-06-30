@@ -42,9 +42,13 @@ function addRandomFact() {
   factContainer.innerText = fact;
 }
 
+/** Retrieves a number of comments. */
 function getComment() {
+  var numComments = document.getElementById("num-comments").value;
+  var queryString = '/list-comments?num-comments=' + numComments;
+
   console.log("Retrieving comments");
-  fetch('/list-comments').then(response => response.json()).then((comments) => {
+  fetch(queryString).then(response => response.json()).then((comments) => {
     const commentListElement = document.getElementById('comment-container');
 
     console.log("Printing comments")
@@ -61,4 +65,10 @@ function createListElement(text) {
   const liElement = document.createElement('li');
   liElement.innerText = text;
   return liElement;
+}
+
+/** Deletes all comments. */
+function deleteAllComments() {
+  console.log("Deleting all comments");
+  fetch('/delete-comment', {method: 'POST'}).then(getComment);
 }
