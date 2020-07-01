@@ -29,7 +29,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that returns some example content. TODO: modify this file to handle 
+comments data */
 @WebServlet("/new-comment")
 public class NewCommentServlet extends HttpServlet {
 

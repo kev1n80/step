@@ -112,4 +112,3 @@ public class ListCommentsServlet extends HttpServlet {
     return numComments;
   }
 }
-
