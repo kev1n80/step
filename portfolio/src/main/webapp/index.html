@@ -9,7 +9,10 @@
   </head>
   <body onload="loadCommentsSection()">
     <div id="content">
-      <div id="comment-container"></div>
+      <div id="comments-section">
+        <div id="comment-container"></div>
+        <div id="pagination"></div>
+      </div>
       <form action="/new-comment" method="POST">
         <p>Enter a comment which can be up to 264 characters!</p>
         <label for="comment">Comment:</labe><br>

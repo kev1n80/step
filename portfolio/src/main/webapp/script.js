@@ -53,10 +53,16 @@ function getComment(numComments, pageNumber) {
 
     console.log("Printing comments")
     commentListElement.innerHTML = '';
-    comments.forEach((comment) => {
+    if (comments.length > 0) {
+      comments.forEach((comment) => {
+        commentListElement.appendChild(
+          createListElement(comment.content));
+      })
+    }
+    else {
       commentListElement.appendChild(
-        createListElement(comment.content));
-    })
+          createListElement("There are no comments"));
+    }
   });
 }
 
@@ -70,11 +76,40 @@ function createListElement(text) {
 /** Deletes all comments. */
 function deleteAllComments() {
   console.log("Deleting all comments");
-  fetch('/delete-comment', {method: 'POST'}).then(getComment);
+  fetch('/delete-comment', {method: 'POST'}).then(loadCommentsSection);
+}
+
+/** Creates pagination to go through all comments. */
+function loadPagination(numComments) {
+  var queryString = '/pagination-comment?num-comments=' + numComments;
+
+  console.log("Fetching comments");
+  fetch(queryString).then(response => response.json()).then((maxPageNum) => {
+    const paginationElement = document.getElementById('pagination');
+    console.log("Loading pagination");
+    paginationElement.innerHTML = '';
+      for (var i = 1; i < maxPageNum + 1; i++) {
+        paginationElement.appendChild(
+          createPageElement(i, numComments));
+      }
+  });
+}
+
+/** Creates an elemet that represents a page */
+function createPageElement(pageNumber, numComments) {
+  console.log("Creating page number " + pageNumber);
+  const pageElement = document.createElement('a');
+  pageElement.innerText = pageNumber;
+  pageElement.addEventListener('click', () => {
+    console.log("Loading comments for page: " + pageNumber);
+    getComment(numComments, pageNumber);
+  });
+  return pageElement;
 }
 
 /** Loads pagination and comments. */
 function loadCommentsSection() {
-  var numCommentsShown = document.getElementById("num-comments").value;
-  getComment(numCommentsShown, 1);
+  var numComments = document.getElementById("num-comments").value;
+  getComment(numComments, 1);
+  loadPagination(numComments);
 }
