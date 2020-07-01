@@ -34,8 +34,6 @@ comments data */
 @WebServlet("/list-comments")
 public class ListCommentsServlet extends HttpServlet {
 
-  private int numCommentsShown = 3;
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     int minNumComments = 1;
@@ -48,7 +46,6 @@ public class ListCommentsServlet extends HttpServlet {
       minNumComments + " to " + maxNumComments + ".");
       return;
     }
-    numCommentsShown = numComments;
 
     // Retrieve Comments from Datastore
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
@@ -58,7 +55,7 @@ public class ListCommentsServlet extends HttpServlet {
 
     List<Comment> comments = new ArrayList<> ();
     Iterator<Entity> commentsIterator = results.asIterator();
-    for (int i = 0; i < numCommentsShown; i++) {
+    for (int i = 0; i < numComments; i++) {
       if (commentsIterator.hasNext()) {
         Entity entity = commentsIterator.next();
         long id = entity.getKey().getId();
@@ -76,26 +73,6 @@ public class ListCommentsServlet extends HttpServlet {
     String jsonComments = new Gson().toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(jsonComments);
-  }
-
-  @Override 
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
-  throws IOException {
-    int minNumComments = 1;
-    int maxNumComments = 5;
-
-    // Receive input from the modify number of comments shown form
-    int numComments = getNumComments(request, minNumComments, maxNumComments);
-    if (numComments == -1) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between " +  
-      minNumComments + " to " + maxNumComments + ".");
-      return;
-    }
-    numCommentsShown = numComments;
-
-    // Redirect back to the HTML page.
-    response.sendRedirect("/index.html");
   }
 
   /** Returns the number of comments shown entered by the user, or -1 if the 
