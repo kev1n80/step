@@ -29,46 +29,38 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
-@WebServlet("/data")
-public class DataServlet extends HttpServlet {
-
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
-    
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(query);
-
-    List<Comment> comments = new ArrayList<> ();
-    for (Entity entity : results.asIterable()) {
-      long id = entity.getKey().getId();
-      String content = (String) entity.getProperty("content");
-      long timestamp = (long) entity.getProperty("timestamp");
-
-      Comment comment = new Comment(id, content, timestamp);
-      comments.add(comment);
-    }
-
-    String jsonComments = new Gson().toJson(comments);
-    response.setContentType("application/json;");
-    response.getWriter().println(jsonComments);
-  }
+/** Servlet that returns some example content. TODO: modify this file to handle 
+comments data */
+@WebServlet("/new-comment")
+public class NewCommentServlet extends HttpServlet {
 
   @Override 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
   throws IOException {
+    int minCommentLen = 1;
+    int maxCommentLen = 264;
+
+    // Receive input from the create a comment form
     String comment = request.getParameter("comment");
-    long timestamp = System.currentTimeMillis();
+    int commentLen = comment.length();
+    if (commentLen >= minCommentLen || commentLen <= maxCommentLen) {
+      long timestamp = System.currentTimeMillis();
 
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("content", comment);
-    commentEntity.setProperty("timestamp", timestamp);
+      Entity commentEntity = new Entity("Comment");
+      commentEntity.setProperty("content", comment);
+      commentEntity.setProperty("timestamp", timestamp);
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
+      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+      datastore.put(commentEntity);
+    }
+    else {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter a comment with " + 
+      minCommentLen + " to " + maxCommentLen + " characters.");
+      return;
+    }
 
+    // Redirect back to the HTML page.
     response.sendRedirect("/index.html");
   }
 }
-
