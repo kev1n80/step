@@ -7,7 +7,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
     <script src="script.js"></script>
   </head>
-  <body onload="getComment()">
+  <body onload="loadCommentsSection()">
     <div id="content">
       <div id="comment-container"></div>
       <form action="/new-comment" method="POST">
@@ -20,7 +20,7 @@
       <label for="num-comments">
         Number of Comments Displayed:
       </label>
-      <select id="num-comments" name="num-comments" onchange="getComment()">
+      <select id="num-comments" name="num-comments" onchange="loadCommentsSection()">
         <option value="3" selected disaled hidden>
           Select a value
         </option>  

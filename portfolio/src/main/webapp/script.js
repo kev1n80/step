@@ -42,10 +42,10 @@ function addRandomFact() {
   factContainer.innerText = fact;
 }
 
-/** Retrieves a number of comments. */
-function getComment() {
-  var numComments = document.getElementById("num-comments").value;
+/** Retrieves a number of comments after and including the first comment shown. */
+function getComment(numComments, pageNumber) {
   var queryString = '/list-comments?num-comments=' + numComments;
+  queryString = queryString + '&page-number=' + pageNumber;
 
   console.log("Retrieving comments");
   fetch(queryString).then(response => response.json()).then((comments) => {
@@ -71,4 +71,10 @@ function createListElement(text) {
 function deleteAllComments() {
   console.log("Deleting all comments");
   fetch('/delete-comment', {method: 'POST'}).then(getComment);
+}
+
+/** Loads pagination and comments. */
+function loadCommentsSection() {
+  var numCommentsShown = document.getElementById("num-comments").value;
+  getComment(numCommentsShown, 1);
 }

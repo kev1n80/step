@@ -15,6 +15,7 @@
 package com.google.sps.servlets;
 
 import java.io.IOException;
+import java.lang.Math;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -34,16 +36,16 @@ comments data */
 @WebServlet("/list-comments")
 public class ListCommentsServlet extends HttpServlet {
 
+  /** Will only show the 30 most recent comments */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    int minNumComments = 1;
-    int maxNumComments = 5;
     // Receive input from the modify number of comments shown form
-    int numComments = getNumComments(request, minNumComments, maxNumComments);
+    int maxNumComments = 5;
+    int numComments = getNumComments(request, "num-comments", 1, maxNumComments);
     if (numComments == -1) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between " +  
-      minNumComments + " to " + maxNumComments + ".");
+      1 + " to " + maxNumComments + ".");
       return;
     }
 
@@ -53,9 +55,23 @@ public class ListCommentsServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
+    // Receive input from the pagination to see which comments to show
+    FetchOptions entitiesLimit = FetchOptions.Builder.withLimit(30);
+    int maxPageNum = (int) Math.ceil(results.countEntities() / numComments);
+    int pageNum = getNumComments(request, "page-number", 1, maxPageNum);
+    if (numComments == -1) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter an integer between " +  
+      1 + " to " + maxPageNum + ".");
+      return;
+    }
+    int commentStartIndex = (pageNum - 1) * numComments;
+    int commentEndIndex = commentStartIndex + numComments;
+
+    // Turn prepared query into a list
     List<Comment> comments = new ArrayList<> ();
     Iterator<Entity> commentsIterator = results.asIterator();
-    for (int i = 0; i < numComments; i++) {
+    for (int i = commentStartIndex; i < commentEndIndex; i++) {
       if (commentsIterator.hasNext()) {
         Entity entity = commentsIterator.next();
         long id = entity.getKey().getId();
@@ -78,7 +94,7 @@ public class ListCommentsServlet extends HttpServlet {
   /** Returns the number of comments shown entered by the user, or -1 if the 
   comment was invalid. Min must be greater than -1 and Max must be greater than 
   or equal to min */
-  private int getNumComments(HttpServletRequest request, int min, int max) {
+  private int getNumComments(HttpServletRequest request, String parameter, int min, int max) {
     if (min <= -1) {
       System.err.println("Min (" + min + ") must be greater than -1 ");
       return -1;
@@ -91,7 +107,7 @@ public class ListCommentsServlet extends HttpServlet {
     }
 
     // Get the input from the form.
-    String numCommentsString = request.getParameter("num-comments");
+    String numCommentsString = request.getParameter(parameter);
 
     // Convert the input to an int.
     int numComments;
@@ -112,4 +128,3 @@ public class ListCommentsServlet extends HttpServlet {
     return numComments;
   }
 }
-
