@@ -47,12 +47,16 @@ function getComment(numComments, pageNumber, blogNumber) {
   var queryString = '/list-comments?num-comments=' + numComments;
   queryString = queryString + '&page-number=' + pageNumber;
   queryString = queryString + '&blog-number=' + blogNumber;
+  
+  
 
-  console.log("Retrieving comments");
+  console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
-    const commentListElement = document.getElementById('comment-container');
+    // const commentListElement = document.getElementById('comment-container-' + 
+    // blogNumber);
+    const commentListElement = document.getElementById('comment-container-' + blogNumber);
 
-    console.log("Printing comments")
+    console.log("Printing comments for blog post " + blogNumber);
     commentListElement.innerHTML = '';
     if (comments.length > 0) {
       comments.forEach((comment) => {
@@ -88,10 +92,10 @@ function loadPagination(numComments, blogNumber) {
   var queryString = '/pagination-comment?num-comments=' + numComments;
   queryString = queryString + '&blog-number=' + blogNumber;
 
-  console.log("Fetching comments");
+  console.log("Fetching pagination for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((maxPageNum) => {
-    const paginationElement = document.getElementById('pagination');
-    console.log("Loading pagination");
+    const paginationElement = document.getElementById('pagination-' + blogNumber);
+    console.log("Loading pagination w/ " + numComments + " comments per page");
     paginationElement.innerHTML = '';
       for (var i = 1; i < maxPageNum + 1; i++) {
         paginationElement.appendChild(
@@ -102,7 +106,8 @@ function loadPagination(numComments, blogNumber) {
 
 /** Creates an elemet that represents a page */
 function createPageElement(pageNumber, numComments, blogNumber) {
-  console.log("Creating page number " + pageNumber);
+  console.log("Creating page number " + pageNumber + " for blog post " + 
+  blogNumber);
   const pageElement = document.createElement('a');
   pageElement.innerText = pageNumber;
   pageElement.addEventListener('click', () => {
@@ -114,7 +119,7 @@ function createPageElement(pageNumber, numComments, blogNumber) {
 
 /** Loads pagination and comments. */
 function loadCommentsSection(blogNumber) {
-  var numComments = document.getElementById("num-comments").value;
+  var numComments = document.getElementById("num-comments-" + blogNumber).value;
   getComment(numComments, 1, blogNumber);
   loadPagination(numComments, blogNumber);
 }

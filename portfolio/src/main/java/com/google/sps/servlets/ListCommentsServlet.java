@@ -56,7 +56,10 @@ public class ListCommentsServlet extends HttpServlet {
     // Receive input on which blog we are retrieving comments from
     int maxNumBlogs = 5;
     int blogNumber = getUserNum(request, "blog-number", 1, maxNumBlogs);
+    System.err.println("blog number " + blogNumber);
     if (blogNumber == -1) {
+      System.err.println("Please enter an integer between " +  
+      1 + " to " + maxNumBlogs + ".");
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between " +  
       1 + " to " + maxNumBlogs + ".");
