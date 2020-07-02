@@ -28,6 +28,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
 
@@ -50,8 +53,20 @@ public class ListCommentsServlet extends HttpServlet {
       return;
     }
 
-    // Retrieve Comments from Datastore
-    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    // Receive input on which blog we are retrieving comments from
+    int maxNumBlogs = 5;
+    int blogNumber = getUserNum(request, "blog-number", 1, maxNumBlogs);
+    if (blogNumber == -1) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter an integer between " +  
+      1 + " to " + maxNumBlogs + ".");
+      return;
+    }
+
+    // Retrieve Comments from Datastore for the given blog post
+    FilterPredicate filterBlogComments = new FilterPredicate("blogNumber", 
+    FilterOperator.EQUAL, blogNumber);
+    Query query = new Query("Comment").setFilter(filterBlogComments).addSort("timestamp", SortDirection.DESCENDING);
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);

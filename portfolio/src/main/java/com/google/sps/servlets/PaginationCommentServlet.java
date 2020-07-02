@@ -20,15 +20,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-// import java.util.*;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-// import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 
 /** Servlet responsible for deleting tasks. */
@@ -39,16 +39,28 @@ public class PaginationCommentServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Receive input from the modify number of comments shown form
     int maxNumComments = 5;
-    int numComments = getNumComments(request, "num-comments", 1, maxNumComments);
+    int numComments = getUserNum(request, "num-comments", 1, maxNumComments);
     if (numComments == -1) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between " +  
       1 + " to " + maxNumComments + ".");
       return;
     }
+    
+    // Receive input on which blog we are retrieving comments from
+    int maxNumBlogs = 5;
+    int blogNumber = getUserNum(request, "blog-number", 1, maxNumBlogs);
+    if (blogNumber == -1) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter an integer between " +  
+      1 + " to " + maxNumBlogs + ".");
+      return;
+    }
 
-    // Retrieve Comments from Datastore
-    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    // Retrieve Comments from Datastore for the given blog post
+    FilterPredicate filterBlogComments = new FilterPredicate("blogNumber", 
+    FilterOperator.EQUAL, blogNumber);
+    Query query = new Query("Comment").setFilter(filterBlogComments);
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
@@ -66,7 +78,7 @@ public class PaginationCommentServlet extends HttpServlet {
   /** Returns the number of comments shown entered by the user, or -1 if the 
   comment was invalid. Min must be greater than -1 and Max must be greater than 
   or equal to min */
-  private int getNumComments(HttpServletRequest request, String parameter, int min, int max) {
+  private int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
     if (min <= -1) {
       System.err.println("Min (" + min + ") must be greater than -1 ");
       return -1;
@@ -79,24 +91,24 @@ public class PaginationCommentServlet extends HttpServlet {
     }
 
     // Get the input from the form.
-    String numCommentsString = request.getParameter(parameter);
+    String userNumString = request.getParameter(parameter);
 
     // Convert the input to an int.
-    int numComments;
+    int userNum;
     try {
-      numComments = Integer.parseInt(numCommentsString);
+      userNum = Integer.parseInt(userNumString);
     } catch (NumberFormatException e) {
-      System.err.println("Could not convert to int: " + numCommentsString);
+      System.err.println("Could not convert to int: " + userNumString);
       return -1;
     }
 
     // Check that the input is between 0 and max.
-    if (numComments < min || numComments > max) {
-      System.err.println("Number of comments shown is out of range: " + 
-      numCommentsString);
+    if (userNum < min || userNum > max) {
+      System.err.println("Value for " + parameter + " is out of range (" + min 
+      + " - " + max + "): " + userNumString);
       return -1;
     }
 
-    return numComments;
+    return userNum;
   }
 }

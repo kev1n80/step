@@ -43,9 +43,10 @@ function addRandomFact() {
 }
 
 /** Retrieves a number of comments after and including the first comment shown. */
-function getComment(numComments, pageNumber) {
+function getComment(numComments, pageNumber, blogNumber) {
   var queryString = '/list-comments?num-comments=' + numComments;
   queryString = queryString + '&page-number=' + pageNumber;
+  queryString = queryString + '&blog-number=' + blogNumber;
 
   console.log("Retrieving comments");
   fetch(queryString).then(response => response.json()).then((comments) => {
@@ -74,14 +75,18 @@ function createListElement(text) {
 }
 
 /** Deletes all comments. */
-function deleteAllComments() {
+function deleteAllComments(blogNumber) {
   console.log("Deleting all comments");
-  fetch('/delete-comment', {method: 'POST'}).then(loadCommentsSection);
+  var queryString = '/delete-comment?blog-number=' + blogNumber;
+  fetch(queryString, {method: 'POST'}).then(() => {
+    loadCommentsSection(blogNumber);
+    });
 }
 
 /** Creates pagination to go through all comments. */
-function loadPagination(numComments) {
+function loadPagination(numComments, blogNumber) {
   var queryString = '/pagination-comment?num-comments=' + numComments;
+  queryString = queryString + '&blog-number=' + blogNumber;
 
   console.log("Fetching comments");
   fetch(queryString).then(response => response.json()).then((maxPageNum) => {
@@ -90,26 +95,26 @@ function loadPagination(numComments) {
     paginationElement.innerHTML = '';
       for (var i = 1; i < maxPageNum + 1; i++) {
         paginationElement.appendChild(
-          createPageElement(i, numComments));
+          createPageElement(i, numComments, blogNumber));
       }
   });
 }
 
 /** Creates an elemet that represents a page */
-function createPageElement(pageNumber, numComments) {
+function createPageElement(pageNumber, numComments, blogNumber) {
   console.log("Creating page number " + pageNumber);
   const pageElement = document.createElement('a');
   pageElement.innerText = pageNumber;
   pageElement.addEventListener('click', () => {
     console.log("Loading comments for page: " + pageNumber);
-    getComment(numComments, pageNumber);
+    getComment(numComments, pageNumber, blogNumber);
   });
   return pageElement;
 }
 
 /** Loads pagination and comments. */
-function loadCommentsSection() {
+function loadCommentsSection(blogNumber) {
   var numComments = document.getElementById("num-comments").value;
-  getComment(numComments, 1);
-  loadPagination(numComments);
+  getComment(numComments, 1, blogNumber);
+  loadPagination(numComments, blogNumber);
 }
