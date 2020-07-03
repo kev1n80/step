@@ -19,9 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 /** A class that contains methods to validate input */
 public final class ValidateInput {
 
-  /** Returns the number of comments shown entered by the user, or -1 if the 
-  comment was invalid. Min must be greater than -1 and Max must be greater than 
-  or equal to min */
+  /** Returns the number entered by the user, or -1 if the comment was invalid.
+   Min must be greater than -1 and Max must be greater than or equal to min */
   public int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
     if (min <= -1) {
       System.err.println("Min (" + min + ") must be greater than -1 ");

@@ -196,8 +196,18 @@ p {
   border-width: 0 2px 2px 2px;
 }
 
+.comment-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .comment {
   margin: 5px;
+  display: inline-flex;
+}
+
+.comment p {
+  margin-right: 5px;
 }
 
 /* pagination */

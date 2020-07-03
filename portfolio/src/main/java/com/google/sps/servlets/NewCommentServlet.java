@@ -36,17 +36,29 @@ public class NewCommentServlet extends HttpServlet {
   @Override 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
   throws IOException {
+    int minNameLen = 1;
+    int maxNameLen = 30;
     int minCommentLen = 1;
     int maxCommentLen = 264;
     int minNumBlogs = 1;
     int maxNumBlogs = 5;
+    ValidateInput validateInput = new ValidateInput();
 
     // Receive input from the create a comment form
-    int blogNumber = new ValidateInput().getUserNum(request, "blog-number", minNumBlogs, maxNumBlogs);
+    int blogNumber = validateInput.getUserNum(request, "blog-number", minNumBlogs, maxNumBlogs);
     if (blogNumber == -1) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between " +  
       1 + " to " + maxNumBlogs + ".");
+      return;
+    }
+
+    String name = request.getParameter("name");
+    int nameLen = name.length();
+    if (nameLen < 1 || nameLen > maxNameLen) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter a string of length " +  
+      1 + " to " + maxNameLen + ".");
       return;
     }
 
@@ -59,6 +71,7 @@ public class NewCommentServlet extends HttpServlet {
       commentEntity.setProperty("content", comment);
       commentEntity.setProperty("timestamp", timestamp);
       commentEntity.setProperty("blogNumber", blogNumber);
+      commentEntity.setProperty("name", name);
 
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       datastore.put(commentEntity);
