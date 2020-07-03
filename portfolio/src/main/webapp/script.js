@@ -287,9 +287,12 @@ function loadBlogpostComment(numberOfBlogs) {
 /** Toggles the blog post comment secion */
 function toggleBlogpostComment(blogNumber) {
   var commentSection = document.getElementById("comment-section-" + blogNumber);
-  if (commentSection.style.display === "none") {
-    commentSection.style.display = "block";
-  } else {
+  if (commentSection.style.display === "block") {
+    console.log("Comment section " + blogNumber + " is now hidden.")
     commentSection.style.display = "none";
+  } else {
+    console.log("Comment section " + blogNumber + " is now visible.")
+    commentSection.style.display = "block";
+    loadCommentSection(blogNumber);
   }
 }

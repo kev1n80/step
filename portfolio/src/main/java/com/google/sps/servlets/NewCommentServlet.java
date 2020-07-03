@@ -43,6 +43,12 @@ public class NewCommentServlet extends HttpServlet {
 
     // Receive input from the create a comment form
     int blogNumber = new ValidateInput().getUserNum(request, "blog-number", minNumBlogs, maxNumBlogs);
+    if (blogNumber == -1) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter an integer between " +  
+      1 + " to " + maxNumBlogs + ".");
+      return;
+    }
 
     String comment = request.getParameter("comment");
     int commentLen = comment.length();
@@ -65,6 +71,7 @@ public class NewCommentServlet extends HttpServlet {
     }
 
     // Redirect back to the HTML page.
-    response.sendRedirect("/index.html");
+    String url = "/index.html#blog-post-" + blogNumber;
+    response.sendRedirect(url);
   }
 }
