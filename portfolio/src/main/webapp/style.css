@@ -5,17 +5,6 @@
   width: 100%;
 }
 
-/* pagination */
-#pagination a {
-  padding: 3px;
-  margin: 5px;
-}
-
-#pagination a:hover {
-  font-size: 150%;
-  color: blue;
-}
-
 h1 {
   margin-top: 0;
 }
@@ -172,11 +161,12 @@ p {
 .blogs {
   display: inline-flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .blog-post {
   display: inline-block;
-  margin: 15px;
+  margin: 15px 15px 0 15px;
   padding: 10px;
   border: 2px black solid;
   background-color: beige;
@@ -197,6 +187,32 @@ p {
 
 .comment-section {
   display: none;
+  flex-direction: column;
+  width: 700px;
+  padding: 10px;
+  align-items: center;
+  background: white;
+  border: solid black;
+  border-width: 0 2px 2px 2px;
+}
+
+.comment {
+  margin: 5px;
+}
+
+/* pagination */
+.pagination {
+  margin: 5px;
+}
+
+.pagination a {
+  padding: 3px;
+  margin: 5px;
+}
+
+.pagination a:hover {
+  font-size: 150%;
+  color: blue;
 }
 
 /* phones */
