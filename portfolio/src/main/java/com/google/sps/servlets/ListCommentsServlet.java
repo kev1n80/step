@@ -33,6 +33,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
+import com.google.sps.utility.ValidateInput;
 
 /** Servlet that returns some example content. TODO: modify this file to handle 
 comments data */
@@ -44,8 +45,9 @@ public class ListCommentsServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Receive input from the modify number of comments shown form
+    ValidateInput validateInput = new ValidateInput();
     int maxNumComments = 5;
-    int numComments = getUserNum(request, "num-comments", 1, maxNumComments);
+    int numComments = validateInput.getUserNum(request, "num-comments", 1, maxNumComments);
     if (numComments == -1) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between " +  
@@ -55,7 +57,7 @@ public class ListCommentsServlet extends HttpServlet {
 
     // Receive input on which blog we are retrieving comments from
     int maxNumBlogs = 5;
-    int blogNumber = getUserNum(request, "blog-number", 1, maxNumBlogs);
+    int blogNumber = validateInput.getUserNum(request, "blog-number", 1, maxNumBlogs);
     System.err.println("blog number " + blogNumber);
     if (blogNumber == -1) {
       System.err.println("Please enter an integer between " +  
@@ -82,7 +84,7 @@ public class ListCommentsServlet extends HttpServlet {
     List<Comment> comments = new ArrayList<> ();
     if (totalComments > 0) {
       int maxPageNum = (int) Math.ceil(totalComments / numComments);
-      int pageNum = getUserNum(request, "page-number", 0, maxPageNum);
+      int pageNum = validateInput.getUserNum(request, "page-number", 0, maxPageNum);
       if (pageNum == -1) {
         response.setContentType("text/html");
         response.getWriter().println("Please enter an integer between " +  
@@ -110,42 +112,5 @@ public class ListCommentsServlet extends HttpServlet {
     String jsonComments = new Gson().toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(jsonComments);
-  }
-
-  /** Returns the number of comments shown entered by the user, or -1 if the 
-  comment was invalid. Min must be greater than -1 and Max must be greater than 
-  or equal to min */
-  private int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
-    if (min <= -1) {
-      System.err.println("Min (" + min + ") must be greater than -1 ");
-      return -1;
-    }
-    
-    if (max < min) {
-      System.err.println("Max (" + max + ") must be greater than or equal to" + 
-      " Min (" + min + ")");
-      return -1;
-    }
-
-    // Get the input from the form.
-    String userNumString = request.getParameter(parameter);
-
-    // Convert the input to an int.
-    int userNum;
-    try {
-      userNum = Integer.parseInt(userNumString);
-    } catch (NumberFormatException e) {
-      System.err.println("Could not convert to int: " + userNumString);
-      return -1;
-    }
-
-    // Check that the input is between 0 and max.
-    if (userNum < min || userNum > max) {
-      System.err.println("Value for " + parameter + " is out of range (" + min 
-      + " - " + max + "): " + userNumString);
-      return -1;
-    }
-
-    return userNum;
   }
 }
