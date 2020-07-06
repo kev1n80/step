@@ -258,7 +258,7 @@ function createCommentForm(blogNumber) {
   formElement.appendChild(createLabelElement(formId, formDescription, "blog-form-label"));
 
   const nameDescription = "Name:";
-  const nameInputClass = "blog-form-input-label";
+  const nameInputClass = "blog-form-input";
   const nameInputId = "blog-" + blogNumber + "-form-name";
   formElement.appendChild(createLabelElement(nameInputId, nameDescription, ""));
 
@@ -268,7 +268,7 @@ function createCommentForm(blogNumber) {
   formElement.appendChild(nameInputElement);
 
   const contentDescription = "Comment:";
-  const contentInputClass = "blog-form-content-label";
+  const contentInputClass = "blog-form-content";
   const contentInputId = "blog-" + blogNumber + "-content-name";
   formElement.appendChild(createLabelElement(contentInputId, contentDescription, ""));
 
