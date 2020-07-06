@@ -56,6 +56,7 @@ function getComment(numComments, pageNumber, blogNumber) {
 
     console.log("Printing comments for blog post " + blogNumber);
     commentListElement.innerHTML = '';
+    commentListElement.appendChild(createHElement("Comments", 4));
     if (comments.length > 0) {
       comments.forEach((comment) => {
         commentListElement.appendChild(
@@ -72,7 +73,7 @@ function getComment(numComments, pageNumber, blogNumber) {
 /** Creates a comment element */
 function createCommentElement(content, name) {
   const divElement = createDivElement("comment", "");
-  divElement.appendChild(createPElement(name))
+  divElement.appendChild(createHElement(name, 5))
   divElement.appendChild(createPElement(content));
   return divElement;
 }
@@ -89,6 +90,13 @@ function createPElement(text) {
   const pElement = document.createElement('p');
   pElement.innerText = text;
   return pElement;
+}
+
+/** Creates a <h> element with rank and containing text. */
+function createHElement(text, rank) {
+  const hElement = document.createElement('h' + rank);
+  hElement.innerText = text;
+  return hElement;
 }
 
 /** Deletes all comments. */
@@ -146,10 +154,11 @@ function createDivElement(classAttribute, idAttribute) {
 }
 
 /** Creates a <label> element containing text and for and form attribute. */
-function createLabelElement(forAttribute, text) {
+function createLabelElement(forAttribute, text, classAttribute) {
   const labelElement = document.createElement('label');
   labelElement.innerText = text;
   labelElement.setAttribute("for", forAttribute);
+  labelElement.setAttribute("class", classAttribute);
   return labelElement;
 }
 
@@ -180,7 +189,7 @@ function createCommentSelect(blogNumber, numComments, defaultValue) {
   const selectId = selectName + "-" + blogNumber;
 
   const selectDescription = "Number of Comments Displayed:";
-  divElement.appendChild(createLabelElement(selectId, selectDescription));
+  divElement.appendChild(createLabelElement(selectId, selectDescription, ""));
   divElement.appendChild(document.createElement("BR"));
 
 
@@ -204,28 +213,36 @@ function createCommentSelect(blogNumber, numComments, defaultValue) {
 }
 
 /** Creates a <form> element containing an action and a method. */
-function createFormElement(actionAttribute, methodAttribute, idAttribute) {
+function createFormElement(actionAttribute, methodAttribute, classAttribute, 
+idAttribute) {
   const formElement = document.createElement('form');
   formElement.setAttribute("action", actionAttribute);
   formElement.setAttribute("method", methodAttribute);
+  formElement.setAttribute("class", classAttribute);
   formElement.setAttribute("id", idAttribute);
   return formElement;
 }
 
 /** Creates an <input> text element containing a type, name and maxlength 
 attribute. */
-function createInputTextElement(nameAttribute, maxLengthAttribute) {
+function createInputTextElement(nameAttribute, minLengthAttribute,
+maxLengthAttribute, placeholderAttribute, classAttribute, idAttribute) {
   const inputElement = document.createElement('input');
   inputElement.setAttribute("type", "text");
   inputElement.setAttribute("name", nameAttribute);
+  inputElement.setAttribute("minLength", minLengthAttribute);
   inputElement.setAttribute("maxLength", maxLengthAttribute);
+  inputElement.setAttribute("placeholder", placeholderAttribute);
+  inputElement.setAttribute("class", classAttribute);
+  inputElement.setAttribute("id", idAttribute);
   return inputElement;
 }
 
 /** Creates an <input> submit element containing a type. */
-function createInputSubmitElement() {
+function createInputSubmitElement(classAttribute) {
   const inputElement = document.createElement('input');
   inputElement.setAttribute("type", "submit");
+  inputElement.setAttribute("class", classAttribute);
   return inputElement;
 }
 
@@ -233,25 +250,33 @@ function createInputSubmitElement() {
 function createCommentForm(blogNumber) {
   console.log("Creating comment form");
   const formAction = "/new-comment?blog-number=" + blogNumber;
+  const formClass = "blog-form";
   const formId = "blog-" + blogNumber + "-form";
-  const formElement = createFormElement(formAction, "POST", formId);
+  const formElement = createFormElement(formAction, "POST", formClass, formId);
 
-  const nameDescription = "Enter you name which can be up to 30 characters!";
-  formElement.appendChild(createLabelElement(formId, nameDescription));
-  formElement.appendChild(document.createElement("BR"));
+  const formDescription = "Add a comment!";
+  formElement.appendChild(createLabelElement(formId, formDescription, "blog-form-label"));
 
-  formElement.appendChild(createInputTextElement("name", "30"));
-  formElement.appendChild(document.createElement("BR"));
+  const nameDescription = "Name:";
+  const nameInputClass = "blog-form-name";
+  const nameInputId = "blog-" + blogNumber + "-form-name";
+  formElement.appendChild(createLabelElement(nameInputId, nameDescription, ""));
 
-  const commentDescription = "Enter a comment which can be up to 264 characters!";
-  formElement.appendChild(createLabelElement(formId, commentDescription));
-  formElement.appendChild(document.createElement("BR"));
+  const namePlaceholder = "Enter name (char limit 50)";
+  const nameInputElement = createInputTextElement("name", "1", "50", 
+  namePlaceholder, nameInputClass, nameInputId);
+  formElement.appendChild(nameInputElement);
 
-  formElement.appendChild(createInputTextElement("comment", "264"));
-  formElement.appendChild(document.createElement("BR"));
+  const contentDescription = "Comment:";
+  const contentInputClass = "blog-form-content";
+  const contentInputId = "blog-" + blogNumber + "-content-name";
+  formElement.appendChild(createLabelElement(contentInputId, contentDescription, ""));
 
-  formElement.appendChild(createInputSubmitElement());
-  formElement.appendChild(document.createElement("BR"));
+  const contentPlaceholder = "Enter a comment (char limit 264)";
+  formElement.appendChild(createInputTextElement("comment", "1", "264", 
+  contentPlaceholder, contentInputClass, contentInputId));
+
+  formElement.appendChild(createInputSubmitElement("blog-form-submit"));
   
   return formElement;
 }

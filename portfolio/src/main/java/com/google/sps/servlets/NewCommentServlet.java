@@ -37,7 +37,7 @@ public class NewCommentServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response)
   throws IOException {
     int minNameLen = 1;
-    int maxNameLen = 30;
+    int maxNameLen = 50;
     int minCommentLen = 1;
     int maxCommentLen = 264;
     int minNumBlogs = 1;
