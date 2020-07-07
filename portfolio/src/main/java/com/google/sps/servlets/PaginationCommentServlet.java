@@ -20,18 +20,22 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-// import java.util.*;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-// import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
-
-/** Servlet responsible for deleting tasks. */
+/** 
+* Servlet that creates comment entities and redirects the user back to the 
+* blog section of the portfolio page.
+*
+* @param request which contains data to retrieve comments
+* @param response
+* @return comments in the form of json
+*/
 @WebServlet("/pagination-comment")
 public class PaginationCommentServlet extends HttpServlet {
 
@@ -63,9 +67,16 @@ public class PaginationCommentServlet extends HttpServlet {
     response.getWriter().println(jsonMaxPageNum);
   }
 
-  /** Returns the number of comments shown entered by the user, or -1 if the 
-  comment was invalid. Min must be greater than -1 and Max must be greater than 
-  or equal to min */
+  /** 
+  * Returns the number of comments shown entered by the user, or -1 if the 
+  * comment was invalid. Min must be greater than -1 and Max must be greater 
+  * than or equal to min 
+  *
+  * @param request the request received from the form that contains user input
+  * @param parameter the name of the input parameter one is retreiving
+  * @param min used to establish the lower bound of the input
+  * @param max used to establish the upper bound of the input
+  */
   private int getNumComments(HttpServletRequest request, String parameter, int min, int max) {
     if (min <= -1) {
       System.err.println("Min (" + min + ") must be greater than -1 ");
