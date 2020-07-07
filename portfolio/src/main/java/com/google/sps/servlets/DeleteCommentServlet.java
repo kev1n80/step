@@ -29,7 +29,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet responsible for deleting tasks. */
+/** 
+* Servlet that deletes comment entities
+*
+* @param request which contains data used to identify a comment in order to
+* delete it
+* @param response
+*/
 @WebServlet("/delete-comment")
 public class DeleteCommentServlet extends HttpServlet {
 
