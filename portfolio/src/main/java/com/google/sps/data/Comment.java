@@ -14,7 +14,14 @@
 
 package com.google.sps.data;
 
-/** A comment for the blog */ 
+/** 
+* A comment for the blog 
+*
+* @param id 
+* @param content
+* @param timestamp
+* @param name 
+*/ 
 public final class Comment {
 
   private final long id;

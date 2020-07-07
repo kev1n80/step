@@ -32,7 +32,14 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.sps.utility.ValidateInput;
 
 
-/** Servlet responsible for deleting tasks. */
+/** 
+* Servlet that creates comment entities and redirects the user back to the 
+* blog section of the portfolio page.
+*
+* @param request which contains data to retrieve comments
+* @param response
+* @return comments in the form of json
+*/
 @WebServlet("/pagination-comment")
 public class PaginationCommentServlet extends HttpServlet {
 

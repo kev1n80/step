@@ -35,13 +35,18 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
 import com.google.sps.utility.ValidateInput;
 
-/** Servlet that returns some example content. TODO: modify this file to handle 
-comments data */
+/** 
+* Servlet that creates comment entities and redirects the user back to the 
+* blog section of the portfolio page.
+*
+* @param request which contains data to retrieve comments
+* @param response
+* @return comments in the form of json more specifically a List<Comment>
+*/
 @WebServlet("/list-comments")
 public class ListCommentsServlet extends HttpServlet {
 
-  /** Will only show the 30 most recent comments.
-      Returns a List<Comment> */
+  // Will only show the 30 most recent comments. Returns a List<Comment> 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Receive input from the modify number of comments shown form

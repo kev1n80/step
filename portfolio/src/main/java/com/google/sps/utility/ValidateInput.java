@@ -16,11 +16,18 @@ package com.google.sps.utility;
 
 import javax.servlet.http.HttpServletRequest;
 
-/** A class that contains methods to validate input */
+  /** 
+  * Returns the number of comments shown entered by the user, or -1 if the 
+  * comment was invalid. Min must be greater than -1 and Max must be greater 
+  * than or equal to min 
+  *
+  * @param request the request received from the form that contains user input
+  * @param parameter the name of the input parameter one is retreiving
+  * @param min used to establish the lower bound of the input
+  * @param max used to establish the upper bound of the input
+  */
 public final class ValidateInput {
 
-  /** Returns the number entered by the user, or -1 if the comment was invalid.
-   Min must be greater than -1 and Max must be greater than or equal to min */
   public int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
     if (min <= -1) {
       System.err.println("Min (" + min + ") must be greater than -1 ");

@@ -29,7 +29,13 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.utility.ValidateInput;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** 
+* Servlet that creates comment entities and redirects the user back to the 
+* blog section of the portfolio page.
+*
+* @param request which contains data to create a new comment
+* @param response
+*/
 @WebServlet("/new-comment")
 public class NewCommentServlet extends HttpServlet {
 
