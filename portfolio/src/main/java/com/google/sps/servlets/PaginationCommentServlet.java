@@ -31,7 +31,14 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 
-/** Servlet responsible for deleting tasks. */
+/** 
+* Servlet that creates comment entities and redirects the user back to the 
+* blog section of the portfolio page.
+*
+* @param request which contains data to retrieve comments
+* @param response
+* @return comments in the form of json
+*/
 @WebServlet("/pagination-comment")
 public class PaginationCommentServlet extends HttpServlet {
 
@@ -75,9 +82,17 @@ public class PaginationCommentServlet extends HttpServlet {
     response.getWriter().println(jsonMaxPageNum);
   }
 
-  /** Returns the number of comments shown entered by the user, or -1 if the 
-  comment was invalid. Min must be greater than -1 and Max must be greater than 
-  or equal to min */
+  /** 
+  * Returns the number of comments shown entered by the user, or -1 if the 
+  * comment was invalid. Min must be greater than -1 and Max must be greater 
+  * than or equal to min 
+  *
+  * @param request the request received from the form that contains user input
+  * @param parameter the name of the input parameter one is retreiving
+  * @param min used to establish the lower bound of the input
+  * @param max used to establish the upper bound of the input
+  * @return the user's input (number) or -1 if it does not follow guidelines
+  */
   private int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
     if (min <= -1) {
       System.err.println("Min (" + min + ") must be greater than -1 ");
