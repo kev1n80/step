@@ -214,17 +214,18 @@ function createCommentSelect(blogNumber, numComments, defaultValue) {
 
 /** Creates a <form> element containing an action and a method. */
 function createFormElement(actionAttribute, methodAttribute, classAttribute, 
-idAttribute) {
+idAttribute, enctypeAttribute) {
   const formElement = document.createElement('form');
   formElement.setAttribute("action", actionAttribute);
   formElement.setAttribute("method", methodAttribute);
   formElement.setAttribute("class", classAttribute);
   formElement.setAttribute("id", idAttribute);
+  formElement.setAttribute("enctype", enctypeAttribute);
   return formElement;
 }
 
-/** Creates an <input> text element containing a type, name and maxlength 
-attribute. */
+/** Creates an <input> text element containing a name, minlength, maxlength,  
+placeholder, class, and id attribute. */
 function createInputTextElement(nameAttribute, minLengthAttribute,
 maxLengthAttribute, placeholderAttribute, classAttribute, idAttribute) {
   const inputElement = document.createElement('input');
@@ -238,7 +239,7 @@ maxLengthAttribute, placeholderAttribute, classAttribute, idAttribute) {
   return inputElement;
 }
 
-/** Creates an <input> submit element containing a type. */
+/** Creates an <input> submit element containing a class attribute. */
 function createInputSubmitElement(classAttribute) {
   const inputElement = document.createElement('input');
   inputElement.setAttribute("type", "submit");
@@ -246,16 +247,29 @@ function createInputSubmitElement(classAttribute) {
   return inputElement;
 }
 
+/** Creates an <input> file element containing a name and class attribute. */
+function createInputFileElement(nameAttribute, classAttribute, idAttribute) {
+  const inputElement = document.createElement('input');
+  inputElement.setAttribute("type", "file");
+  inputElement.setAttribute("name", nameAttribute);
+  inputElement.setAttribute("class", classAttribute);
+  inputElement.setAttribute("id", idAttribute);
+  return inputElement;
+}
+
 /** Creates a form to create a comment */
 function createCommentForm(blogNumber) {
   console.log("Creating comment form");
-  const formAction = "/new-comment?blog-number=" + blogNumber;
+  const formAction = "";
   const formClass = "blog-form";
   const formId = "blog-" + blogNumber + "-form";
-  const formElement = createFormElement(formAction, "POST", formClass, formId);
+  const formEnctype = "multipart/form-data";
+  const formElement = createFormElement(formAction, "POST", formClass, formId, 
+  formEnctype);
 
   const formDescription = "Add a comment!";
-  formElement.appendChild(createLabelElement(formId, formDescription, "blog-form-label"));
+  formElement.appendChild(createLabelElement(formId, formDescription, 
+  "blog-form-label"));
 
   const nameDescription = "Name:";
   const nameInputClass = "blog-form-input";
@@ -269,12 +283,19 @@ function createCommentForm(blogNumber) {
 
   const contentDescription = "Comment:";
   const contentInputClass = "blog-form-content";
-  const contentInputId = "blog-" + blogNumber + "-content-name";
+  const contentInputId = "blog-" + blogNumber + "-form-content";
   formElement.appendChild(createLabelElement(contentInputId, contentDescription, ""));
 
   const contentPlaceholder = "Enter a comment (char limit 264)";
   formElement.appendChild(createInputTextElement("comment", "1", "264", 
   contentPlaceholder, contentInputClass, contentInputId));
+
+  const imageDescription = "Upload an image:";
+  const imageInputClass = "blog-form-image";
+  const imageInputId = "blog-" + blogNumber + "-form-image";
+  formElement.appendChild(createLabelElement(imageInputId, imageDescription, ""));
+
+  formElement.appendChild(createInputFileElement("image", imageInputClass, imageInputId));
 
   formElement.appendChild(createInputSubmitElement("blog-form-submit"));
   
@@ -319,11 +340,29 @@ function createCommentSection(blogNumber) {
     deleteButtonClass));
 }
 
+/** Creates a blobstore url and changes the comments forms action to this 
+blobsore url */
+function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
+  const servletUrl = "/new-comment?blog-number=" + blogNumber;
+  const queryString = "/blobstore-upload-url?servlet-url=" + servletUrl;
+
+  fetch(queryString)
+      .then((response) => {
+        return response.text();
+      }).then((imageUploadUrl) => {
+        const formId = "blog-" + blogNumber + "-form";
+
+        const commentForm = document.getElementById(formId);
+        commentForm.action = imageUploadUrl;
+      });
+}
+
 /** Loads blog post comment section */
 function loadBlogpostComment(numberOfBlogs) {
   for (var i = 1; i < numberOfBlogs + 1; i++) {
     console.log("Creating comment section for blog post " + i);
     createCommentSection(i);
+    fetchBlobstoreUrlAndUpdateForm(i);
   }
 }
 
