@@ -35,53 +35,56 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
 
 /** 
-* Servlet that creates comment entities and redirects the user back to the 
-* blog section of the portfolio page.
-*
-* @param request which contains data to retrieve comments
-* @param response
-* @return comments in the form of json
-*/
+ * Servlet that creates comment entities and redirects the user back to the 
+ * blog section of the portfolio page.
+ *
+ * @param request which contains data to retrieve comments
+ * @param response
+ * @return comments in the form of json
+ */
 @WebServlet("/list-comments")
 public class ListCommentsServlet extends HttpServlet {
 
-  /** Will only show the 30 most recent comments.
-      Returns a List<Comment> */
+  static final int MAX_NUM_COMMENTS = 5;
+  static final int MAX_NUM_BLOGS = 5;
+  static final int COMMENT_LIMIT = 30;
+
+  /** 
+   * Will only show the 30 most recent comments.
+   * Returns a List<Comment> 
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Receive input from the modify number of comments shown form
-    int maxNumComments = 5;
-    int numComments = getUserNum(request, "num-comments", 1, maxNumComments);
+    int numComments = getUserNum(request, "num-comments", 1, MAX_NUM_COMMENTS);
     if (numComments == -1) {
       response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between " +  
-      1 + " to " + maxNumComments + ".");
+      response.getWriter().println("Please enter an integer between 1 to " + 
+          MAX_NUM_COMMENTS + ".");
       return;
     }
 
     // Receive input on which blog we are retrieving comments from
-    int maxNumBlogs = 5;
-    int blogNumber = getUserNum(request, "blog-number", 1, maxNumBlogs);
+    int blogNumber = getUserNum(request, "blog-number", 1, MAX_NUM_BLOGS);
     System.err.println("blog number " + blogNumber);
     if (blogNumber == -1) {
-      System.err.println("Please enter an integer between " +  
-      1 + " to " + maxNumBlogs + ".");
       response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between " +  
-      1 + " to " + maxNumBlogs + ".");
+      response.getWriter().println("Please enter an integer between 1 to " + 
+          MAX_NUM_BLOGS + ".");
       return;
     }
 
     // Retrieve Comments from Datastore for the given blog post
     FilterPredicate filterBlogComments = new FilterPredicate("blogNumber", 
-    FilterOperator.EQUAL, blogNumber);
-    Query query = new Query("Comment").setFilter(filterBlogComments).addSort("timestamp", SortDirection.DESCENDING);
+        FilterOperator.EQUAL, blogNumber);
+    Query query = new Query("Comment").setFilter(filterBlogComments);
+    query = query.addSort("timestamp", SortDirection.DESCENDING);
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
     // Receive input from the pagination to see which comments to show
-    FetchOptions entitiesLimit = FetchOptions.Builder.withLimit(30);
+    FetchOptions entitiesLimit = FetchOptions.Builder.withLimit(COMMENT_LIMIT);
     double totalComments = results.countEntities(entitiesLimit);
 
     // If there are comments then return a list of comments
@@ -91,8 +94,8 @@ public class ListCommentsServlet extends HttpServlet {
       int pageNum = getUserNum(request, "page-number", 0, maxPageNum);
       if (pageNum == -1) {
         response.setContentType("text/html");
-        response.getWriter().println("Please enter an integer between " +  
-        0 + " to " + maxPageNum + ".");
+        response.getWriter().println("Please enter an integer between 0 to " + 
+            maxPageNum + ".");
         return;
       }
       
@@ -119,16 +122,16 @@ public class ListCommentsServlet extends HttpServlet {
   }
 
   /** 
-  * Returns the number of comments shown entered by the user, or -1 if the 
-  * comment was invalid. Min must be greater than -1 and Max must be greater 
-  * than or equal to min 
-  *
-  * @param request the request received from the form that contains user input
-  * @param parameter the name of the input parameter one is retreiving
-  * @param min used to establish the lower bound of the input
-  * @param max used to establish the upper bound of the input
-  * @return the user's input (number) or -1 if it does not follow guidelines
-  */
+   * Returns the number of comments shown entered by the user, or -1 if the 
+   * comment was invalid. Min must be greater than -1 and Max must be greater 
+   * than or equal to min 
+   *
+   * @param request the request received from the form that contains user input
+   * @param parameter the name of the input parameter one is retreiving
+   * @param min used to establish the lower bound of the input
+   * @param max used to establish the upper bound of the input
+   * @return the user's input (number) or -1 if it does not follow guidelines
+   */
   private int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
     if (min <= -1) {
       System.err.println("Min (" + min + ") must be greater than -1 ");
@@ -137,7 +140,7 @@ public class ListCommentsServlet extends HttpServlet {
     
     if (max < min) {
       System.err.println("Max (" + max + ") must be greater than or equal to" + 
-      " Min (" + min + ")");
+          " Min (" + min + ")");
       return -1;
     }
 
@@ -156,7 +159,7 @@ public class ListCommentsServlet extends HttpServlet {
     // Check that the input is between 0 and max.
     if (userNum < min || userNum > max) {
       System.err.println("Value for " + parameter + " is out of range (" + min 
-      + " - " + max + "): " + userNumString);
+          + " - " + max + "): " + userNumString);
       return -1;
     }
 
