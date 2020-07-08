@@ -37,7 +37,7 @@ import com.google.sps.utility.ValidateInput;
 public class NewCommentServlet extends HttpServlet {
 
   static final int MAX_COMMENT_LEN = 264;
-  static final int MAX_NAME_LEN = 30; 
+  static final int MAX_NAME_LEN = 50; 
 
   /** 
    * Creates comment entities and stores them in the datastore
