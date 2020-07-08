@@ -7,35 +7,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
     <script src="script.js"></script>
   </head>
-  <body onload="loadCommentsSection()">
+  <body>
     <div id="content">
-      <div id="comments-section">
-        <div id="comment-container"></div>
-        <div id="pagination"></div>
-      </div>
-      <form action="/new-comment" method="POST">
-        <p>Enter a comment which can be up to 264 characters!</p>
-        <label for="comment">Comment:</labe><br>
-        <input type="text" name="comment" maxlength="264"><br>
-        <input type="submit" /><br>
-      </form>
-
-      <label for="num-comments">
-        Number of Comments Displayed:
-      </label>
-      <select id="num-comments" name="num-comments" onchange="loadCommentsSection()">
-        <option value="3" selected disaled hidden>
-          Select a value
-        </option>  
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-      </select>  
-
-      <button type="button" onclick="deleteAllComments()">Delete All Comments</button>
-
       <div class="intro-container">
         <div class="quick-info-container">
           <div class="quick-info-content">
@@ -154,12 +127,65 @@
               such as photography.
             </p>
           </article>
+          <div id="comments-section">
+            <label for="num-comments">
+              Number of Comments Displayed:
+            </label>
+            <select id="num-comments-1" name="num-comments" onchange="loadCommentsSection('1')">
+              <option value="3" selected disaled hidden>
+                Select a value
+              </option>  
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>  
+            <div id="comment-container-1"></div>
+            <form action="/new-comment?blog-number=1" method="POST">
+              <p>Enter a comment which can be up to 264 characters!</p>
+              <label for="comment">Comment:</label><br>
+              <input type="text" name="comment" maxlength="264"><br>
+              <input type="submit" /><br>
+            </form>
+            <div id="pagination-1"></div>
+            <button type="button" onclick="deleteAllComments('1')">
+              Delete All Comments
+            </button>
+          </div>
+
           <article class="blog-post"> 
             <h3>What Lead Me to Fencing</h3>
             <p>
               After watching the movie 300 I was motivated to learn how to use a sword. While I did not find a studio to teach me how to fight like a spartan, I stumbled across the sport of fencing specifically foil. 
             </p>
           </article>
+          <div class="comments-section">
+            <label for="num-comments">
+              Number of Comments Displayed:
+            </label>
+            <select id="num-comments-2" name="num-comments" onchange="loadCommentsSection('2')">
+              <option value="3" selected disaled hidden>
+                Select a value
+              </option>  
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>  
+            <div id="comment-container-2"></div>
+            <form action="/new-comment?blog-number=2" method="POST">
+              <p>Enter a comment which can be up to 264 characters!</p>
+              <label for="comment">Comment:</label><br>
+              <input type="text" name="comment" maxlength="264"><br>
+              <input type="submit" /><br>
+            </form>
+            <div id="pagination-2"></div>
+            <button type="button" onclick="deleteAllComments('2')">
+              Delete All Comments
+            </button>
+          </div>
         </div>
       </div>
     </div>

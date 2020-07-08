@@ -27,44 +27,60 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.sps.data.Comment;
+import com.google.sps.utility.CommentConstants;
+import com.google.sps.utility.ValidateInput;
 
 /** 
-* Servlet that creates comment entities and redirects the user back to the 
-* blog section of the portfolio page.
-*
-* @param request which contains data to create a new comment
-* @param response
-*/
-
+ * Servlet that handles blog comment forms
+ */
 @WebServlet("/new-comment")
 public class NewCommentServlet extends HttpServlet {
 
+  static final int MAX_COMMENT_LEN = 264;
+
+  /** 
+   * Creates comment entities and stores them in the datastore
+   *
+   * @param request which contains data to create a new comment
+   * @param response redirect user to home page
+   */
   @Override 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
   throws IOException {
-    int minCommentLen = 1;
-    int maxCommentLen = 264;
 
     // Receive input from the create a comment form
-    String comment = request.getParameter("comment");
-    int commentLen = comment.length();
-    if (commentLen >= minCommentLen || commentLen <= maxCommentLen) {
-      long timestamp = System.currentTimeMillis();
-
-      Entity commentEntity = new Entity("Comment");
-      commentEntity.setProperty("content", comment);
-      commentEntity.setProperty("timestamp", timestamp);
-
-      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      datastore.put(commentEntity);
-    }
-    else {
+    int blogNumber;
+    try {
+      blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
+          CommentConstants.MAX_NUM_BLOGS);
+    } catch (Exception e) {
       response.setContentType("text/html");
-      response.getWriter().println("Please enter a comment with " + 
-      minCommentLen + " to " + maxCommentLen + " characters.");
+      response.getWriter().println("Please enter an integer between 1 to " + 
+          CommentConstants.MAX_NUM_BLOGS + ".");
       return;
-    }
+    }    
+
+    String comment;
+
+    try {
+      comment = ValidateInput.getUserString(request, "comment", 1, 
+          MAX_COMMENT_LEN);
+    } catch (Exception e) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter an integer between 1 to " + 
+          MAX_COMMENT_LEN + ".");
+      return;
+    }    
+
+    long timestamp = System.currentTimeMillis();
+
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("content", comment);
+    commentEntity.setProperty("timestamp", timestamp);
+    commentEntity.setProperty("blogNumber", blogNumber);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(commentEntity);
 
     // Redirect back to the HTML page.
     response.sendRedirect("/index.html");

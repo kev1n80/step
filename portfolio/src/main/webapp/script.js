@@ -29,10 +29,10 @@ function addRandomGreeting() {
 
 function addRandomFact() {
   const facts =
-    ['I love to dance!', 'I am a lefty', 'I use to fence foil', 
-    'I am Peruvian!', 'I reached Plat in SC2', 
-    'I have never left the Americas', 
-    'My quarantine hobby is photography'];
+      ['I love to dance!', 'I am a lefty', 'I use to fence foil', 
+      'I am Peruvian!', 'I reached Plat in SC2', 
+      'I have never left the Americas', 
+      'My quarantine hobby is photography'];
 
   // Pick a random greeting.
   const fact = facts[Math.floor(Math.random() * facts.length)];
@@ -43,20 +43,25 @@ function addRandomFact() {
 }
 
 /** Retrieves a number of comments after and including the first comment shown. */
-function getComment(numComments, pageNumber) {
-  var queryString = '/list-comments?num-comments=' + numComments;
+function getComment(numComments, pageNumber, blogNumber) {
+  let queryString = '/list-comments?num-comments=' + numComments;
   queryString = queryString + '&page-number=' + pageNumber;
+  queryString = queryString + '&blog-number=' + blogNumber;
+  
+  
 
-  console.log("Retrieving comments");
+  console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
-    const commentListElement = document.getElementById('comment-container');
+    // const commentListElement = document.getElementById('comment-container-' + 
+    // blogNumber);
+    const commentListElement = document.getElementById('comment-container-' + blogNumber);
 
-    console.log("Printing comments")
+    console.log("Printing comments for blog post " + blogNumber);
     commentListElement.innerHTML = '';
     if (comments.length > 0) {
       comments.forEach((comment) => {
         commentListElement.appendChild(
-          createListElement(comment.content));
+            createListElement(comment.content));
       })
     }
     else {
@@ -74,42 +79,47 @@ function createListElement(text) {
 }
 
 /** Deletes all comments. */
-function deleteAllComments() {
+function deleteAllComments(blogNumber) {
   console.log("Deleting all comments");
-  fetch('/delete-comment', {method: 'POST'}).then(loadCommentsSection);
+  const queryString = '/delete-comment?blog-number=' + blogNumber;
+  fetch(queryString, {method: 'POST'}).then(() => {
+    loadCommentsSection(blogNumber);
+  });
 }
 
 /** Creates pagination to go through all comments. */
-function loadPagination(numComments) {
-  var queryString = '/pagination-comment?num-comments=' + numComments;
+function loadPagination(numComments, blogNumber) {
+  let queryString = '/pagination-comment?num-comments=' + numComments;
+  queryString = queryString + '&blog-number=' + blogNumber;
 
-  console.log("Fetching comments");
+  console.log("Fetching pagination for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((maxPageNum) => {
-    const paginationElement = document.getElementById('pagination');
-    console.log("Loading pagination");
+    const paginationElement = document.getElementById('pagination-' + blogNumber);
+    console.log("Loading pagination w/ " + numComments + " comments per page");
     paginationElement.innerHTML = '';
-      for (var i = 1; i < maxPageNum + 1; i++) {
+      for (let i = 1; i < maxPageNum + 1; i++) {
         paginationElement.appendChild(
-          createPageElement(i, numComments));
+            createPageElement(i, numComments, blogNumber));
       }
   });
 }
 
 /** Creates an elemet that represents a page */
-function createPageElement(pageNumber, numComments) {
-  console.log("Creating page number " + pageNumber);
+function createPageElement(pageNumber, numComments, blogNumber) {
+  console.log("Creating page number " + pageNumber + " for blog post " + 
+      blogNumber);
   const pageElement = document.createElement('a');
   pageElement.innerText = pageNumber;
   pageElement.addEventListener('click', () => {
     console.log("Loading comments for page: " + pageNumber);
-    getComment(numComments, pageNumber);
+    getComment(numComments, pageNumber, blogNumber);
   });
   return pageElement;
 }
 
 /** Loads pagination and comments. */
-function loadCommentsSection() {
-  var numComments = document.getElementById("num-comments").value;
-  getComment(numComments, 1);
-  loadPagination(numComments);
+function loadCommentsSection(blogNumber) {
+  const numComments = document.getElementById("num-comments-" + blogNumber).value;
+  getComment(numComments, 1, blogNumber);
+  loadPagination(numComments, blogNumber);
 }
