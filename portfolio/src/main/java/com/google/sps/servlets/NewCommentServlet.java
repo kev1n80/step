@@ -82,7 +82,8 @@ public class NewCommentServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
 
-    // Redirect back to the HTML page.
-    response.sendRedirect("/index.html");
+    // Redirect back to the blog section in the HTML page.
+    String url = "/index.html#blog-post-" + blogNumber;
+    response.sendRedirect(url);
   }
 }
