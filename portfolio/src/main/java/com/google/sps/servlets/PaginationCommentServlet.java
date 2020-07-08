@@ -32,7 +32,6 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.sps.utility.CommentConstants;
 import com.google.sps.utility.ValidateInput;
 
-
 /** 
  * Servlet that receives input from the blog select input, which creates the 
  * pagination for the blog comments section.
