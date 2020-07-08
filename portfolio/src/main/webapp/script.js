@@ -61,14 +61,21 @@ function getComment(numComments, pageNumber, blogNumber) {
     if (comments.length > 0) {
       comments.forEach((comment) => {
         commentListElement.appendChild(
-            createListElement(comment.content));
+            createCommentElement(comment.content));
       })
     }
     else {
       commentListElement.appendChild(
-          createListElement("There are no comments"));
+          createCommentElement("There are no comments"));
     }
   });
+}
+
+/** Creates a comment element */
+function createCommentElement(text) {
+  const divElement = createDivElement("comment", "");
+  divElement.appendChild(createPElement(text));
+  return divElement;
 }
 
 /** Creates an <li> element containing text. */
@@ -176,7 +183,7 @@ function createCommentSelect(blogNumber, numComments, defaultValue) {
 
   const selectDescription = "Number of Comments Displayed:";
   divElement.appendChild(createLabelElement(selectId, selectDescription));
-
+  divElement.appendChild(document.createElement("BR"));
 
   const onchange = "loadCommentSection('" + blogNumber + "')";
   const selectElement = createSelectElement(selectName, onchange, selectId);
@@ -185,6 +192,9 @@ function createCommentSelect(blogNumber, numComments, defaultValue) {
   const optionMessage = "Select a value";
   const defaultOptionElement = createOptionElement(defaultValue, optionMessage);
   selectElement.appendChild(defaultOptionElement);
+  defaultOptionElement.setAttribute("selected", true);
+  defaultOptionElement.setAttribute("disabled", true);
+  defaultOptionElement.setAttribute("hidden", true);
 
   for (var i = 1; i < numComments + 1; i++) {
       selectElement.appendChild(
@@ -227,18 +237,15 @@ function createCommentForm(blogNumber) {
   const formId = "blog-" + blogNumber + "-form";
   const formElement = createFormElement(formAction, "POST", formId);
 
-  const description = "Enter a comment which can be up to 264 characters!";
-  formElement.appendChild(createPElement(description));
-
-  formElement.appendChild(createLabelElement(formId, "Comment:"));
-  const brElement = document.createElement("br");
-  formElement.appendChild(brElement);
+  const commentDescription = "Enter a comment which can be up to 264 characters!";
+  formElement.appendChild(createLabelElement(formId, commentDescription));
+  formElement.appendChild(document.createElement("BR"));
 
   formElement.appendChild(createInputTextElement("comment", "264"));
-  formElement.appendChild(brElement);
+  formElement.appendChild(document.createElement("BR"));
 
   formElement.appendChild(createInputSubmitElement());
-  formElement.appendChild(brElement);
+  formElement.appendChild(document.createElement("BR"));
 
   return formElement;
 }
@@ -269,7 +276,7 @@ function createCommentSection(blogNumber) {
   commentSection.appendChild(createCommentForm(blogNumber));
 
   const commentPaginationId = "comment-pagination-" + blogNumber;
-  commentSection.appendChild(createDivElement("", commentPaginationId));
+  commentSection.appendChild(createDivElement("pagination", commentPaginationId));
 
   const deleteButtonOnclick = "deleteAllComments('" + blogNumber + "')";
   const deleteButtonDescription = "Delete All Comments";
@@ -289,12 +296,12 @@ function loadBlogpostComment(numberOfBlogs) {
 /** Toggles the blog post comment section. */
 function toggleBlogpostComment(blogNumber) {
   var commentSection = document.getElementById("comment-section-" + blogNumber);
-  if (commentSection.style.display === "block") {
+  if (commentSection.style.display === "inline-flex") {
     console.log("Comment section " + blogNumber + " is now hidden.")
     commentSection.style.display = "none";
   } else {
     console.log("Comment section " + blogNumber + " is now visible.")
-    commentSection.style.display = "block";
+    commentSection.style.display = "inline-flex";
     loadCommentSection(blogNumber);
   }
 }
