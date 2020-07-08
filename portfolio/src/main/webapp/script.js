@@ -47,8 +47,6 @@ function getComment(numComments, pageNumber, blogNumber) {
   let queryString = '/list-comments?num-comments=' + numComments;
   queryString = queryString + '&page-number=' + pageNumber;
   queryString = queryString + '&blog-number=' + blogNumber;
-  
-  
 
   console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
@@ -61,20 +59,21 @@ function getComment(numComments, pageNumber, blogNumber) {
     if (comments.length > 0) {
       comments.forEach((comment) => {
         commentListElement.appendChild(
-            createCommentElement(comment.content));
+            createCommentElement(comment.content, comment.name));
       })
     }
     else {
       commentListElement.appendChild(
-          createCommentElement("There are no comments"));
+          createCommentElement("There are no comments", ""));
     }
   });
 }
 
 /** Creates a comment element */
-function createCommentElement(text) {
+function createCommentElement(content, name) {
   const divElement = createDivElement("comment", "");
-  divElement.appendChild(createPElement(text));
+  divElement.appendChild(createPElement(name));
+  divElement.appendChild(createPElement(content));
   return divElement;
 }
 
@@ -237,6 +236,13 @@ function createCommentForm(blogNumber) {
   const formId = "blog-" + blogNumber + "-form";
   const formElement = createFormElement(formAction, "POST", formId);
 
+  const nameDescription = "Enter you name which can be up to 30 characters!";
+  formElement.appendChild(createLabelElement(formId, nameDescription));
+  formElement.appendChild(document.createElement("BR"));
+
+  formElement.appendChild(createInputTextElement("name", "30"));
+  formElement.appendChild(document.createElement("BR"));
+
   const commentDescription = "Enter a comment which can be up to 264 characters!";
   formElement.appendChild(createLabelElement(formId, commentDescription));
   formElement.appendChild(document.createElement("BR"));
@@ -271,7 +277,8 @@ function createCommentSection(blogNumber) {
       createCommentSelect(blogNumber, numComments, defaultValue));
 
   const commentContainerId = "comment-container-" + blogNumber;
-  commentSection.appendChild(createDivElement("", commentContainerId));
+  commentSection.appendChild(createDivElement("comment-container", 
+      commentContainerId));
 
   commentSection.appendChild(createCommentForm(blogNumber));
 

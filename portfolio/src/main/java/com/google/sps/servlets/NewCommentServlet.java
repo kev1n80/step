@@ -37,6 +37,7 @@ import com.google.sps.utility.ValidateInput;
 public class NewCommentServlet extends HttpServlet {
 
   static final int MAX_COMMENT_LEN = 264;
+  static final int MAX_NAME_LEN = 30; 
 
   /** 
    * Creates comment entities and stores them in the datastore
@@ -70,7 +71,18 @@ public class NewCommentServlet extends HttpServlet {
       response.getWriter().println("Please enter an integer between 1 to " + 
           MAX_COMMENT_LEN + ".");
       return;
-    }    
+    }   
+
+    String name;
+    try {
+      name = ValidateInput.getUserString(request, "name", 1, 
+          MAX_NAME_LEN);
+    } catch (Exception e) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter an integer between 1 to " + 
+          MAX_NAME_LEN + ".");
+      return;
+    }       
 
     long timestamp = System.currentTimeMillis();
 
@@ -78,6 +90,7 @@ public class NewCommentServlet extends HttpServlet {
     commentEntity.setProperty("content", comment);
     commentEntity.setProperty("timestamp", timestamp);
     commentEntity.setProperty("blogNumber", blogNumber);
+    commentEntity.setProperty("name", name);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
