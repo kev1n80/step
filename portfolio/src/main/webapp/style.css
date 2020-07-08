@@ -186,6 +186,19 @@ p {
   text-align: left;
 }
 
+.toggle-comment-section {
+  border: none;
+  width: 10%;
+}
+
+.toggle-comment-section input {
+  width: 50%;
+}
+
+.comment-section {
+  display: none;
+}
+
 /* phones */
 @media (max-width: 600px) {
   h2 {

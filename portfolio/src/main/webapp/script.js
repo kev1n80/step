@@ -278,10 +278,20 @@ function createCommentSection(blogNumber) {
       deleteButtonDescription));
 }
 
-/** Loads comment section */
+/** Loads blog post comment section. */
 function loadBlogpostComment(numberOfBlogs) {
   for (var i = 1; i < numberOfBlogs + 1; i++) {
     console.log("Creating comment section for blog post " + i);
     createCommentSection(i);
+  }
+}
+
+/** Toggles the blog post comment section. */
+function toggleBlogpostComment(blogNumber) {
+  var commentSection = document.getElementById("comment-section-" + blogNumber);
+  if (commentSection.style.display === "none") {
+    commentSection.style.display = "block";
+  } else {
+    commentSection.style.display = "none";
   }
 }
