@@ -29,39 +29,45 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.sps.utility.CommentConstants;
+import com.google.sps.utility.ValidateInput;
 
 
 /** 
- * Servlet that creates comment entities and redirects the user back to the 
- * blog section of the portfolio page.
- *
- * @param request which contains data to retrieve comments
- * @param response
- * @return comments in the form of json
+ * Servlet that receives input from the blog select input, which creates the 
+ * pagination for the blog comments section.
  */
 @WebServlet("/pagination-comment")
 public class PaginationCommentServlet extends HttpServlet {
 
-  static final int MAX_NUM_COMMENTS = 5;
-  static final int MAX_NUM_BLOGS = 5;
-
+  /** 
+   * Determines the maximum pages needed for the pagination or how many groups * of comments are need for there to be n number of comments per page. n  
+   * being the input selected by the user.
+   *
+   * @param request which contains data to retrieve comments
+   * @param response
+   * @return the maximum number of pages created in the form of json
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Receive input from the modify number of comments shown form
-    int numComments = getUserNum(request, "num-comments", 1, MAX_NUM_COMMENTS);
+    ValidateInput validateInput = new ValidateInput();
+    int numComments = validateInput.getUserNum(request, "num-comments", 1, 
+        CommentConstants.MAX_NUM_COMMENTS);
     if (numComments == -1) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between 1 to " + 
-          MAX_NUM_COMMENTS + ".");
+          CommentConstants.MAX_NUM_COMMENTS + ".");
       return;
     }
     
     // Receive input on which blog we are retrieving comments from
-    int blogNumber = getUserNum(request, "blog-number", 1, MAX_NUM_BLOGS);
+    int blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
+        CommentConstants.MAX_NUM_BLOGS);
     if (blogNumber == -1) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between 1 to " + 
-          MAX_NUM_BLOGS + ".");
+          CommentConstants.MAX_NUM_BLOGS + ".");
       return;
     }
 
@@ -81,50 +87,5 @@ public class PaginationCommentServlet extends HttpServlet {
     String jsonMaxPageNum = new Gson().toJson(maxPageNum);
     response.setContentType("application/json;");
     response.getWriter().println(jsonMaxPageNum);
-  }
-
-  /** 
-   * Returns the number of comments shown entered by the user, or -1 if the 
-   * comment was invalid. Min must be greater than -1 and Max must be greater 
-   * than or equal to min 
-   *
-   * @param request the request received from the form that contains user input
-   * @param parameter the name of the input parameter one is retreiving
-   * @param min used to establish the lower bound of the input
-   * @param max used to establish the upper bound of the input
-   * @return the user's input (number) or -1 if it does not follow guidelines
-   */
-  private int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
-    if (min <= -1) {
-      System.err.println("Min (" + min + ") must be greater than -1 ");
-      return -1;
-    }
-    
-    if (max < min) {
-      System.err.println("Max (" + max + ") must be greater than or equal to" + 
-          " Min (" + min + ")");
-      return -1;
-    }
-
-    // Get the input from the form.
-    String userNumString = request.getParameter(parameter);
-
-    // Convert the input to an int.
-    int userNum;
-    try {
-      userNum = Integer.parseInt(userNumString);
-    } catch (NumberFormatException e) {
-      System.err.println("Could not convert to int: " + userNumString);
-      return -1;
-    }
-
-    // Check that the input is between 0 and max.
-    if (userNum < min || userNum > max) {
-      System.err.println("Value for " + parameter + " is out of range (" + min 
-          + " - " + max + "): " + userNumString);
-      return -1;
-    }
-
-    return userNum;
   }
 }

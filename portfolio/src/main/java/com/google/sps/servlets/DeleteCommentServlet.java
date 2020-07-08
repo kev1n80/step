@@ -25,6 +25,8 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.sps.data.Comment;
+import com.google.sps.utility.CommentConstants;
+import com.google.sps.utility.ValidateInput;
 import java.io.IOException;
 import java.util.*;
 import javax.servlet.annotation.WebServlet;
@@ -34,30 +36,33 @@ import javax.servlet.http.HttpServletResponse;
 
 /** 
  * Servlet that deletes comment entities
- *
- * @param request which contains data used to identify a comment in order to
- * delete it
- * @param response
  */
 @WebServlet("/delete-comment")
 public class DeleteCommentServlet extends HttpServlet {
 
-  static final int MAX_NUM_BLOGS = 5;
-
+  /**
+   * Deletes comments from that Datastore based on the blog post the button the 
+   * user pressed is associated with.
+   * 
+   * @param request which contains data used to identify a comment in order to
+   * delete it
+   * @param response
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Receive input on which blog we are retrieving comments from
-    int blogNumber = getUserNum(request, "blog-number", 1, MAX_NUM_BLOGS);
+    int blogNumber = new ValidateInput().getUserNum(request, "blog-number", 1, 
+        CommentConstants.MAX_NUM_BLOGS);
     if (blogNumber == -1) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between 1 to " + 
-          MAX_NUM_BLOGS + ".");
+          CommentConstants.MAX_NUM_BLOGS + ".");
       return;
     }
 
     // Retrieve Comments from Datastore for the given blog post
     FilterPredicate filterBlogComments = new FilterPredicate("blogNumber", 
-      FilterOperator.EQUAL, blogNumber);
+        FilterOperator.EQUAL, blogNumber);
     Query query = new Query("Comment").setFilter(filterBlogComments);
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -70,44 +75,5 @@ public class DeleteCommentServlet extends HttpServlet {
     }
     
     datastore.delete(commentKeys);
-  }
-
-  /** 
-   * Returns the number of comments shown entered by the user, or -1 if the 
-   * comment was invalid. Min must be greater than -1 and Max must be greater 
-   * than or equal to min 
-   */
-  private int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
-    if (min <= -1) {
-      System.err.println("Min (" + min + ") must be greater than -1 ");
-      return -1;
-    }
-    
-    if (max < min) {
-      System.err.println("Max (" + max + ") must be greater than or equal to" + 
-          " Min (" + min + ")");
-      return -1;
-    }
-
-    // Get the input from the form.
-    String userNumString = request.getParameter(parameter);
-
-    // Convert the input to an int.
-    int userNum;
-    try {
-      userNum = Integer.parseInt(userNumString);
-    } catch (NumberFormatException e) {
-      System.err.println("Could not convert to int: " + userNumString);
-      return -1;
-    }
-
-    // Check that the input is between 0 and max.
-    if (userNum < min || userNum > max) {
-      System.err.println("Value for " + parameter + " is out of range (" + min 
-          + " - " + max + "): " + userNumString);
-      return -1;
-    }
-
-    return userNum;
   }
 }
