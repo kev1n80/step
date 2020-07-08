@@ -58,9 +58,11 @@ public class ListCommentsServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Receive input from the modify number of comments shown form
     ValidateInput validateInput = new ValidateInput();
-    int numComments = validateInput.getUserNum(request, "num-comments", 1, 
-        CommentConstants.MAX_NUM_COMMENTS);
-    if (numComments == -1) {
+    int numComments;
+    try {
+      numComments = validateInput.getUserNum(request, "num-comments", 1, 
+          CommentConstants.MAX_NUM_COMMENTS);
+    } catch (Exception e) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between 1 to " + 
           CommentConstants.MAX_NUM_COMMENTS + ".");
@@ -68,15 +70,16 @@ public class ListCommentsServlet extends HttpServlet {
     }
 
     // Receive input on which blog we are retrieving comments from
-    int blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
-        CommentConstants.MAX_NUM_BLOGS);
-    System.err.println("blog number " + blogNumber);
-    if (blogNumber == -1) {
+    int blogNumber;
+    try {
+      blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
+          CommentConstants.MAX_NUM_BLOGS);
+    } catch (Exception e) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between 1 to " + 
           CommentConstants.MAX_NUM_BLOGS + ".");
       return;
-    }
+    }    
 
     // Retrieve Comments from Datastore for the given blog post
     FilterPredicate filterBlogComments = new FilterPredicate("blogNumber", 
@@ -95,8 +98,11 @@ public class ListCommentsServlet extends HttpServlet {
     List<Comment> comments = new ArrayList<> ();
     if (totalComments > 0) {
       int maxPageNum = (int) Math.ceil(totalComments / numComments);
-      int pageNum = validateInput.getUserNum(request, "page-number", 0, maxPageNum);
-      if (pageNum == -1) {
+      int pageNum;
+      try {
+        pageNum = validateInput.getUserNum(request, "page-number", 0,      
+            maxPageNum);
+      } catch (Exception e) {
         response.setContentType("text/html");
         response.getWriter().println("Please enter an integer between 0 to " + 
             maxPageNum + ".");

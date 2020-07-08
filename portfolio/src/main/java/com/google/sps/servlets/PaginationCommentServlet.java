@@ -50,26 +50,31 @@ public class PaginationCommentServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Receive input from the modify number of comments shown form
     ValidateInput validateInput = new ValidateInput();
-    int numComments = validateInput.getUserNum(request, "num-comments", 1, 
-        CommentConstants.MAX_NUM_COMMENTS);
-    if (numComments == -1) {
+    
+    // Receive input from the modify number of comments shown form
+    int numComments;
+    try {
+      numComments = validateInput.getUserNum(request, "num-comments", 1, 
+          CommentConstants.MAX_NUM_COMMENTS);
+    } catch (Exception e) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between 1 to " + 
           CommentConstants.MAX_NUM_COMMENTS + ".");
       return;
-    }
+    }    
     
     // Receive input on which blog we are retrieving comments from
-    int blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
-        CommentConstants.MAX_NUM_BLOGS);
-    if (blogNumber == -1) {
+    int blogNumber;
+    try {
+      blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
+          CommentConstants.MAX_NUM_BLOGS);
+    } catch (Exception e) {
       response.setContentType("text/html");
       response.getWriter().println("Please enter an integer between 1 to " + 
           CommentConstants.MAX_NUM_BLOGS + ".");
       return;
-    }
+    }    
 
     // Retrieve Comments from Datastore for the given blog post
     FilterPredicate filterBlogComments = new FilterPredicate("blogNumber", 

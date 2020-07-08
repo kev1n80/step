@@ -15,14 +15,16 @@
 package com.google.sps.utility;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /** A class that contains methods to validate input */
 public final class ValidateInput {
 
   /** 
-   * Returns the number of comments shown entered by the user, or -1 if the 
-   * comment was invalid. Min must be greater than -1 and Max must be greater 
-   * than or equal to min 
+   * Returns the String input entered by the user, or throws an exception if
+   * the input was invalid.
+   * Min must be greater than -1 and Max must be greater 
+   * than or equal to min or else an exception is thrown.
    *
    * @param request the request received from the form that contains user input
    * @param parameter the name of the input parameter one is retreiving
@@ -30,38 +32,122 @@ public final class ValidateInput {
    * @param max used to establish the upper bound of the input
    * @return the user's input (number) or -1 if it does not follow guidelines
    */
-  public int getUserNum(HttpServletRequest request, String parameter, int min, int max) {
+  static String getUserInput(HttpServletRequest request, String parameter, 
+      int min, int max) throws Exception {
     if (min <= -1) {
-      System.err.println("Min (" + min + ") must be greater than -1 ");
-      return -1;
+      String error = "Min (" + min + ") must be greater than -1 ";
+      System.err.println(error);
+      throw new Exception(error);
     }
     
     if (max < min) {
-      System.err.println("Max (" + max + ") must be greater than or equal to" + 
-          " Min (" + min + ")");
-      return -1;
+      String error = "Max (" + max + ") must be greater than or equal to" + 
+          " Min (" + min + ")";
+      System.err.println(error);
+      throw new Exception(error);
     }
 
     // Get the input from the form.
-    String userNumString = request.getParameter(parameter);
+    String userInputString = request.getParameter(parameter);
+    if (userInputString == null) {
+      String error = "Paramter was not found";
+      throw new Exception(error);
+    }
+
+    return userInputString;
+  }
+
+  /**
+   * Check that the value is between min and max. If it's not throw an 
+   * Exception.
+   *
+   * @param value an int that is being compared to bounds
+   * @param min a lower bound int
+   * @param max an upper bound int
+   */
+
+  static void isInputInBounds(int value, String parameter, int min, int max) 
+      throws Exception {
+    if (value < min || value > max) {
+      String error = "Value for " + parameter + " is out of range (" + min 
+          + " - " + max + "): " + value;
+      System.err.println(error);
+      throw new Exception(error);
+    }    
+  }
+
+  /** 
+   * Returns the int input entered by the user, or throws an exception if
+   * the input was invalid or not between the bounds.
+   * Min must be greater than -1 and Max must be greater 
+   * than or equal to min or else an exception is thrown.
+   *
+   * @param request the request received from the form that contains user input
+   * @param parameter the name of the input parameter one is retreiving
+   * @param min used to establish the lower bound of the input
+   * @param max used to establish the upper bound of the input
+   * @return the user's input (number) or -1 if it does not follow guidelines
+   */
+  public int getUserNum(HttpServletRequest request, String parameter, int min, 
+      int max) throws Exception {
+    // Get the input from the form.
+    String userInputString;
+    try {
+      userInputString = getUserInput(request, parameter, min, max);
+    } catch (Exception e) {
+      throw e;
+    }
 
     // Convert the input to an int.
     int userNum;
     try {
-      userNum = Integer.parseInt(userNumString);
+      userNum = Integer.parseInt(userInputString);
     } catch (NumberFormatException e) {
-      System.err.println("Could not convert to int: " + userNumString);
-      return -1;
+      String error = "Could not convert to int: " + userInputString;
+      System.err.println(error);
+      throw new Exception(error);
     }
 
-    // Check that the input is between 0 and max.
-    if (userNum < min || userNum > max) {
-      System.err.println("Value for " + parameter + " is out of range (" + min 
-          + " - " + max + "): " + userNumString);
-      return -1;
+    // Check that the input is between min and max.
+    try {
+      isInputInBounds(userNum, parameter, min, max);
+    } catch (Exception e) {
+      throw e; 
     }
 
     return userNum;
+  }
+
+  /** 
+   * Returns the String input entered by the user, or throws an exception if
+   * the input was invalid or not between the bounds.
+   * Min must be greater than -1 and Max must be greater 
+   * than or equal to min or else an exception is thrown.
+   *
+   * @param request the request received from the form that contains user input
+   * @param parameter the name of the input parameter one is retreiving
+   * @param min used to establish the lower bound of the input
+   * @param max used to establish the upper bound of the input
+   * @return the user's input (number) or -1 if it does not follow guidelines
+   */
+  public String getUserString(HttpServletRequest request, String parameter, 
+      int min, int max) throws Exception {
+    // Get the input from the form.
+    String userInputString;
+    try {
+      userInputString = getUserInput(request, parameter, min, max);
+    } catch (Exception e) {
+      throw e;
+    }
+
+    // Check that the input is between min and max.
+    try {
+      isInputInBounds(userInputString.length(), parameter, min, max);
+    } catch (Exception e) {
+      throw e; 
+    }
+
+    return userInputString;
   }
 } 
 

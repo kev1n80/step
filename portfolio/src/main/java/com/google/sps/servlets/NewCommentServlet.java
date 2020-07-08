@@ -47,30 +47,41 @@ public class NewCommentServlet extends HttpServlet {
   @Override 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
   throws IOException {
+    ValidateInput validateInput = new ValidateInput();
 
     // Receive input from the create a comment form
-    int blogNumber = new ValidateInput().getUserNum(request, "blog-number", 
-        1, CommentConstants.MAX_NUM_BLOGS);
-
-    String comment = request.getParameter("comment");
-    int commentLen = comment.length();
-    if (commentLen >= 1 || commentLen <= MAX_COMMENT_LEN) {
-      long timestamp = System.currentTimeMillis();
-
-      Entity commentEntity = new Entity("Comment");
-      commentEntity.setProperty("content", comment);
-      commentEntity.setProperty("timestamp", timestamp);
-      commentEntity.setProperty("blogNumber", blogNumber);
-
-      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      datastore.put(commentEntity);
-    }
-    else {
+    int blogNumber;
+    try {
+      blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
+          CommentConstants.MAX_NUM_BLOGS);
+    } catch (Exception e) {
       response.setContentType("text/html");
-      response.getWriter().println("Please enter a comment with " + 
-          1 + " to " + MAX_COMMENT_LEN + " characters.");
+      response.getWriter().println("Please enter an integer between 1 to " + 
+          CommentConstants.MAX_NUM_BLOGS + ".");
       return;
-    }
+    }    
+
+    String comment;
+
+    try {
+      comment = validateInput.getUserString(request, "comment", 1, 
+          MAX_COMMENT_LEN);
+    } catch (Exception e) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please enter an integer between 1 to " + 
+          MAX_COMMENT_LEN + ".");
+      return;
+    }    
+
+    long timestamp = System.currentTimeMillis();
+
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("content", comment);
+    commentEntity.setProperty("timestamp", timestamp);
+    commentEntity.setProperty("blogNumber", blogNumber);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(commentEntity);
 
     // Redirect back to the HTML page.
     response.sendRedirect("/index.html");
