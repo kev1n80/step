@@ -259,7 +259,7 @@ function createCommentForm(blogNumber) {
       "blog-form-label"));
 
   const nameDescription = "Name:";
-  const nameInputClass = "blog-form-name";
+  const nameInputClass = "blog-form-input-label";
   const nameInputId = "blog-" + blogNumber + "-form-name";
   formElement.appendChild(createLabelElement(nameInputId, nameDescription, ""));
 
@@ -269,7 +269,7 @@ function createCommentForm(blogNumber) {
   formElement.appendChild(nameInputElement);
 
   const contentDescription = "Comment:";
-  const contentInputClass = "blog-form-content";
+  const contentInputClass = "blog-form-content-label";
   const contentInputId = "blog-" + blogNumber + "-content-name";
   formElement.appendChild(createLabelElement(contentInputId, contentDescription,
       ""));
@@ -285,11 +285,13 @@ function createCommentForm(blogNumber) {
 
 /** Creates a <button> submit element containing a type and onclick attribute 
 and text. */
-function createButtonElement(typeAttribute, onclickAttribute, text) {
+function createButtonElement(typeAttribute, onclickAttribute, text,
+    classAttribute) {
   const buttonElement = document.createElement('button');
   buttonElement.innerText = text;
   buttonElement.setAttribute("type", typeAttribute);
   buttonElement.setAttribute("onclick", onclickAttribute);
+  buttonElement.setAttribute("class", classAttribute);
   return buttonElement;
 }
 
@@ -314,9 +316,10 @@ function createCommentSection(blogNumber) {
 
   const deleteButtonOnclick = "deleteAllComments('" + blogNumber + "')";
   const deleteButtonDescription = "Delete All Comments";
+  const deleteButtonClass = "delete-comment-button";
   commentSection.appendChild(
       createButtonElement("button", deleteButtonOnclick, 
-      deleteButtonDescription));
+      deleteButtonDescription, deleteButtonClass));
 }
 
 /** Loads blog post comment section. */
