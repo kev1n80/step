@@ -42,7 +42,13 @@ function addRandomFact() {
   factContainer.innerText = fact;
 }
 
-/** Retrieves a number of comments after and including the first comment shown. */
+/** 
+ * Retrieves a number of comments after and including the first comment shown. 
+ *
+ * @param numComments the number of comments to display
+ * @param pageNumber the page number the user clicked 
+ * @param blogNumber the blog the comments are assoicated with
+ */
 function getComment(numComments, pageNumber, blogNumber) {
   let queryString = '/list-comments?num-comments=' + numComments;
   queryString = queryString + '&page-number=' + pageNumber;
@@ -70,7 +76,13 @@ function getComment(numComments, pageNumber, blogNumber) {
   });
 }
 
-/** Creates a comment element */
+/** 
+ * Creates a comment element 
+ *
+ * @param content the text the user commented
+ * @param name the name of the user who commented
+ * @return returns a div that represents a comment
+ */
 function createCommentElement(content, name) {
   const divElement = createDivElement("comment", "");
   divElement.appendChild(createHElement(name, 5));
@@ -78,28 +90,48 @@ function createCommentElement(content, name) {
   return divElement;
 }
 
-/** Creates an <li> element containing text. */
+/** 
+ * Creates an <li> element containing text. 
+ *
+ * @param text the text that will be displayed
+ * @return returns an li element with the text
+ */
 function createListElement(text) {
   const liElement = document.createElement('li');
   liElement.innerText = text;
   return liElement;
 }
 
-/** Creates a <p> element containing text. */
+/** 
+ * Creates a <p> element containing text. 
+ *
+ * @param text the text that will be displated
+ * @return returns a p element with the text
+ */
 function createPElement(text) {
   const pElement = document.createElement('p');
   pElement.innerText = text;
   return pElement;
 }
 
-/** Creates a <h> element with rank and containing text. */
+/** 
+ * Creates a <h> element with rank and containing text. 
+ * 
+ * @param text the text that will be displayed
+ * @param rank the rank of the header
+ * @return returns an h element with a rank and text
+ */
 function createHElement(text, rank) {
   const hElement = document.createElement('h' + rank);
   hElement.innerText = text;
   return hElement;
 }
 
-/** Deletes all comments. */
+/** 
+ * Deletes all comments. 
+ *
+ * @param blogNumber the blog whose comments will be deleted
+ */
 function deleteAllComments(blogNumber) {
   console.log("Deleting all comments");
   const queryString = '/delete-comment?blog-number=' + blogNumber;
@@ -108,7 +140,12 @@ function deleteAllComments(blogNumber) {
   });
 }
 
-/** Creates pagination to go through all comments. */
+/** 
+ * Creates pagination to go through all comments. 
+ * 
+ * @param numComments the number of comments displayed per page
+ * @param blogNumber the blog this func is creating a pagination for
+ */
 function loadCommentPagination(numComments, blogNumber) {
   let queryString = '/pagination-comment?num-comments=' + numComments;
   queryString = queryString + '&blog-number=' + blogNumber;
@@ -126,7 +163,15 @@ function loadCommentPagination(numComments, blogNumber) {
   });
 }
 
-/** Creates an elemet that represents a page. */
+/** 
+ * Creates an elemet that represents a page. 
+ *
+ * @param pageNumber the page number that this element represents
+ * @param numComments the number of comments displayed per page
+ * @param blogNumber the blog that this page element is relateed to 
+ * @return returns an <a> element that represents a page number in the 
+ * pagination
+ */
 function createPageElement(pageNumber, numComments, blogNumber) {
   console.log("Creating page number " + pageNumber + " for blog post " + 
       blogNumber);
@@ -139,14 +184,25 @@ function createPageElement(pageNumber, numComments, blogNumber) {
   return pageElement;
 }
 
-/** Loads pagination and comments. */
+/**
+ * Loads pagination and comments. 
+ *
+ * @param blogNumber the blog this func is loading the pagination and
+ * comments for
+ */
 function loadCommentSection(blogNumber) {
   const numComments = document.getElementById("num-comments-" + blogNumber).value;
   getComment(numComments, 1, blogNumber);
   loadCommentPagination(numComments, blogNumber);
 }
 
-/** Creates a <div> element containing class and id attribute. */
+/** 
+ * Creates a <div> element containing class and id attribute. 
+ *
+ * @param classAttribute the name of the class of this div element
+ * @param idAttribute the name of the id of this div element
+ * @return returns a div element with a class and id
+ */
 function createDivElement(classAttribute, idAttribute) {
   const divElement = document.createElement('div');
   divElement.setAttribute("class", classAttribute);
@@ -154,7 +210,13 @@ function createDivElement(classAttribute, idAttribute) {
   return divElement;
 }
 
-/** Creates a <label> element containing text and for and form attribute. */
+/** 
+ * Creates a <label> element containing text and for and form attribute. 
+ * @param forAttribute the for attribute of this label
+ * @param text the text displayed
+ * @param classAttribute the name of the class of this div element
+ * @return returns a label element with text, a class, and an id
+ */
 function createLabelElement(forAttribute, text, classAttribute) {
   const labelElement = document.createElement('label');
   labelElement.innerText = text;
@@ -163,7 +225,14 @@ function createLabelElement(forAttribute, text, classAttribute) {
   return labelElement;
 }
 
-/** Creates a <select> element containing a name, onchange, and id attrubute. */
+/** 
+ * Creates a <select> element containing a name, onchange, and id attrubute. 
+ *
+ * @param nameAttribute the name attribute of a select element
+ * @param onchangeAttribute the js function to execute when the select changes
+ * @param idAttribute the name of the id of this div element
+ * @return returns a select element
+ */
 function createSelectElement(nameAttribute, onchangeAttribute, id) {
   const selectElement = document.createElement('select');
   selectElement.setAttribute("name", nameAttribute);
@@ -180,8 +249,15 @@ function createOptionElement(valueAttribute, text) {
   return optionElement;
 }
 
-/** Creates a select for the user to choose the number of comments they want to 
-be displayed per page. */
+/** 
+ * Creates a select for the user to choose the number of comments they want to 
+ * be displayed per page. 
+ *
+ * @param blogNumber the blog that this page element is relateed to 
+ * @param numComments the number of comments displayed per page
+ * @param defaultValue the default value that this select element will have
+ * @return returns a div element that contains a select element
+ */
 function createCommentSelect(blogNumber, numComments, defaultValue) {
   console.log("Creating comment select")
   const divElement = createDivElement("blog-select-comments-num", "");
@@ -212,9 +288,17 @@ function createCommentSelect(blogNumber, numComments, defaultValue) {
   return divElement;
 }
 
-/** Creates a <form> element containing an action and a method. */
+/** 
+ * Creates a <form> element containing an action and a method. 
+ *
+ * @param actionAttribute the servlet that this form will send input to
+ * @param methodAttribute the method attribute of the form element
+ * @param classAttribute the name of the class of this div element
+ * @param idAttribute the name of the id of this div element
+ * @return returns a form element
+ */
 function createFormElement(actionAttribute, methodAttribute, classAttribute, 
-    idAttribute) {
+      idAttribute) {
   const formElement = document.createElement('form');
   formElement.setAttribute("action", actionAttribute);
   formElement.setAttribute("method", methodAttribute);
@@ -223,10 +307,20 @@ function createFormElement(actionAttribute, methodAttribute, classAttribute,
   return formElement;
 }
 
-/** Creates an <input> text element containing a type, name and maxlength 
-attribute. */
+/** 
+ * Creates an <input> text element containing a type, name and maxlength 
+ * attribute. 
+ * 
+ * @param nameAttribute the name attribute for this input element
+ * @param minLengthAttribute the minimum length of text accepted
+ * @param maxLengthAttribute the maximum length of text accepted
+ * @param placeholderAttribute the text that will be displayed before the user  * inputs text
+ * @param classAttribute the name of the class of this div element
+ * @param idAttribute the name of the id of this div element
+ * @return return an input element of type text
+ */
 function createInputTextElement(nameAttribute, minLengthAttribute,
-    maxLengthAttribute, placeholderAttribute, classAttribute, idAttribute) {
+      maxLengthAttribute, placeholderAttribute, classAttribute, idAttribute) {
   const inputElement = document.createElement('input');
   inputElement.setAttribute("type", "text");
   inputElement.setAttribute("name", nameAttribute);
@@ -238,7 +332,12 @@ function createInputTextElement(nameAttribute, minLengthAttribute,
   return inputElement;
 }
 
-/** Creates an <input> submit element containing a type. */
+/** 
+ * Creates an <input> submit element containing a type. 
+ *
+ * @param classAttribute the name of the class of this div element
+ * @return return an input element of type submit
+ */
 function createInputSubmitElement(classAttribute) {
   const inputElement = document.createElement('input');
   inputElement.setAttribute("type", "submit");
@@ -246,7 +345,12 @@ function createInputSubmitElement(classAttribute) {
   return inputElement;
 }
 
-/** Creates a form to create a comment */
+/** 
+ * Creates a form to create a comment 
+ *
+ * @param blogNumber the blog that this form element is related to 
+ * @return a form element that is related to a blog and creates a comment
+ */
 function createCommentForm(blogNumber) {
   console.log("Creating comment form");
   const formAction = "/new-comment?blog-number=" + blogNumber;
@@ -259,32 +363,40 @@ function createCommentForm(blogNumber) {
       "blog-form-label"));
 
   const nameDescription = "Name:";
-  const nameInputClass = "blog-form-input-label";
+  const nameInputClass = "blog-form-input";
   const nameInputId = "blog-" + blogNumber + "-form-name";
   formElement.appendChild(createLabelElement(nameInputId, nameDescription, ""));
 
   const namePlaceholder = "Enter name (char limit 50)";
   const nameInputElement = createInputTextElement("name", "1", "50", 
-  namePlaceholder, nameInputClass, nameInputId);
+      namePlaceholder, nameInputClass, nameInputId);
   formElement.appendChild(nameInputElement);
 
   const contentDescription = "Comment:";
-  const contentInputClass = "blog-form-content-label";
+  const contentInputClass = "blog-form-content";
   const contentInputId = "blog-" + blogNumber + "-content-name";
   formElement.appendChild(createLabelElement(contentInputId, contentDescription,
       ""));
 
   const contentPlaceholder = "Enter a comment (char limit 264)";
   formElement.appendChild(createInputTextElement("comment", "1", "264", 
-  contentPlaceholder, contentInputClass, contentInputId));
+      contentPlaceholder, contentInputClass, contentInputId));
 
   formElement.appendChild(createInputSubmitElement("blog-form-submit"));
 
   return formElement;
 }
 
-/** Creates a <button> submit element containing a type and onclick attribute 
-and text. */
+/** 
+ * Creates a <button> submit element containing a type and onclick attribute 
+ * and text. 
+ *
+ * @param typeAttribute the type of button this is
+ * @param onclickAttribute the js that is executed when this button is clicked
+ * @param text the text that is displated
+ * @param classAttribute the name of the class of this div element
+ * @return a button element
+ */
 function createButtonElement(typeAttribute, onclickAttribute, text,
     classAttribute) {
   const buttonElement = document.createElement('button');
@@ -296,7 +408,10 @@ function createButtonElement(typeAttribute, onclickAttribute, text,
 }
 
 
-/** Creates a comments section. */
+/** 
+ * Creates a comments section. 
+ * @param blogNumber the blog this comment section is related to
+ */
 function createCommentSection(blogNumber) {
   const commentSection = document.getElementById('comment-section-' + blogNumber);
 
@@ -322,7 +437,11 @@ function createCommentSection(blogNumber) {
       deleteButtonDescription, deleteButtonClass));
 }
 
-/** Loads blog post comment section. */
+/** 
+ * Loads blog post comment section. 
+ * 
+ * @param numberOfBlogs the number of blogs to create a comment section for 
+ */
 function loadBlogpostComment(numberOfBlogs) {
   for (var i = 1; i < numberOfBlogs + 1; i++) {
     console.log("Creating comment section for blog post " + i);
@@ -330,7 +449,11 @@ function loadBlogpostComment(numberOfBlogs) {
   }
 }
 
-/** Toggles the blog post comment section. */
+/** 
+ * Toggles the blog post comment section. 
+ * 
+ * @param numberOfBlogs the number of blogs to create a comment section for 
+ */
 function toggleBlogpostComment(blogNumber) {
   var commentSection = document.getElementById("comment-section-" + blogNumber);
   if (commentSection.style.display === "inline-flex") {
