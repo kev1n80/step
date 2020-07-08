@@ -47,12 +47,11 @@ public class NewCommentServlet extends HttpServlet {
   @Override 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
   throws IOException {
-    ValidateInput validateInput = new ValidateInput();
 
     // Receive input from the create a comment form
     int blogNumber;
     try {
-      blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
+      blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
       response.setContentType("text/html");
@@ -64,7 +63,7 @@ public class NewCommentServlet extends HttpServlet {
     String comment;
 
     try {
-      comment = validateInput.getUserString(request, "comment", 1, 
+      comment = ValidateInput.getUserString(request, "comment", 1, 
           MAX_COMMENT_LEN);
     } catch (Exception e) {
       response.setContentType("text/html");

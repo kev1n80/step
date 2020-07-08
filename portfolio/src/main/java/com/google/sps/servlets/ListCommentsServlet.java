@@ -57,10 +57,9 @@ public class ListCommentsServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Receive input from the modify number of comments shown form
-    ValidateInput validateInput = new ValidateInput();
     int numComments;
     try {
-      numComments = validateInput.getUserNum(request, "num-comments", 1, 
+      numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
       response.setContentType("text/html");
@@ -72,7 +71,7 @@ public class ListCommentsServlet extends HttpServlet {
     // Receive input on which blog we are retrieving comments from
     int blogNumber;
     try {
-      blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
+      blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
       response.setContentType("text/html");
@@ -100,7 +99,7 @@ public class ListCommentsServlet extends HttpServlet {
       int maxPageNum = (int) Math.ceil(totalComments / numComments);
       int pageNum;
       try {
-        pageNum = validateInput.getUserNum(request, "page-number", 0,      
+        pageNum = ValidateInput.getUserNum(request, "page-number", 0,      
             maxPageNum);
       } catch (Exception e) {
         response.setContentType("text/html");

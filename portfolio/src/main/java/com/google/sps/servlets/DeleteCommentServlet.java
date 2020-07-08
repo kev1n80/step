@@ -50,12 +50,11 @@ public class DeleteCommentServlet extends HttpServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    ValidateInput validateInput = new ValidateInput();
     
     // Receive input on which blog we are retrieving comments from
     int blogNumber; 
     try {
-      blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
+      blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
       response.setContentType("text/html");

@@ -88,8 +88,8 @@ public final class ValidateInput {
    * @param max used to establish the upper bound of the input
    * @return the user's input (number) or -1 if it does not follow guidelines
    */
-  public int getUserNum(HttpServletRequest request, String parameter, int min, 
-      int max) throws Exception {
+  public static int getUserNum(HttpServletRequest request, String parameter, 
+      int min, int max) throws Exception {
     // Get the input from the form.
     String userInputString;
     try {
@@ -130,8 +130,8 @@ public final class ValidateInput {
    * @param max used to establish the upper bound of the input
    * @return the user's input (number) or -1 if it does not follow guidelines
    */
-  public String getUserString(HttpServletRequest request, String parameter, 
-      int min, int max) throws Exception {
+  public static String getUserString(HttpServletRequest request, 
+      String parameter, int min, int max) throws Exception {
     // Get the input from the form.
     String userInputString;
     try {

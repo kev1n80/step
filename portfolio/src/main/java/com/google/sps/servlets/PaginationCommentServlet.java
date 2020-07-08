@@ -50,12 +50,10 @@ public class PaginationCommentServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    ValidateInput validateInput = new ValidateInput();
-    
     // Receive input from the modify number of comments shown form
     int numComments;
     try {
-      numComments = validateInput.getUserNum(request, "num-comments", 1, 
+      numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
       response.setContentType("text/html");
@@ -67,7 +65,7 @@ public class PaginationCommentServlet extends HttpServlet {
     // Receive input on which blog we are retrieving comments from
     int blogNumber;
     try {
-      blogNumber = validateInput.getUserNum(request, "blog-number", 1, 
+      blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
       response.setContentType("text/html");
