@@ -89,6 +89,14 @@ public class NewCommentServlet extends HttpServlet {
       return;
     }       
 
+    String imageURL;
+    try {
+      imageURL = ValidateInput.getUploadedFileUrl(request, "image");
+    } catch (Exception e) {
+      System.err.println(e.getMessage());
+      return;
+    }     
+
     long timestamp = System.currentTimeMillis();
 
     Entity commentEntity = new Entity("Comment");
@@ -96,6 +104,7 @@ public class NewCommentServlet extends HttpServlet {
     commentEntity.setProperty("timestamp", timestamp);
     commentEntity.setProperty("blogNumber", blogNumber);
     commentEntity.setProperty("name", name);
+    commentEntity.setProperty("image", imageURL);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
