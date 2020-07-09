@@ -55,8 +55,7 @@ public class NewCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      System.err.println("Please enter an integer between 1 to " + 
-          CommentConstants.MAX_NUM_BLOGS + ".");
+      System.err.println(e.getMessage());
       return;
     }    
 
@@ -66,8 +65,7 @@ public class NewCommentServlet extends HttpServlet {
       content = ValidateInput.getUserString(request, "content", 1, 
           MAX_COMMENT_LEN);
     } catch (Exception e) {
-      System.err.println("Please enter an integer between 1 to " + 
-          MAX_COMMENT_LEN + ".");
+      System.err.println(e.getMessage());
       return;
     }   
 
@@ -76,8 +74,7 @@ public class NewCommentServlet extends HttpServlet {
       name = ValidateInput.getUserString(request, "name", 1, 
           MAX_NAME_LEN);
     } catch (Exception e) {
-      System.err.println("Please enter an integer between 1 to " + 
-          MAX_NAME_LEN + ".");
+      System.err.println(e.getMessage());
       return;
     }       
 

@@ -34,12 +34,6 @@ public final class ValidateInput {
    */
   static String getUserInput(HttpServletRequest request, String parameter, 
       int min, int max) throws Exception {
-    if (min <= -1) {
-      String error = "Min (" + min + ") must be greater than -1 ";
-      System.err.println(error);
-      throw new Exception(error);
-    }
-    
     if (max < min) {
       String error = "Max (" + max + ") must be greater than or equal to" + 
           " Min (" + min + ")";
@@ -79,14 +73,14 @@ public final class ValidateInput {
   /** 
    * Returns the int input entered by the user, or throws an exception if
    * the input was invalid or not between the bounds.
-   * Min must be greater than -1 and Max must be greater 
-   * than or equal to min or else an exception is thrown.
+   * Max must be greater than or equal to min or else an exception is thrown.
    *
    * @param request the request received from the form that contains user input
    * @param parameter the name of the input parameter one is retreiving
    * @param min used to establish the lower bound of the input
    * @param max used to establish the upper bound of the input
-   * @return the user's input (number) or -1 if it does not follow guidelines
+   * @return the user's input (int) or throw an exception if it does not 
+   * follow guidelines
    */
   public static int getUserNum(HttpServletRequest request, String parameter, 
       int min, int max) throws Exception {
@@ -128,10 +122,17 @@ public final class ValidateInput {
    * @param parameter the name of the input parameter one is retreiving
    * @param min used to establish the lower bound of the input
    * @param max used to establish the upper bound of the input
-   * @return the user's input (number) or -1 if it does not follow guidelines
+   * @return the user's input (String) or throw and exception if it does not 
+   * follow guidelines
    */
   public static String getUserString(HttpServletRequest request, 
       String parameter, int min, int max) throws Exception {
+    if (min <= -1) {
+      String error = "Min (" + min + ") must be greater than -1 ";
+      System.err.println(error);
+      throw new Exception(error);
+    }
+
     // Get the input from the form.
     String userInputString;
     try {
