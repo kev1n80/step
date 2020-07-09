@@ -30,6 +30,9 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.utility.CommentConstants;
 import com.google.sps.utility.ValidateInput;
 
+
+import java.util.Enumeration;
+import java.util.*;
 /** 
  * Servlet that handles blog comment forms
  */
@@ -48,6 +51,15 @@ public class NewCommentServlet extends HttpServlet {
   @Override 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
   throws IOException {
+    
+    Enumeration<String> paramNames = request.getParameterNames();
+    // for (String myVar : paramNames) {
+    //   System.err.println(myVar);
+    // }
+
+    while(paramNames.hasMoreElements()) {
+      System.err.println(paramNames.nextElement());
+    }
 
     // Receive input from the create a comment form
     int blogNumber;
@@ -60,7 +72,6 @@ public class NewCommentServlet extends HttpServlet {
     }    
 
     String content;
-
     try {
       content = ValidateInput.getUserString(request, "content", 1, 
           MAX_COMMENT_LEN);

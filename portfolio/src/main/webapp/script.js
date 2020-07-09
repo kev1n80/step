@@ -190,6 +190,7 @@ function createPageElement(pageNumber, numComments, blogNumber) {
  * comments for
  */
 function loadCommentSection(blogNumber) {
+  console.log("Loading blog " + blogNumber + "'s comment section.");
   const numComments = document.getElementById("num-comments-" + blogNumber).value;
   getComment(numComments, 1, blogNumber);
   loadCommentPagination(numComments, blogNumber);
@@ -294,27 +295,24 @@ function createCommentSelect(blogNumber, numComments, defaultValue) {
 }
 
 /** 
- * Creates a <form> element containing an action and a method. 
+ * Creates a <form> element containing an action, method, and enctype. 
  *
- * @param actionAttribute the servlet that this form will send input to
- * @param methodAttribute the method attribute of the form element
+ * @param enctypeAttribute 
  * @param classAttribute the name of the class of this div element
  * @param idAttribute the name of the id of this div element
  * @return returns a form element
  */
-function createFormElement(actionAttribute, methodAttribute, classAttribute, 
-      idAttribute) {
+function createFormElement(enctypeAttribute, classAttribute, idAttribute) {
   const formElement = document.createElement('form');
-  formElement.setAttribute("action", actionAttribute);
-  formElement.setAttribute("method", methodAttribute);
+  formElement.setAttribute("enctype", enctypeAttribute);
   formElement.setAttribute("class", classAttribute);
   formElement.setAttribute("id", idAttribute);
   return formElement;
 }
 
 /** 
- * Creates an <input> text element containing a type, name and maxlength 
- * attribute. 
+ * Creates an <input> element of type text containing a name, minlength,   
+ * maxlength, and placeholder attribute as well as a class and id. 
  * 
  * @param nameAttribute the name attribute for this input element
  * @param minLengthAttribute the minimum length of text accepted
@@ -325,7 +323,7 @@ function createFormElement(actionAttribute, methodAttribute, classAttribute,
  * @return return an input element of type text
  */
 function createInputTextElement(nameAttribute, minLengthAttribute,
-      maxLengthAttribute, placeholderAttribute, classAttribute, idAttribute) {
+    maxLengthAttribute, placeholderAttribute, classAttribute, idAttribute) {
   const inputElement = document.createElement('input');
   inputElement.setAttribute("type", "text");
   inputElement.setAttribute("name", nameAttribute);
@@ -338,7 +336,7 @@ function createInputTextElement(nameAttribute, minLengthAttribute,
 }
 
 /** 
- * Creates an <input> submit element containing a type. 
+ * Creates an <input> element of type submit containing a class. 
  *
  * @param classAttribute the name of the class of this div element
  * @return return an input element of type submit
@@ -351,6 +349,24 @@ function createInputSubmitElement(classAttribute) {
 }
 
 /** 
+ * Creates an <input> element of type file containing a name and class 
+ * attribute. 
+ *
+ * @param nameAttribute the name of the data
+ * @param classAttribute the name of the class of this div element
+ * @param idAttribute the name of the id of this div element
+ * @return return an input element of type file
+ */
+function createInputFileElement(nameAttribute, classAttribute, idAttribute) {
+  const inputElement = document.createElement('input');
+  inputElement.setAttribute("type", "file");
+  inputElement.setAttribute("name", nameAttribute);
+  inputElement.setAttribute("class", classAttribute);
+  inputElement.setAttribute("id", idAttribute);
+  return inputElement;
+}
+
+/** 
  * Creates a form to create a comment 
  *
  * @param blogNumber the blog that this form element is related to 
@@ -359,13 +375,13 @@ function createInputSubmitElement(classAttribute) {
 function createCommentForm(blogNumber) {
   console.log("Creating comment form");
 
+  const formEnctype = "multipart/form-data";
   const formClass = "blog-form";
   const formId = "blog-" + blogNumber + "-form";
-  const formElement = createDivElement(formClass, formId);
+  const formElement = createFormElement(formEnctype, formClass, formId);
 
   const formDescription = "Add a comment!";
-  formElement.appendChild(createLabelElement(formId, formDescription, 
-      "blog-form-label"));
+  formElement.appendChild(createLabelElement(formId, formDescription, "blog-form-label"));
 
   const nameDescription = "Name:";
   const nameInputClass = "blog-form-input";
@@ -374,25 +390,77 @@ function createCommentForm(blogNumber) {
 
   const namePlaceholder = "Enter name (char limit 50)";
   const nameInputElement = createInputTextElement("name", "1", "50", 
-      namePlaceholder, nameInputClass, nameInputId);
+  namePlaceholder, nameInputClass, nameInputId);
   formElement.appendChild(nameInputElement);
 
   const contentDescription = "Comment:";
   const contentInputClass = "blog-form-content";
   const contentInputId = "blog-" + blogNumber + "-content-name";
-  formElement.appendChild(createLabelElement(contentInputId, contentDescription,
-      ""));
+  formElement.appendChild(createLabelElement(contentInputId, contentDescription, ""));
 
   const contentPlaceholder = "Enter a comment (char limit 264)";
-  formElement.appendChild(createInputTextElement("comment", "1", "264", 
-      contentPlaceholder, contentInputClass, contentInputId));
+  formElement.appendChild(createInputTextElement("content", "1", "264", 
+  contentPlaceholder, contentInputClass, contentInputId));
 
-  const submitButtonElement = createInputSubmitElement("blog-form-submit");
-  submitButtonElement.onclick = function() {sendFormData(blogNumber, 
-      nameInputId, contentInputId)};
-  formElement.appendChild(submitButtonElement);
+  const imageDescription = "Upload an image:";
+  const imageInputClass = "blog-form-image";
+  const imageInputId = "blog-" + blogNumber + "-form-image";
+  formElement.appendChild(createLabelElement(imageInputId, imageDescription, 
+      ""));
 
+  formElement.appendChild(createInputFileElement("image", imageInputClass, 
+      imageInputId));
+
+  formElement.appendChild(createInputSubmitElement("blog-form-submit"));
+  
   return formElement;
+}
+
+/** 
+ * Creates a blobstore url and changes the comments forms action to this 
+ * blobsore url 
+ * 
+ * @param blogNumber the blog the form is associated with
+ */
+function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
+  const servletUrl = "/new-comment";
+  const queryString = "/blobstore-upload-url?servlet-url=" + servletUrl;
+
+  console.log("fetching blobstore url.");
+  fetch(queryString)
+      .then((response) => {
+        return response.text();
+      }).then((imageUploadUrl) => {
+        const formId = "blog-" + blogNumber + "-form";
+
+        const commentForm = document.getElementById(formId);
+        
+        commentForm.addEventListener('submit', function(event) {
+          console.log("Adding event listener to blog " + blogNumber + 
+              "'s comment form.");
+          event.preventDefault();
+          sendFormData(blogNumber, commentForm, imageUploadUrl);
+          fetchBlobstoreUrlAndUpdateForm(blogNumber);
+          resetBlogCommentInputs(blogNumber);
+          loadCommentSection(blogNumber);
+        }, false);        
+      });
+}
+
+/** 
+ * Resets the input elements in the blog comment section 
+ *
+ * @param blogNumber the blog the input elements are associated with
+ */
+function resetBlogCommentInputs(blogNumber) {
+  console.log("Reseting blog " + blogNumber + "'s comment form.")
+
+  const nameInputId = "blog-" + blogNumber + "-form-name";
+  const contentInputId = "blog-" + blogNumber + "-content-name";
+  const imageInputId = "blog-" + blogNumber + "-form-image";
+
+  document.getElementById(nameInputId).value = '';
+  document.getElementById(contentInputId).value = '';  
 }
 
 /** 
@@ -402,21 +470,27 @@ function createCommentForm(blogNumber) {
  * @param nameInputId the id of the input element with the name data
  * @param contentInputId the id of the input element with the content data
  */
-function sendFormData(blogNumber, nameInputId, contentInputId) {
-  let url = "/new-comment?blog-number=" + blogNumber;
-    
-  const nameInputElement = document.getElementById(nameInputId);
-  url = url + "&name=" + nameInputElement.value;
-  const contentInputElement = document.getElementById(contentInputId);
-  url = url + "&content=" + contentInputElement.value;
+function sendFormData(blogNumber, commentForm, imageUploadUrl) {
+  console.log("Sending blog " + blogNumber + "'s form data to servlet.");
+  var data = new FormData(commentForm);
 
-  console.log(url);
-  console.log("sending form data");
-  fetch(url, {method: 'POST'}).then(() => {
-    loadCommentSection(blogNumber);
-    nameInputElement.value = '';
-    contentInputElement.value = '';
-  });
+  data.append("blog-number", blogNumber);
+
+  for (var key of data.entries()) {
+    console.log(key[0] + ', ' + key[1]);
+  }
+
+  var req = new XMLHttpRequest();
+  req.open("POST", imageUploadUrl, true);
+  req.onload = function() {
+    if (req.status == 200) {
+      console.log("Uploaded!");
+    } else {
+      console.log("Error " + req.status + " occurred when trying to upload your file.<br \/>");
+    }
+  };
+
+  req.send(data);
 }
 
 /** 
@@ -462,6 +536,8 @@ function createCommentSection(blogNumber) {
   const commentPaginationId = "comment-pagination-" + blogNumber;
   commentSection.appendChild(createDivElement("pagination", commentPaginationId));
 
+  loadCommentSection(blogNumber);
+
   const deleteButtonOnclick = "deleteAllComments('" + blogNumber + "')";
   const deleteButtonDescription = "Delete All Comments";
   const deleteButtonClass = "delete-comment-button";
@@ -479,6 +555,7 @@ function loadBlogpostComment(numberOfBlogs) {
   for (var i = 1; i < numberOfBlogs + 1; i++) {
     console.log("Creating comment section for blog post " + i);
     createCommentSection(i);
+    fetchBlobstoreUrlAndUpdateForm(i);
   }
 }
 
@@ -495,6 +572,5 @@ function toggleBlogpostComment(blogNumber) {
   } else {
     console.log("Comment section " + blogNumber + " is now visible.")
     commentSection.style.display = "inline-flex";
-    loadCommentSection(blogNumber);
   }
 }

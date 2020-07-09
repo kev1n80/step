@@ -44,7 +44,7 @@ public final class ValidateInput {
     // Get the input from the form.
     String userInputString = request.getParameter(parameter);
     if (userInputString == null) {
-      String error = "Paramter was not found";
+      String error = "Paramter " + parameter + " was not found";
       throw new Exception(error);
     }
 
