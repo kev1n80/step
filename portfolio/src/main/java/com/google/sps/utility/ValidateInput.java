@@ -80,7 +80,7 @@ public final class ValidateInput {
    * @param parameter the name of the input parameter one is retreiving
    * @param min used to establish the lower bound of the input
    * @param max used to establish the upper bound of the input
-   * @return the user's input (number) or throw and exception if it does not 
+   * @return the user's input (int) or throw an exception if it does not 
    * follow guidelines
    */
   public static int getUserNum(HttpServletRequest request, String parameter, 
@@ -123,7 +123,7 @@ public final class ValidateInput {
    * @param parameter the name of the input parameter one is retreiving
    * @param min used to establish the lower bound of the input
    * @param max used to establish the upper bound of the input
-   * @return the user's input (number) or throw and exception if it does not 
+   * @return the user's input (String) or throw an exception if it does not 
    * follow guidelines
    */
   public static String getUserString(HttpServletRequest request, 
