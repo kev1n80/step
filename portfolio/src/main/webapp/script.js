@@ -65,12 +65,13 @@ function getComment(numComments, pageNumber, blogNumber) {
     if (comments.length > 0) {
       comments.forEach((comment) => {
         commentListElement.appendChild(
-            createCommentElement(comment.content, comment.name));
+            createCommentElement(comment.content, comment.name, 
+                comment.imageURL));
       })
     }
     else {
       commentListElement.appendChild(
-          createCommentElement("There are no comments", ""));
+          createCommentElement("There are no comments", "", ""));
     }
   });
 }
@@ -82,10 +83,15 @@ function getComment(numComments, pageNumber, blogNumber) {
  * @param name the name of the user who commented
  * @return returns a div that represents a comment
  */
-function createCommentElement(content, name) {
+function createCommentElement(content, name, imageURL) {
   const divElement = createDivElement("comment", "");
-  divElement.appendChild(createHElement(name, 5));
-  divElement.appendChild(createPElement(content));
+
+  const mainElement = createDivElement("comment-main", "");
+  mainElement.appendChild(createHElement(name, 5));
+  mainElement.appendChild(createPElement(content));
+  divElement.appendChild(mainElement)
+
+  divElement.appendChild(createImgElement(imageURL, name + "'s uploaded image"));
   return divElement;
 }
 
@@ -104,13 +110,27 @@ function createListElement(text) {
 /** 
  * Creates a <p> element containing text. 
  *
- * @param text the text that will be displated
+ * @param text the text that will be displayed
  * @return returns a p element with the text
  */
 function createPElement(text) {
   const pElement = document.createElement('p');
   pElement.innerText = text;
   return pElement;
+}
+
+/** 
+ * Creates an <img> element. 
+ *
+ * @param srcAttribute the link to the image
+ * @param altAttribute the alternative text that will be displayed
+ * @return returns a p element with the text
+ */
+function createImgElement(srcAttribute, altAttribute) {
+  const imgElement = document.createElement('img');
+  imgElement.src = srcAttribute;
+  imgElement.alt = altAttribute;
+  return imgElement;
 }
 
 /** 

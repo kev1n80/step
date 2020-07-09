@@ -44,6 +44,7 @@ import com.google.sps.utility.ValidateInput;
 public class ListCommentsServlet extends HttpServlet {
 
   static final int COMMENT_LIMIT = 30;
+  static final int URL_LIMIT = 35;
 
   /** 
    * Will only show the 30 most recent comments.
@@ -114,8 +115,9 @@ public class ListCommentsServlet extends HttpServlet {
         String content = (String) entity.getProperty("content");
         long timestamp = (long) entity.getProperty("timestamp");
         String name = (String) entity.getProperty("name");
+        String imageURL = (String) entity.getProperty("image");
 
-        Comment comment = new Comment(id, content, timestamp, name);
+        Comment comment = new Comment(id, content, timestamp, name, imageURL);
         comments.add(comment);
       }
     }
