@@ -353,10 +353,10 @@ function createInputSubmitElement(classAttribute) {
  */
 function createCommentForm(blogNumber) {
   console.log("Creating comment form");
-  const formAction = "/new-comment?blog-number=" + blogNumber;
+
   const formClass = "blog-form";
   const formId = "blog-" + blogNumber + "-form";
-  const formElement = createFormElement(formAction, "POST", formClass, formId);
+  const formElement = createDivElement(formClass, formId);
 
   const formDescription = "Add a comment!";
   formElement.appendChild(createLabelElement(formId, formDescription, 
@@ -382,9 +382,38 @@ function createCommentForm(blogNumber) {
   formElement.appendChild(createInputTextElement("comment", "1", "264", 
       contentPlaceholder, contentInputClass, contentInputId));
 
-  formElement.appendChild(createInputSubmitElement("blog-form-submit"));
+  const submitButtonElement = createInputSubmitElement("blog-form-submit");
+  // let submitOnclick = "sendFormData(" + blogNumber  + ", " + nameInputId + ", " 
+  //     + contentInputId + ")";
+  submitButtonElement.onclick = function() {sendFormData(blogNumber, 
+      nameInputId, contentInputId)};
+  formElement.appendChild(submitButtonElement);
 
   return formElement;
+}
+
+/** 
+ * Sends name and content input data, and it clears the input elements
+ * 
+ * @param blogNumber the blog associated with the input
+ * @param nameInputId the id of the input element with the name data
+ * @param contentInputId the id of the input element with the content data
+ */
+function sendFormData(blogNumber, nameInputId, contentInputId) {
+  let url = "/new-comment?blog-number=" + blogNumber;
+    
+  const nameInputElement = document.getElementById(nameInputId);
+  url = url + "&name=" + nameInputElement.value;
+  const contentInputElement = document.getElementById(contentInputId);
+  url = url + "&content=" + contentInputElement.value;
+
+  console.log(url);
+  console.log("sending form data");
+  fetch(url, {method: 'POST'}).then(() => {
+    loadCommentSection(blogNumber);
+    nameInputElement.value = '';
+    contentInputElement.value = '';
+  });
 }
 
 /** 

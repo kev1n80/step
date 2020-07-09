@@ -102,8 +102,7 @@ public class ListCommentsServlet extends HttpServlet {
         pageNum = ValidateInput.getUserNum(request, "page-number", 0,      
             maxPageNum);
       } catch (Exception e) {
-        response.setContentType("text/html");
-        response.getWriter().println("Please enter an integer between 0 to " + 
+        System.err.println("Please enter an integer between 0 to " + 
             maxPageNum + ".");
         return;
       }

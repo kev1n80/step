@@ -55,20 +55,18 @@ public class NewCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
+      System.err.println("Please enter an integer between 1 to " + 
           CommentConstants.MAX_NUM_BLOGS + ".");
       return;
     }    
 
-    String comment;
+    String content;
 
     try {
-      comment = ValidateInput.getUserString(request, "comment", 1, 
+      content = ValidateInput.getUserString(request, "content", 1, 
           MAX_COMMENT_LEN);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
+      System.err.println("Please enter an integer between 1 to " + 
           MAX_COMMENT_LEN + ".");
       return;
     }   
@@ -78,8 +76,7 @@ public class NewCommentServlet extends HttpServlet {
       name = ValidateInput.getUserString(request, "name", 1, 
           MAX_NAME_LEN);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
+      System.err.println("Please enter an integer between 1 to " + 
           MAX_NAME_LEN + ".");
       return;
     }       
@@ -87,7 +84,7 @@ public class NewCommentServlet extends HttpServlet {
     long timestamp = System.currentTimeMillis();
 
     Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("content", comment);
+    commentEntity.setProperty("content", content);
     commentEntity.setProperty("timestamp", timestamp);
     commentEntity.setProperty("blogNumber", blogNumber);
     commentEntity.setProperty("name", name);
