@@ -56,9 +56,8 @@ function getComment(numComments, pageNumber, blogNumber) {
 
   console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
-    // const commentListElement = document.getElementById('comment-container-' + 
-    // blogNumber);
-    const commentListElement = document.getElementById('comment-container-' + blogNumber);
+    const commentListElement = document.getElementById('comment-container-' + 
+        blogNumber);
 
     console.log("Printing comments for blog post " + blogNumber);
     commentListElement.innerHTML = '';
@@ -241,7 +240,13 @@ function createSelectElement(nameAttribute, onchangeAttribute, id) {
   return selectElement;
 }
 
-/** Creates an <option> element containing a value and text. */
+/** 
+ * Creates an <option> element containing a value and text. 
+ *
+ * @param valueAttribute the value that this option returns when chosen
+ * @param text the text that will be displayed
+ * @return an option element
+ */
 function createOptionElement(valueAttribute, text) {
   const optionElement = document.createElement('option');
   optionElement.innerText = text;
@@ -383,8 +388,6 @@ function createCommentForm(blogNumber) {
       contentPlaceholder, contentInputClass, contentInputId));
 
   const submitButtonElement = createInputSubmitElement("blog-form-submit");
-  // let submitOnclick = "sendFormData(" + blogNumber  + ", " + nameInputId + ", " 
-  //     + contentInputId + ")";
   submitButtonElement.onclick = function() {sendFormData(blogNumber, 
       nameInputId, contentInputId)};
   formElement.appendChild(submitButtonElement);
@@ -439,6 +442,7 @@ function createButtonElement(typeAttribute, onclickAttribute, text,
 
 /** 
  * Creates a comments section. 
+ *
  * @param blogNumber the blog this comment section is related to
  */
 function createCommentSection(blogNumber) {
