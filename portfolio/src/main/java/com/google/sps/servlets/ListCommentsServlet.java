@@ -62,9 +62,7 @@ public class ListCommentsServlet extends HttpServlet {
       numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
-          CommentConstants.MAX_NUM_COMMENTS + ".");
+      System.err.println(e.getMessage());
       return;
     }
 
@@ -74,9 +72,7 @@ public class ListCommentsServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
-          CommentConstants.MAX_NUM_BLOGS + ".");
+      System.err.println(e.getMessage());
       return;
     }    
 
@@ -102,8 +98,7 @@ public class ListCommentsServlet extends HttpServlet {
         pageNum = ValidateInput.getUserNum(request, "page-number", 0,      
             maxPageNum);
       } catch (Exception e) {
-        System.err.println("Please enter an integer between 0 to " + 
-            maxPageNum + ".");
+        System.err.println(e.getMessage());
         return;
       }
       
