@@ -159,6 +159,7 @@ function deleteAllComments(blogNumber) {
   const queryString = '/delete-comment?blog-number=' + blogNumber;
   fetch(queryString, {method: 'POST'}).then(() => {
     loadCommentSection(blogNumber);
+    drawChart();
   });
 }
 
@@ -463,10 +464,13 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
               "'s comment form.");
           event.preventDefault();
           sendFormData(blogNumber, commentForm, imageUploadUrl);
-          fetchBlobstoreUrlAndUpdateForm(blogNumber);
           resetBlogCommentInputs(blogNumber);
-          loadCommentSection(blogNumber);
         }, false);        
+      })
+      .then(() => {
+        fetchBlobstoreUrlAndUpdateForm(blogNumber);
+        loadCommentSection(blogNumber);
+        drawChart();
       });
 }
 
@@ -586,7 +590,7 @@ function loadBlogpostComment(numberOfBlogs) {
 /** 
  * Toggles the blog post comment section. 
  * 
- * @param numberOfBlogs the number of blogs to create a comment section for 
+ * @param blogNumber the blog this div is associated with 
  */
 function toggleBlogpostComment(blogNumber) {
   var commentSection = document.getElementById("comment-section-" + blogNumber);
