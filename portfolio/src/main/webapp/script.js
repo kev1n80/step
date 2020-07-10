@@ -71,7 +71,7 @@ function getComment(numComments, pageNumber, blogNumber) {
     }
     else {
       commentListElement.appendChild(
-          createCommentElement("There are no comments", "", ""));
+          createPElement("There are no comments"));
     }
   });
 }
@@ -481,6 +481,7 @@ function resetBlogCommentInputs(blogNumber) {
 
   document.getElementById(nameInputId).value = '';
   document.getElementById(contentInputId).value = '';  
+  document.getElementById(imageInputId).value = '';
 }
 
 /** 

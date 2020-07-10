@@ -232,6 +232,10 @@ p {
   margin: 0 0 0 1.5rem;
 }
 
+.comment img {
+  max-width: 100%;
+}
+
 /* pagination */
 .pagination {
   margin: 5px;
