@@ -283,6 +283,10 @@ p {
   align-self: stretch;
 }
 
+.blog-form-loading {
+  display: inline-flex;
+}
+
 .chart {
   margin: 15px 15px 0 15px;
   padding-bottom: 15px;  
