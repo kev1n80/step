@@ -62,7 +62,12 @@ public class ListCommentsServlet extends HttpServlet {
       numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }
 
@@ -72,7 +77,12 @@ public class ListCommentsServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+      
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }    
 
@@ -98,8 +108,13 @@ public class ListCommentsServlet extends HttpServlet {
         pageNum = ValidateInput.getUserNum(request, "page-number", 0,      
             maxPageNum);
       } catch (Exception e) {
-        System.err.println(e.getMessage());
-        return;
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+      
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
+      return;
       }
       
       int commentStartIndex = (pageNum - 1) * numComments;

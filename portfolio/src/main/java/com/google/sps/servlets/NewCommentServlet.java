@@ -55,7 +55,12 @@ public class NewCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }    
 
@@ -65,7 +70,12 @@ public class NewCommentServlet extends HttpServlet {
       content = ValidateInput.getUserString(request, "content", 1, 
           MAX_COMMENT_LEN);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }   
 
@@ -74,7 +84,12 @@ public class NewCommentServlet extends HttpServlet {
       name = ValidateInput.getUserString(request, "name", 1, 
           MAX_NAME_LEN);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }       
 
@@ -89,8 +104,8 @@ public class NewCommentServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
 
-    // Redirect back to the blog section in the HTML page.
-    String url = "/index.html#blog-post-" + blogNumber;
-    response.sendRedirect(url);
+    // return a message saying that this function call was successful
+    response.setContentType("application/json;");
+    response.getWriter().println(CommentConstants.SUCCESS);
   }
 }
