@@ -633,6 +633,7 @@ function toggleDisplay(id) {
 /** Creates a chart and adds it to the page. */
 function drawChart() {
   fetch("/num-comments").then(response => response.json()).then((numComments) => {
+    const chartDivElement =  document.getElementById('chart-container');
     const numCommentsLength = numComments.length;
     if (numCommentsLength > 0) {
       console.log("Creating Chart: Number of Comments per Blog ");
@@ -653,11 +654,11 @@ function drawChart() {
         'height':400
       };
 
-      let chart = new google.visualization.PieChart(
-          document.getElementById('chart-container'));
+      let chart = new google.visualization.PieChart(chartDivElement);
       chart.draw(data, options);      
     } else {
       console.log("There is no chart, because there are no comments.");
+      chartDivElement.innerHTML = '';
     }
   })
 }
