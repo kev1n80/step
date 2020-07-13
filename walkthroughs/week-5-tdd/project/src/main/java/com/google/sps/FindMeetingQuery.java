@@ -17,7 +17,23 @@ package com.google.sps;
 import java.util.Collection;
 
 public final class FindMeetingQuery {
+  /**
+   * Returns all possible time periods throughout the day when everybody 
+   * attending this meeting is available. 
+   * 
+   * @param events All events that are occurring  
+   * @param request The meeting that the user wants to create and find time for 
+   * @return an array of TimeRange objects
+   */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     throw new UnsupportedOperationException("TODO: Implement this method.");
+
+    // check if duration of meeting is longer than a day or a negative number
+
+    // remove all events that do no have the attendees from the meeting request 
+
+    // sort the events that are remaining
+
+    // Find the time available for this meeting
   }
 }
