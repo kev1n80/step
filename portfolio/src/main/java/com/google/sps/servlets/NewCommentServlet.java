@@ -53,9 +53,6 @@ public class NewCommentServlet extends HttpServlet {
   throws IOException {
     
     Enumeration<String> paramNames = request.getParameterNames();
-    // for (String myVar : paramNames) {
-    //   System.err.println(myVar);
-    // }
 
     while(paramNames.hasMoreElements()) {
       System.err.println(paramNames.nextElement());

@@ -367,15 +367,13 @@ function createInputTextElement(nameAttribute, minLengthAttribute,
  * Creates an <input> element of type submit containing a class. 
  *
  * @param classAttribute the name of the class of this div element
- * @param onclickAttribute the name of the js function that will execute when 
  * this element is clicked
  * @return return an input element of type submit
  */
-function createInputSubmitElement(classAttribute, onclickAttribute) {
+function createInputSubmitElement(classAttribute) {
   const inputElement = document.createElement('input');
   inputElement.setAttribute("type", "submit");
   inputElement.setAttribute("class", classAttribute);
-  inputElement.setAttribute("onclick", onclickAttribute);
   return inputElement;
 }
 
@@ -442,10 +440,7 @@ function createCommentForm(blogNumber) {
   formElement.appendChild(createInputFileElement("image", imageInputClass, 
       imageInputId));
 
-  // const submitOnclickAttribute = "fetchBlobstoreUrlAndUpdateForm('" + 
-  //     blogNumber + "')";
-  formElement.appendChild(createInputSubmitElement("blog-form-submit", 
-      ""));
+  formElement.appendChild(createInputSubmitElement("blog-form-submit"));
 
   // Will display when the comments section is waiting to retreive new data
   const loadingClass = "blog-form-loading";
@@ -482,19 +477,12 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
       .then((imageUploadUrl) => {
         console.log("Uploading blog " + blogNumber + 
             "'s comment form.");
+
+        const loadingId = "blog-form-" + blogNumber + "-loading";
+        toggleDisplay(loadingId);
+
         sendFormData(blogNumber, commentForm, imageUploadUrl);
         resetBlogCommentInputs(blogNumber);
-
-        const loadingId = "blog-form-" + blogNumber + "-loading";
-        toggleDisplay(loadingId);
-      })
-      .then(() => {
-        console.log("Reloading comments and chart");
-        loadCommentSection(blogNumber);
-
-        // Remove loading message
-        const loadingId = "blog-form-" + blogNumber + "-loading";
-        toggleDisplay(loadingId);
       });
 }
 
@@ -528,6 +516,7 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
 
   data.append("blog-number", blogNumber);
 
+  // prints the input name and value
   for (var key of data.entries()) {
     console.log(key[0] + ', ' + key[1]);
   }
@@ -537,6 +526,13 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
   req.onload = function() {
     if (req.status == 200) {
       console.log("Uploaded!");
+
+      console.log("Reloading comments and chart");
+      loadCommentSection(blogNumber);
+
+      // Remove loading message
+      const loadingId = "blog-form-" + blogNumber + "-loading";
+      toggleDisplay(loadingId);
     } else {
       console.log("Error " + req.status + " occurred when trying to upload your file.<br \/>");
     }
@@ -644,7 +640,8 @@ function drawChart() {
       data.addColumn('string', 'Blog Number');
       data.addColumn('number', 'Number of Comments');
       
-      console.log("Length of numComments is " + numCommentsLength);
+      console.log("Pie chart will display " + numCommentsLength) + 
+          " blog's comments";
       for (let i = 0; i < numCommentsLength; i++) {
         data.addRow(["Blog " + (i + 1), numComments[i]]);
       }
