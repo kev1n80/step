@@ -442,8 +442,8 @@ function createCommentForm(blogNumber) {
   formElement.appendChild(createInputFileElement("image", imageInputClass, 
       imageInputId));
 
-  const submitOnclickAttribute = "fetchBlobstoreUrlAndUpdateForm('" + 
-      blogNumber + "')";
+  // const submitOnclickAttribute = "fetchBlobstoreUrlAndUpdateForm('" + 
+  //     blogNumber + "')";
   formElement.appendChild(createInputSubmitElement("blog-form-submit", 
       ""));
 
@@ -495,7 +495,6 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
         // Remove loading message
         const loadingId = "blog-form-" + blogNumber + "-loading";
         toggleDisplay(loadingId);
-        
       });
 }
 
@@ -542,7 +541,6 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
       console.log("Error " + req.status + " occurred when trying to upload your file.<br \/>");
     }
   };
-
   req.send(data);
 }
 
@@ -565,7 +563,6 @@ function createButtonElement(typeAttribute, onclickAttribute, text,
   buttonElement.setAttribute("class", classAttribute);
   return buttonElement;
 }
-
 
 /** 
  * Creates a comments section. 
@@ -608,7 +605,6 @@ function loadBlogpostComment(numberOfBlogs) {
   for (var i = 1; i < numberOfBlogs + 1; i++) {
     console.log("Creating comment section for blog post" + i);
     createCommentSection(i);
-    fetchBlobstoreUrlAndUpdateForm(i);
   }
 }
 
