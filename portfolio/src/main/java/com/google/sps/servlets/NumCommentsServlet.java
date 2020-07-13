@@ -54,24 +54,28 @@ public class NumCommentsServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    List<Integer> numComments = new ArrayList<> ();
+    List<int[]> numComments = new ArrayList<> ();
 
     // Receive input from the pagination to see which comments to show
     FetchOptions entitiesLimit = FetchOptions.Builder.withLimit(COMMENT_LIMIT);
     double totalComments = results.countEntities(entitiesLimit);
 
     if (totalComments > 0) {
-      int countSize = 0;
+      int currentNumber = 0;
       Iterable<Entity> entitiesList = results.asIterable();
       for (Entity entity : entitiesList) {
         int blogNumber = Math.toIntExact((long) entity.getProperty("blogNumber"));
-        if (blogNumber > countSize) {
-          numComments.add(1);
-          countSize = countSize + 1;
+        // blogNumber will always be > 0
+        if (blogNumber != currentNumber) {
+          int[] blogInfo = {blogNumber, 1};
+          numComments.add(blogInfo);
+          currentNumber = blogNumber;
         } else {
-          int index = blogNumber - 1;
-          Integer count = numComments.get(index) + 1;
-          numComments.set(index, count);
+          int index = numComments.size() - 1;
+          int[] blogInfo = numComments.get(index);
+          blogInfo[1] = blogInfo[1] + 1;
+          // numComments.set(index, count);
+
         }
       }
     }

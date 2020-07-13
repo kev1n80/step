@@ -643,7 +643,8 @@ function drawChart() {
       console.log("Pie chart will display " + numCommentsLength) + 
           " blog's comments";
       for (let i = 0; i < numCommentsLength; i++) {
-        data.addRow(["Blog " + (i + 1), numComments[i]]);
+        blogInfo = numComments[i];
+        data.addRow(["Blog " + blogInfo[0], blogInfo[1]]);
       }
 
       const options = {
