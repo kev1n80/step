@@ -56,23 +56,28 @@ function getComment(numComments, pageNumber, blogNumber) {
 
   console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
-    const commentListElement = document.getElementById('comment-container-' + 
-        blogNumber);
+    if (typeof comments == "string") {
+      console.log(comments);
+      window.alert(comments);
+    } else {
+      const commentListElement = document.getElementById('comment-container-' + 
+          blogNumber);
 
-    console.log("Printing comments for blog post " + blogNumber);
-    commentListElement.innerHTML = '';
-    commentListElement.appendChild(createHElement("Comments", 4));
-    if (comments.length > 0) {
-      comments.forEach((comment) => {
+      console.log("Printing comments for blog post " + blogNumber);
+      commentListElement.innerHTML = '';
+      commentListElement.appendChild(createHElement("Comments", 4));
+      if (comments.length > 0) {
+        comments.forEach((comment) => {
+          commentListElement.appendChild(
+              createCommentElement(comment.content, comment.name, 
+                  comment.imageURL));
+        })
+      }
+      else {
         commentListElement.appendChild(
-            createCommentElement(comment.content, comment.name, 
-                comment.imageURL));
-      })
-    }
-    else {
-      commentListElement.appendChild(
-          createCommentElement("There are no comments", "", ""));
-    }
+            createCommentElement("There are no comments", "", ""));
+      }      
+    }  
   });
 }
 
@@ -154,9 +159,16 @@ function createHElement(text, rank) {
 function deleteAllComments(blogNumber) {
   console.log("Deleting all comments");
   const queryString = '/delete-comment?blog-number=' + blogNumber;
-  fetch(queryString, {method: 'POST'}).then(() => {
-    loadCommentSection(blogNumber);
-  });
+  fetch(queryString, {method: 'POST'}).then(response => response.json())
+      .then((response) => {
+        if (response == "success") {
+          loadCommentSection(blogNumber);
+        } else {
+          // if it doesn't return a success then it is an error
+          console.log(response);
+          window.alert(response);
+        }
+      });
 }
 
 /** 
@@ -171,14 +183,20 @@ function loadCommentPagination(numComments, blogNumber) {
 
   console.log("Fetching pagination for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((maxPageNum) => {
-    const paginationElement = document.getElementById('comment-pagination-' + 
-        blogNumber);
-    console.log("Loading pagination w/ " + numComments + " comments per page");
-    paginationElement.innerHTML = '';
+    if (typeof maxPageNum == "number") {
+      const paginationElement = document.getElementById('comment-pagination-' + 
+          blogNumber);
+      console.log("Loading pagination w/ " + numComments + " comments per page");
+      paginationElement.innerHTML = '';
       for (let i = 1; i < maxPageNum + 1; i++) {
         paginationElement.appendChild(
             createPageElement(i, numComments, blogNumber));
       }
+    } else {
+      // return a message saying that this function call was successful
+      response.setContentType("application/json;");
+      response.getWriter().println(maxPageNum);
+    }
   });
 }
 
@@ -451,19 +469,25 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
       .then((response) => {
         return response.text();
       }).then((imageUploadUrl) => {
-        const formId = "blog-" + blogNumber + "-form";
+        if (typeof imageUploadUrl == "String") {
+          const formId = "blog-" + blogNumber + "-form";
 
-        const commentForm = document.getElementById(formId);
-        
-        commentForm.addEventListener('submit', function(event) {
-          console.log("Adding event listener to blog " + blogNumber + 
-              "'s comment form.");
-          event.preventDefault();
-          sendFormData(blogNumber, commentForm, imageUploadUrl);
-          fetchBlobstoreUrlAndUpdateForm(blogNumber);
-          resetBlogCommentInputs(blogNumber);
-          loadCommentSection(blogNumber);
-        }, false);        
+          const commentForm = document.getElementById(formId);
+          
+          commentForm.addEventListener('submit', function(event) {
+            console.log("Adding event listener to blog " + blogNumber + 
+                "'s comment form.");
+            event.preventDefault();
+            sendFormData(blogNumber, commentForm, imageUploadUrl);
+            fetchBlobstoreUrlAndUpdateForm(blogNumber);
+            resetBlogCommentInputs(blogNumber);
+            loadCommentSection(blogNumber);
+          }, false);    
+        } else {
+          // if it doesn't return a success then it is an error
+          console.log(imageUploadUrl);
+          window.alert(imageUploadUrl);
+        }    
       });
 }
 

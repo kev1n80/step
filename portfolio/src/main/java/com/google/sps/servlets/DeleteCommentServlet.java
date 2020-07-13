@@ -24,6 +24,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import com.google.sps.utility.CommentConstants;
 import com.google.sps.utility.ValidateInput;
@@ -57,7 +58,12 @@ public class DeleteCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }
 
@@ -76,5 +82,9 @@ public class DeleteCommentServlet extends HttpServlet {
     }
     
     datastore.delete(commentKeys);
+
+    // return a message saying that this function call was successful
+    response.setContentType("application/json;");
+    response.getWriter().println(CommentConstants.SUCCESS);
   }
 }

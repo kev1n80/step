@@ -16,6 +16,7 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.gson.Gson;
 import com.google.sps.utility.ValidateInput;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -41,7 +42,13 @@ public class BlobstoreUploadUrlServlet extends HttpServlet {
       servletUrl = ValidateInput.getUserString(request, "servlet-url", 1, 
           SERVLET_URL_MAX_CHAR);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String[] error = new String[]{errorMessage};
+      String jsonErrorMessage = new Gson().toJson(error);
+      response.setContentType("application/json;");
+      response.getWriter().println(error);
       return;
     }    
     System.err.println("Servlet url: " + servletUrl);
