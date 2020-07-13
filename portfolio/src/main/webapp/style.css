@@ -5,17 +5,6 @@
   width: 100%;
 }
 
-/* pagination */
-#pagination a {
-  padding: 3px;
-  margin: 5px;
-}
-
-#pagination a:hover {
-  font-size: 150%;
-  color: blue;
-}
-
 h1 {
   margin-top: 0;
 }
@@ -26,6 +15,14 @@ h2 {
 
 h3 {
   margin-top: 0;
+}
+
+h4 {
+  margin: 0;
+}
+
+h5 {
+  margin: 0;
 }
 
 p {
@@ -172,11 +169,12 @@ p {
 .blogs {
   display: inline-flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .blog-post {
   display: inline-block;
-  margin: 15px;
+  margin: 15px 15px 0 15px;
   padding: 10px;
   border: 2px black solid;
   background-color: beige;
@@ -184,6 +182,92 @@ p {
 
 .blog-post p {
   text-align: left;
+}
+
+.toggle-comment-section {
+  border: none;
+  width: 10%;
+}
+
+.toggle-comment-section input {
+  width: 50%;
+}
+
+.comment-section {
+  display: none;
+  flex-direction: column;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  margin: 0 15px;
+  align-items: center;
+  background: white;
+  border: solid black;
+  border-width: 0 2px 2px 2px;
+}
+
+.blog-select-comments-num {
+  align-self: flex-start;
+  margin: 1rem 0 0 1rem;
+}
+
+.comment-container {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+}
+
+/* comment */
+.comment {
+  margin: 5px;
+  display: inline-flex;
+}
+
+.comment p {
+  margin: 0 0 0 1.5rem;
+}
+
+/* pagination */
+.pagination {
+  margin: 5px;
+}
+
+.pagination a {
+  padding: 3px;
+  margin: 5px;
+}
+
+.pagination a:hover {
+  font-size: 150%;
+  color: blue;
+}
+
+/* form */
+.blog-form {
+  width: 50%;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.blog-form label {
+  margin-bottom: 10px;
+}
+
+.blog-form-label {
+  align-self: center;
+  font-weight: bold;
+}
+
+.blog-form input {
+  margin-bottom: 10px;
+}
+
+.blog-form-content {
+  align-self: stretch;
+}
+
+.blog-form-submit {
+  align-self: stretch;
 }
 
 /* phones */
@@ -220,6 +304,19 @@ p {
   .about-container img {
     height: 250px;
   }  
+
+  /* blog section */
+  .comment-section {
+    padding: 15px;
+  }
+
+  .comment-container {
+    margin: 15px 0;
+  }
+
+  .blog-form input {
+    font-size: .8rem;
+  }  
 }
 
 /* bigger devices */
@@ -236,6 +333,14 @@ p {
   h3 {
     margin-bottom: 10px;
     font-size: 2rem;
+  }
+
+  h4 {
+    font-size: 30px;
+  }
+
+  h5 {
+    font-size: 25px;
   }
 
   p {
@@ -297,13 +402,45 @@ p {
   }
 
   /* blog section */
-  /* .blog-post p {
-    width: 800px;
-  } */
+  .comment-section {
+    padding: 36px;
+  }
+
+  .blog-select-comments-num {
+    font-size: 20px;
+  }
+
+  .comment-container {
+    margin: 30px 0;
+  } 
+
+  .blog-form-label {
+    font-size: 30px;
+  }
+
+  .blog-form input {
+    font-size: 1rem;
+  }
+
+  .pagination a {
+    font-size: 25px;
+  }
+
+  .pagination a:hover {
+    font-size: 27px;
+  }
+
+  .delete-comment-button {
+    font-size: 1rem;
+  }
 }
 
 @media (min-width: 870px) {
   .blog-post p {
     width: 800px;
   }
+
+  .comment-section {
+    width: 800px;
+  }  
 }  

@@ -37,6 +37,7 @@ import com.google.sps.utility.ValidateInput;
 public class NewCommentServlet extends HttpServlet {
 
   static final int MAX_COMMENT_LEN = 264;
+  static final int MAX_NAME_LEN = 50; 
 
   /** 
    * Creates comment entities and stores them in the datastore
@@ -54,35 +55,57 @@ public class NewCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
-          CommentConstants.MAX_NUM_BLOGS + ".");
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }    
 
-    String comment;
+    String content;
 
     try {
-      comment = ValidateInput.getUserString(request, "comment", 1, 
+      content = ValidateInput.getUserString(request, "content", 1, 
           MAX_COMMENT_LEN);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
-          MAX_COMMENT_LEN + ".");
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
-    }    
+    }   
+
+    String name;
+    try {
+      name = ValidateInput.getUserString(request, "name", 1, 
+          MAX_NAME_LEN);
+    } catch (Exception e) {
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
+      return;
+    }       
 
     long timestamp = System.currentTimeMillis();
 
     Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("content", comment);
+    commentEntity.setProperty("content", content);
     commentEntity.setProperty("timestamp", timestamp);
     commentEntity.setProperty("blogNumber", blogNumber);
+    commentEntity.setProperty("name", name);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
 
-    // Redirect back to the HTML page.
-    response.sendRedirect("/index.html");
+    // return a message saying that this function call was successful
+    response.setContentType("application/json;");
+    response.getWriter().println(CommentConstants.SUCCESS);
   }
 }

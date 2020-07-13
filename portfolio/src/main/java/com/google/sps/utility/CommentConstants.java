@@ -18,5 +18,5 @@ package com.google.sps.utility;
 public final class CommentConstants {
   public static final int MAX_NUM_COMMENTS = 5;
   public static final int MAX_NUM_BLOGS = 5;
+  public static final String SUCCESS = "success";
 } 
-

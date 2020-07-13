@@ -55,9 +55,12 @@ public class PaginationCommentServlet extends HttpServlet {
       numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
-          CommentConstants.MAX_NUM_COMMENTS + ".");
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }    
     
@@ -67,9 +70,12 @@ public class PaginationCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
-          CommentConstants.MAX_NUM_BLOGS + ".");
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }    
 

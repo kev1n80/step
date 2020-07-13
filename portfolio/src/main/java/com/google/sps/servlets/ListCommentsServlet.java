@@ -62,9 +62,12 @@ public class ListCommentsServlet extends HttpServlet {
       numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
-          CommentConstants.MAX_NUM_COMMENTS + ".");
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }
 
@@ -74,9 +77,12 @@ public class ListCommentsServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please enter an integer between 1 to " + 
-          CommentConstants.MAX_NUM_BLOGS + ".");
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+      
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
       return;
     }    
 
@@ -102,10 +108,13 @@ public class ListCommentsServlet extends HttpServlet {
         pageNum = ValidateInput.getUserNum(request, "page-number", 0,      
             maxPageNum);
       } catch (Exception e) {
-        response.setContentType("text/html");
-        response.getWriter().println("Please enter an integer between 0 to " + 
-            maxPageNum + ".");
-        return;
+      String errorMessage = e.getMessage();
+      System.err.println(errorMessage);
+      
+      String jsonErrorMessage = new Gson().toJson(errorMessage);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonErrorMessage);
+      return;
       }
       
       int commentStartIndex = (pageNum - 1) * numComments;
@@ -119,8 +128,9 @@ public class ListCommentsServlet extends HttpServlet {
         long id = entity.getKey().getId();
         String content = (String) entity.getProperty("content");
         long timestamp = (long) entity.getProperty("timestamp");
+        String name = (String) entity.getProperty("name");
 
-        Comment comment = new Comment(id, content, timestamp);
+        Comment comment = new Comment(id, content, timestamp, name);
         comments.add(comment);
       }
     }
