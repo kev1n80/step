@@ -62,12 +62,7 @@ public class ListCommentsServlet extends HttpServlet {
       numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }
 
@@ -77,12 +72,7 @@ public class ListCommentsServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-      
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
 
@@ -108,13 +98,8 @@ public class ListCommentsServlet extends HttpServlet {
         pageNum = ValidateInput.getUserNum(request, "page-number", 0,      
             maxPageNum);
       } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-      
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
-      return;
+        ValidateInput.createErrorMessage(e, response);
+        return;
       }
       
       int commentStartIndex = (pageNum - 1) * numComments;
@@ -129,8 +114,9 @@ public class ListCommentsServlet extends HttpServlet {
         String content = (String) entity.getProperty("content");
         long timestamp = (long) entity.getProperty("timestamp");
         String name = (String) entity.getProperty("name");
+        String imageURL = (String) entity.getProperty("image");
 
-        Comment comment = new Comment(id, content, timestamp, name);
+        Comment comment = new Comment(id, content, timestamp, name, imageURL);
         comments.add(comment);
       }
     }
