@@ -56,8 +56,11 @@ function getComment(numComments, pageNumber, blogNumber) {
 
   console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
-    if (typeof comments == "string") {
-      console.log(comments);
+    console.log(comments);
+    const isError = isErrorMessage(comments);
+    console.log("error: " + isError);    
+    if (isError) {
+      console.log("Servlet error: " + comments);
       window.alert(comments);
     } else {
       const commentListElement = document.getElementById('comment-container-' + 
@@ -72,12 +75,11 @@ function getComment(numComments, pageNumber, blogNumber) {
               createCommentElement(comment.content, comment.name, 
                   comment.imageURL));
         })
-      }
-      else {
+      } else {
         commentListElement.appendChild(
             createCommentElement("There are no comments", "", ""));
-      }      
-    }  
+      }
+    }
   });
 }
 
@@ -157,16 +159,24 @@ function createHElement(text, rank) {
  * @param blogNumber the blog whose comments will be deleted
  */
 function deleteAllComments(blogNumber) {
-  console.log("Deleting all comments");
+  console.log("Deleting all comments for blog " + blogNumber);
   const queryString = '/delete-comment?blog-number=' + blogNumber;
-  fetch(queryString, {method: 'POST'}).then(response => response.json())
-      .then((response) => {
-        if (response == "success") {
-          loadCommentSection(blogNumber);
-        } else {
+  fetch(queryString, {
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'}
+    })
+      .then(response => response.json())
+      .then((status) => {
+        console.log("response json: " + status);
+        const isError = isErrorMessage(status);
+        if (isError) {
           // if it doesn't return a success then it is an error
-          console.log(response);
-          window.alert(response);
+          console.log(status);
+          window.alert(status);
+        } else {
+          loadCommentSection(blogNumber);      
         }
       });
 }
@@ -183,7 +193,12 @@ function loadCommentPagination(numComments, blogNumber) {
 
   console.log("Fetching pagination for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((maxPageNum) => {
-    if (typeof maxPageNum == "number") {
+    const isError = isErrorMessage(maxPageNum);
+    if (isError) {
+      // if it doesn't return a success then it is an error
+      console.log(response);
+      window.alert(response);
+    } else {
       const paginationElement = document.getElementById('comment-pagination-' + 
           blogNumber);
       console.log("Loading pagination w/ " + numComments + " comments per page");
@@ -192,14 +207,10 @@ function loadCommentPagination(numComments, blogNumber) {
         paginationElement.appendChild(
             createPageElement(i, numComments, blogNumber));
       }
-    } else {
-      // return a message saying that this function call was successful
-      response.setContentType("application/json;");
-      response.getWriter().println(maxPageNum);
     }
   });
 }
-
+      
 /** 
  * Creates an elemet that represents a page. 
  *
@@ -467,9 +478,14 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
   console.log("fetching blobstore url.");
   fetch(queryString)
       .then((response) => {
-        return response.text();
+        return response.json();
       }).then((imageUploadUrl) => {
-        if (typeof imageUploadUrl == "String") {
+        // check to see if an error was returned
+        const isError = isErrorMessage(imageUploadUrl);
+        if (isError) {
+          console.log(imageUploadUrl);
+          window.alert(imageUploadUrl);
+        } else {
           const formId = "blog-" + blogNumber + "-form";
 
           const commentForm = document.getElementById(formId);
@@ -483,18 +499,24 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
             resetBlogCommentInputs(blogNumber);
             loadCommentSection(blogNumber);
           }, false);    
-        } else {
-          // if it doesn't return a success then it is an error
-          console.log(imageUploadUrl);
-          window.alert(imageUploadUrl);
         }    
       });
 }
 
 /** 
+ * Returns a boolean stating whether a String is an error message or not
+ *
+ * @param str a string that will be checked to see if it is an error message
+ */
+function isErrorMessage(str) {
+  const errorIntro = "Servlet Error:";
+  return (typeof str == "string" && str.length > 14 && str.substring(0,14) == errorIntro);
+}
+
+/** 
  * Resets the input elements in the blog comment section 
  *
- * @param blogNumber the blog the input elements are associated with
+= * @param blogNumber the blog the input elements are associated with
  */
 function resetBlogCommentInputs(blogNumber) {
   console.log("Reseting blog " + blogNumber + "'s comment form.")
@@ -516,7 +538,7 @@ function resetBlogCommentInputs(blogNumber) {
  */
 function sendFormData(blogNumber, commentForm, imageUploadUrl) {
   console.log("Sending blog " + blogNumber + "'s form data to servlet.");
-  var data = new FormData(commentForm);
+  const data = new FormData(commentForm);
 
   data.append("blog-number", blogNumber);
 
@@ -524,7 +546,7 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
     console.log(key[0] + ', ' + key[1]);
   }
 
-  var req = new XMLHttpRequest();
+  const req = new XMLHttpRequest();
   req.open("POST", imageUploadUrl, true);
   req.onload = function() {
     if (req.status == 200) {

@@ -44,7 +44,6 @@ import com.google.sps.utility.ValidateInput;
 public class ListCommentsServlet extends HttpServlet {
 
   static final int COMMENT_LIMIT = 30;
-  static final int URL_LIMIT = 35;
 
   /** 
    * Will only show the 30 most recent comments.
@@ -63,12 +62,7 @@ public class ListCommentsServlet extends HttpServlet {
       numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }
 
@@ -78,12 +72,7 @@ public class ListCommentsServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
 
@@ -109,13 +98,8 @@ public class ListCommentsServlet extends HttpServlet {
         pageNum = ValidateInput.getUserNum(request, "page-number", 0,      
             maxPageNum);
       } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
-      return;
+        ValidateInput.createErrorMessage(e, response);
+        return;
       }
       
       int commentStartIndex = (pageNum - 1) * numComments;

@@ -53,11 +53,8 @@ public class NewCommentServlet extends HttpServlet {
   throws IOException {
     
     Enumeration<String> paramNames = request.getParameterNames();
-    // for (String myVar : paramNames) {
-    //   System.err.println(myVar);
-    // }
 
-    while(paramNames.hasMoreElements()) {
+    while (paramNames.hasMoreElements()) {
       System.err.println(paramNames.nextElement());
     }
 
@@ -67,12 +64,7 @@ public class NewCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
 
@@ -81,12 +73,7 @@ public class NewCommentServlet extends HttpServlet {
       content = ValidateInput.getUserString(request, "content", 1, 
           MAX_COMMENT_LEN);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }   
 
@@ -95,12 +82,7 @@ public class NewCommentServlet extends HttpServlet {
       name = ValidateInput.getUserString(request, "name", 1, 
           MAX_NAME_LEN);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }       
 
@@ -108,12 +90,7 @@ public class NewCommentServlet extends HttpServlet {
     try {
       imageURL = ValidateInput.getUploadedFileUrl(request, "image");
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }     
 
@@ -131,6 +108,7 @@ public class NewCommentServlet extends HttpServlet {
 
     // return a message saying that this function call was successful
     response.setContentType("application/json;");
-    response.getWriter().println(CommentConstants.SUCCESS);
+    String jsonStatus = new Gson().toJson(CommentConstants.SUCCESS);
+    response.getWriter().println(jsonStatus);
   }
 }

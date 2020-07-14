@@ -58,12 +58,7 @@ public class DeleteCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String jsonErrorMessage = new Gson().toJson(errorMessage);
-      response.setContentType("application/json;");
-      response.getWriter().println(jsonErrorMessage);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }
 
@@ -85,6 +80,7 @@ public class DeleteCommentServlet extends HttpServlet {
 
     // return a message saying that this function call was successful
     response.setContentType("application/json;");
-    response.getWriter().println(CommentConstants.SUCCESS);
+    String jsonStatus = new Gson().toJson(CommentConstants.SUCCESS);
+    response.getWriter().println(jsonStatus);
   }
 }

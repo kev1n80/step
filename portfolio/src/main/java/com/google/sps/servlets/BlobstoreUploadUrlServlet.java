@@ -42,20 +42,15 @@ public class BlobstoreUploadUrlServlet extends HttpServlet {
       servletUrl = ValidateInput.getUserString(request, "servlet-url", 1, 
           SERVLET_URL_MAX_CHAR);
     } catch (Exception e) {
-      String errorMessage = e.getMessage();
-      System.err.println(errorMessage);
-
-      String[] error = new String[]{errorMessage};
-      String jsonErrorMessage = new Gson().toJson(error);
-      response.setContentType("application/json;");
-      response.getWriter().println(error);
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
     System.err.println("Servlet url: " + servletUrl);
     String uploadUrl = blobstoreService.createUploadUrl(servletUrl); 
     System.err.println("Upload url: " + uploadUrl);
 
-    response.setContentType("text/html");
-    response.getWriter().println(uploadUrl);
+    response.setContentType("application/json;");
+    String jsonUploadUrl = new Gson().toJson(uploadUrl);
+    response.getWriter().println(jsonUploadUrl);
   }
 }
