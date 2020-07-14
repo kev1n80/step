@@ -51,6 +51,7 @@ public final class ValidateInput {
    */
   static String getUserInput(HttpServletRequest request, String parameter, 
       int min, int max) throws Exception {
+
     if (max < min) {
       String error = "Max (" + max + ") must be greater than or equal to" + 
           " Min (" + min + ")";

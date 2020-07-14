@@ -80,6 +80,8 @@ function getComment(numComments, pageNumber, blogNumber) {
             createCommentElement("There are no comments", "", ""));
       }
     }
+
+    
   });
 }
 
