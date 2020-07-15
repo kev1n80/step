@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
 /**
  * Adds a random greeting to the page.
  */
@@ -77,8 +80,13 @@ function getComment(numComments, pageNumber, blogNumber) {
         })
       } else {
         commentListElement.appendChild(
-            createCommentElement("There are no comments", "", ""));
-      }
+            createCommentElement(comment.content, comment.name, 
+                comment.imageURL));
+      })
+    }
+    else {
+      commentListElement.appendChild(
+          createPElement("There are no comments"));
     }
 
     
@@ -529,6 +537,7 @@ function resetBlogCommentInputs(blogNumber) {
 
   document.getElementById(nameInputId).value = '';
   document.getElementById(contentInputId).value = '';  
+  document.getElementById(imageInputId).value = '';
 }
 
 /** 
@@ -641,4 +650,36 @@ function toggleBlogpostComment(blogNumber) {
     console.log("Comment section " + blogNumber + " is now visible.")
     commentSection.style.display = "inline-flex";
   }
+}
+
+/** Creates a chart and adds it to the page. */
+function drawChart() {
+  fetch("/num-comments").then(response => response.json()).then((numComments) => {
+    const numCommentsLength = Object.keys(numComments).length;
+    console.log("Number of keys: " + numCommentsLength);
+    if (numCommentsLength > 0) {
+      console.log("Creating Chart: Number of Comments per Blog ");
+      const data = new google.visualization.DataTable();
+      data.addColumn('string', 'Blog Number');
+      data.addColumn('number', 'Number of Comments');
+      
+      console.log("Length of numComments is " + numCommentsLength);
+
+      for (const [key, value] of Object.entries(numComments)) {
+        data.addRow(["Blog " + key, value]);
+      }
+
+      const options = {
+        'title': 'Number of Comments per Blog',
+        'width':500,
+        'height':400
+      };
+
+      const chart = new google.visualization.PieChart(
+          document.getElementById('chart-container'));
+      chart.draw(data, options);      
+    } else {
+      console.log("There is no chart, because there are no comments.");
+    }
+  })
 }
