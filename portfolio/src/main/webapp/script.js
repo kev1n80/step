@@ -80,16 +80,9 @@ function getComment(numComments, pageNumber, blogNumber) {
         })
       } else {
         commentListElement.appendChild(
-            createCommentElement(comment.content, comment.name, 
-                comment.imageURL));
-      })
+            createPElement("There are no comments"));
+      }
     }
-    else {
-      commentListElement.appendChild(
-          createPElement("There are no comments"));
-    }
-
-    
   });
 }
 
