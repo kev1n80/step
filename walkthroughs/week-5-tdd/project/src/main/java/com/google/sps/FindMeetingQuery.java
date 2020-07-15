@@ -42,6 +42,7 @@ public final class FindMeetingQuery {
     Collections.sort(events, new SortByTime());
 
     // Find the time available for this meeting
+    
     // go through the collection, store the beginning time and end time
     // skip through the other events with the same start time because of the 
     //  way that the collection is ordered
