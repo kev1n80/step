@@ -43,7 +43,7 @@ public class NumCommentsServlet extends HttpServlet {
    * @param request which contains data to retrieve comments
    * @param response
    * @return a list of the number of comments per blog post in the form of json 
-   * (ArrayList<Comment>)
+   *    (ArrayList<Comment>)
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

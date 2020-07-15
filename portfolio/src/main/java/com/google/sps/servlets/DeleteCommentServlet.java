@@ -42,10 +42,10 @@ public class DeleteCommentServlet extends HttpServlet {
 
   /**
    * Deletes comments from that Datastore based on the blog post the button the 
-   * user pressed is associated with.
+   *    user pressed is associated with.
    * 
    * @param request which contains data used to identify a comment in order to
-   * delete it
+   *    delete it
    * @param response
    */
   @Override

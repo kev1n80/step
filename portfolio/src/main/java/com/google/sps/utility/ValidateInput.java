@@ -169,7 +169,7 @@ public final class ValidateInput {
 
   /** 
    * Returns a URL that points to the uploaded file, or throw an exception if 
-   * the user didn't upload a file. 
+   *    the user didn't upload a file. 
    *
    * @param request the request received from the form that contains user input
    * @param parameter the name of the input parameter one is retreiving

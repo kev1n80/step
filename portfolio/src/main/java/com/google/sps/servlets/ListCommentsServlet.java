@@ -38,7 +38,7 @@ import com.google.sps.utility.ValidateInput;
 
 /** 
  * Servlet that creates comment objects from entities and returns the list of 
- * comment entities.
+ *    comment entities.
  */
 @WebServlet("/list-comments")
 public class ListCommentsServlet extends HttpServlet {
@@ -49,7 +49,7 @@ public class ListCommentsServlet extends HttpServlet {
   /** 
    * Will only show the 30 most recent comments.
    * Returns the comments associated with the page the user is on, which 
-   * is found based on their input.
+   *    is found based on their input.
    *
    * @param request which contains data to retrieve comments
    * @param response
