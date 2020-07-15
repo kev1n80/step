@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -54,30 +56,29 @@ public class NumCommentsServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    List<Integer> numComments = new ArrayList<> ();
+    Map<Integer, Integer> numComments = new HashMap<Integer, Integer> ();
 
     // Receive input from the pagination to see which comments to show
     FetchOptions entitiesLimit = FetchOptions.Builder.withLimit(COMMENT_LIMIT);
     double totalComments = results.countEntities(entitiesLimit);
 
     if (totalComments > 0) {
-      int countSize = 0;
+      int currentNumber = 0;
       Iterable<Entity> entitiesList = results.asIterable();
       for (Entity entity : entitiesList) {
-        int blogNumber = Math.toIntExact((long) entity.getProperty("blogNumber"));
-        if (blogNumber > countSize) {
-          numComments.add(1);
-          countSize = countSize + 1;
+        Integer blogNumber = Math.toIntExact((long) entity.getProperty("blogNumber"));
+        if (blogNumber != currentNumber) {
+          numComments.put(blogNumber, 1);
+          currentNumber = blogNumber;
         } else {
-          int index = blogNumber - 1;
-          Integer count = numComments.get(index) + 1;
-          numComments.set(index, count);
+          Integer count = numComments.get(currentNumber) + 1;
+          numComments.put(currentNumber, count);
         }
       }
     }
 
-    String jsonnumComments = new Gson().toJson(numComments);
+    String jsonNumComments = new Gson().toJson(numComments);
     response.setContentType("application/json;");
-    response.getWriter().println(jsonnumComments);
+    response.getWriter().println(jsonNumComments);
   }
 }

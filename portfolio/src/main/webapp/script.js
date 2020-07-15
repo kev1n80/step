@@ -602,7 +602,8 @@ function toggleBlogpostComment(blogNumber) {
 /** Creates a chart and adds it to the page. */
 function drawChart() {
   fetch("/num-comments").then(response => response.json()).then((numComments) => {
-    const numCommentsLength = numComments.length;
+    const numCommentsLength = Object.keys(numComments).length;
+    console.log("Number of keys: " + numCommentsLength);
     if (numCommentsLength > 0) {
       console.log("Creating Chart: Number of Comments per Blog ");
       const data = new google.visualization.DataTable();
@@ -610,8 +611,9 @@ function drawChart() {
       data.addColumn('number', 'Number of Comments');
       
       console.log("Length of numComments is " + numCommentsLength);
-      for (let i = 0; i < numCommentsLength; i++) {
-        data.addRow(["Blog " + (i + 1), numComments[i]]);
+
+      for (const [key, value] of Object.entries(numComments)) {
+        data.addRow(["Blog " + key, value]);
       }
 
       const options = {
