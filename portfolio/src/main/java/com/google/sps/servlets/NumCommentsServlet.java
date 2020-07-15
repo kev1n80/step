@@ -17,7 +17,9 @@ package com.google.sps.servlets;
 import java.io.IOException;
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +56,7 @@ public class NumCommentsServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    List<int[]> numComments = new ArrayList<> ();
+    Map<Integer, Integer> numComments = new HashMap<Integer, Integer> ();
 
     // Receive input from the pagination to see which comments to show
     FetchOptions entitiesLimit = FetchOptions.Builder.withLimit(COMMENT_LIMIT);
@@ -64,18 +66,13 @@ public class NumCommentsServlet extends HttpServlet {
       int currentNumber = 0;
       Iterable<Entity> entitiesList = results.asIterable();
       for (Entity entity : entitiesList) {
-        int blogNumber = Math.toIntExact((long) entity.getProperty("blogNumber"));
-        // blogNumber will always be > 0
+        Integer blogNumber = Math.toIntExact((long) entity.getProperty("blogNumber"));
         if (blogNumber != currentNumber) {
-          int[] blogInfo = {blogNumber, 1};
-          numComments.add(blogInfo);
+          numComments.put(blogNumber, 1);
           currentNumber = blogNumber;
         } else {
-          int index = numComments.size() - 1;
-          int[] blogInfo = numComments.get(index);
-          blogInfo[1] = blogInfo[1] + 1;
-          // numComments.set(index, count);
-
+          Integer count = numComments.get(currentNumber) + 1;
+          numComments.put(currentNumber, count);
         }
       }
     }

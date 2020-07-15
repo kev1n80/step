@@ -633,19 +633,18 @@ function toggleDisplay(id) {
 /** Creates a chart and adds it to the page. */
 function drawChart() {
   fetch("/num-comments").then(response => response.json()).then((numComments) => {
-    const chartDivElement =  document.getElementById('chart-container');
-    const numCommentsLength = numComments.length;
+    const numCommentsLength = Object.keys(numComments).length;
+    console.log("Number of keys: " + numCommentsLength);
     if (numCommentsLength > 0) {
       console.log("Creating Chart: Number of Comments per Blog ");
       const data = new google.visualization.DataTable();
       data.addColumn('string', 'Blog Number');
       data.addColumn('number', 'Number of Comments');
       
-      console.log("Pie chart will display " + numCommentsLength) + 
-          " blog's comments";
-      for (let i = 0; i < numCommentsLength; i++) {
-        blogInfo = numComments[i];
-        data.addRow(["Blog " + blogInfo[0], blogInfo[1]]);
+      console.log("Length of numComments is " + numCommentsLength);
+
+      for (const [key, value] of Object.entries(numComments)) {
+        data.addRow(["Blog " + key, value]);
       }
 
       const options = {
@@ -654,11 +653,11 @@ function drawChart() {
         'height':400
       };
 
-      let chart = new google.visualization.PieChart(chartDivElement);
+      const chart = new google.visualization.PieChart(
+          document.getElementById('chart-container'));
       chart.draw(data, options);      
     } else {
       console.log("There is no chart, because there are no comments.");
-      chartDivElement.innerHTML = '';
     }
   })
 }
