@@ -32,7 +32,6 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.sps.utility.CommentConstants;
 import com.google.sps.utility.ValidateInput;
 
-
 /** 
  * Servlet that receives input from the blog select input, which creates the 
  * pagination for the blog comments section.
@@ -56,7 +55,7 @@ public class PaginationCommentServlet extends HttpServlet {
       numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
     
@@ -66,7 +65,7 @@ public class PaginationCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
 

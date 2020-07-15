@@ -44,7 +44,6 @@ import com.google.sps.utility.ValidateInput;
 public class ListCommentsServlet extends HttpServlet {
 
   static final int COMMENT_LIMIT = 30;
-  static final int URL_LIMIT = 35;
 
   /** 
    * Will only show the 30 most recent comments.
@@ -63,7 +62,7 @@ public class ListCommentsServlet extends HttpServlet {
       numComments = ValidateInput.getUserNum(request, "num-comments", 1, 
           CommentConstants.MAX_NUM_COMMENTS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }
 
@@ -73,7 +72,7 @@ public class ListCommentsServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
 
@@ -99,7 +98,7 @@ public class ListCommentsServlet extends HttpServlet {
         pageNum = ValidateInput.getUserNum(request, "page-number", 0,      
             maxPageNum);
       } catch (Exception e) {
-        System.err.println(e.getMessage());
+        ValidateInput.createErrorMessage(e, response);
         return;
       }
       
