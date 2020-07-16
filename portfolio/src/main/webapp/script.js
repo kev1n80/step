@@ -80,16 +80,9 @@ function getComment(numComments, pageNumber, blogNumber) {
         })
       } else {
         commentListElement.appendChild(
-            createCommentElement(comment.content, comment.name, 
-                comment.imageURL));
-      })
+            createPElement("There are no comments", "", ""));
+      }
     }
-    else {
-      commentListElement.appendChild(
-          createPElement("There are no comments", "", ""));
-    }
-
-    
   });
 }
 
@@ -509,7 +502,8 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
   fetch(queryString)
       .then((response) => {
         return response.json();
-      }).then((imageUploadUrl) => {
+      })
+      .then((imageUploadUrl) => {
         // check to see if an error was returned
         const isError = isErrorMessage(imageUploadUrl);
         if (isError) {
@@ -524,6 +518,7 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
 
           sendFormData(blogNumber, commentForm, imageUploadUrl);
           resetBlogCommentInputs(blogNumber);
+        }
       });
 }
 
