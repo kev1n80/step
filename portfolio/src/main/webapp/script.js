@@ -634,8 +634,9 @@ function toggleDisplay(id) {
 function drawChart() {
   fetch("/num-comments").then(response => response.json()).then((numComments) => {
     const numCommentsLength = Object.keys(numComments).length;
-    console.log("Number of keys: " + numCommentsLength);
+    let chartElement = document.getElementById('chart-container');
     if (numCommentsLength > 0) {
+      chartElement.style.display = "block";
       console.log("Creating Chart: Number of Comments per Blog ");
       const data = new google.visualization.DataTable();
       data.addColumn('string', 'Blog Number');
@@ -654,9 +655,10 @@ function drawChart() {
       };
 
       const chart = new google.visualization.PieChart(
-          document.getElementById('chart-container'));
+          chartElement);
       chart.draw(data, options);      
     } else {
+      chartElement.style.display = "none";
       console.log("There is no chart, because there are no comments.");
     }
   })
