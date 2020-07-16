@@ -71,6 +71,7 @@ public final class IsIntersection implements Predicate<Event> {
 
   /**
    * Checks if an event shares an attendee with this class's attendees
+   * Time Complexity: O()
    *
    * @param other the other event we are comparing with
    * @return a boolean stating whether this event share an attendee with this 

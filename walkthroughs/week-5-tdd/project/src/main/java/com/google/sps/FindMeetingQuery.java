@@ -96,11 +96,6 @@ public final class FindMeetingQuery {
     if (start > prevEnd) {
       int availableDuration = start - prevEnd;
       if (availableDuration >= duration) {
-        System.err.println("Add Available Time");
-        System.err.println("endTime: " + prevEnd);
-        System.err.println("startTime: " + start);
-        System.err.println("availableDuration: " + availableDuration);
-        System.err.println("duration: " + duration);
         TimeRange availableTime = TimeRange.fromStartDuration(prevEnd, 
             availableDuration);
         availableTimes.add(availableTime);
@@ -119,7 +114,6 @@ public final class FindMeetingQuery {
    */
   public static Collection<TimeRange> timeAvailable(ArrayList<int[]> times, 
       int duration) {
-    System.err.println("TO TIME t: " + times.size());
     int endTime = TimeRange.START_OF_DAY;
     ArrayList<TimeRange> availableTimes = new ArrayList<TimeRange>();
     for (int[] time : times) {
@@ -129,21 +123,18 @@ public final class FindMeetingQuery {
       addAvailableTime(start, endTime, duration, availableTimes);
 
       endTime = end;
-      System.err.println("NEW endTime: " + endTime);
     }
 
     int endOfDay = TimeRange.END_OF_DAY + 1;
-    System.err.println("endTime: " + endTime);
-    System.err.println("endOfDay: " + endOfDay);
     addAvailableTime(endOfDay, endTime, duration, availableTimes);
 
-    System.err.println("Available Times size: " + availableTimes.size());
     return availableTimes;
   }
   
   /**
    * Returns an array with all of the events that meet the requirements set in 
    *    the predicate.
+   * Time Complexity: O(n^2 * ln(n))
    *
    * @param events the array of events that we are going to filter through
    * @param pred the predicate that will decide whether or not to keep an event
@@ -165,6 +156,7 @@ public final class FindMeetingQuery {
   /**
    * Returns all possible time periods throughout the day when everybody 
    * attending this meeting is available. 
+   * Time Complexity: O(n^2 * ln(n))
    * 
    * @param events All events that are occurring  
    * @param request The meeting that the user wants to create and find time for 
@@ -175,7 +167,6 @@ public final class FindMeetingQuery {
 
     // check if duration of meeting is longer than a day or a negative number
     int durationMeeting = Math.toIntExact(request.getDuration());
-    System.err.println("DURATION: " + durationMeeting);
     // long durationMeeting = request.getDuration();
     if (durationMeeting > 1440 || durationMeeting < 0) {
       System.err.println("EDGE: duration meeting out of scope");
@@ -191,41 +182,20 @@ public final class FindMeetingQuery {
     // Filter events input
     Event[] eventsArray = new Event[events.size()];
     eventsArray = events.toArray(eventsArray);
-    System.err.println("INITIAL e: " + eventsArray.length);
 
     // remove all events that do not have the attendees from the meeting request 
     Predicate<Event> isIntersection = new IsIntersection(request.getAttendees());
     eventsArray = includeEventIf(eventsArray, isIntersection);
-    System.err.println("PRED e: " + eventsArray.length);
-    // DELETE afterward
-    for (Event event : eventsArray) {
-      TimeRange tr = event.getWhen();
-      System.err.print("- (" + tr.start() + ", ");
-      System.err.print(tr.end() + ") \n");
-    }
 
     // sort the events that are remaining
     MergeSort<Event> merge = new MergeSort<Event>();
     merge.sort(eventsArray, new SortEventsByTime());
-    System.err.println("SORTED e: " + eventsArray.length);
-    // DELETE afterward
-    for (Event event : eventsArray) {
-      TimeRange tr = event.getWhen();
-      System.err.print("- (" + tr.start() + ", ");
-      System.err.print(tr.end() + ") \n");
-    }
+
     // Get the times of the event and remove events with the same times
     // (but keep the longest duration)
     ArrayList<int[]> times = new ArrayList<int[]>();
     try {
-      times = eventToTime(eventsArray);
-      System.err.println("TO TIME e: " + eventsArray.length);
-      System.err.println("TO TIME t: " + times.size());
-      
-      for (int[] time : times) {
-        System.err.print("- (" + time[0] + ", ");
-        System.err.print(time[1] + ") \n");
-      }
+      times = eventToTime(eventsArray);  
     } catch (Exception e) {
       String errorMessage = "Error: " + e.getMessage();
       System.err.println(errorMessage);
@@ -234,8 +204,6 @@ public final class FindMeetingQuery {
     // Compare filtered events input to meeting request
     // Find the time available for this meeting
     Collection<TimeRange> availableTimes = timeAvailable(times, durationMeeting);
-    System.err.println("AVAILABLE: " + availableTimes.size());
-    System.err.println();
     return availableTimes;
   }
 }

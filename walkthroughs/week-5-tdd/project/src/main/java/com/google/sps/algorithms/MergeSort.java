@@ -23,14 +23,21 @@ import java.util.Comparator;
  */
 public final class MergeSort<T> {
 
-  public void merge(T[] events, Comparator<T> eventComp,
+  /**
+   * Merges two subarrays into an ordered array
+   * Time Complexity: O(n)
+   * 
+   * @param array the arraylist we will order 
+   * @param comp the comparator that  
+   * @param left the leftmost index of the sub array
+   * @param middle the middle index of the subarray
+   * @param right the right index of the subarray
+   */
+  public void merge(T[] array, Comparator<T> comp,
       int left, int middle, int right) {
     // prep by creating the two subarrays
-    // int sub1Size = middle - left + 1;
-    // int sub2Size = right - middle; 
-
-    T[] sub1 = Arrays.copyOfRange(events, left, middle);
-    T[] sub2 = Arrays.copyOfRange(events, middle + 1, right);
+    T[] sub1 = Arrays.copyOfRange(array, left, middle);
+    T[] sub2 = Arrays.copyOfRange(array, middle + 1, right);
 
     int sub1Size = sub1.length;
     int sub2Size = sub2.length; 
@@ -42,43 +49,59 @@ public final class MergeSort<T> {
     while (i < sub1Size && j < sub2Size) {
       T first = sub1[i];
       T second = sub2[j];
-      int order = eventComp.compare(first, second);
+      int order = comp.compare(first, second);
       if (order < 0) {
         i++;
-        events[startIndex] = first;
+        array[startIndex] = first;
       } else {
         j++;
-        events[startIndex] = second;
+        array[startIndex] = second;
       }
       startIndex++;
     }
 
     // merge the leftover
     while (i < sub1Size) {
-      events[startIndex] = sub1[i];
+      array[startIndex] = sub1[i];
       i++;
       startIndex++;
     }
 
     while (j < sub2Size) {
-      events[startIndex] = sub2[j];
+      array[startIndex] = sub2[j];
       j++;
       startIndex++;
     }
   }
 
-  public void sortArray(T[] events, Comparator<T> eventComp, 
+  /**
+   * Sort an array using merge sort
+   * Time complexity: O(n * ln(n))
+   *
+   * @param array the array to order
+   * @param comp the comparator to define the ordering
+   * @param left the left index of the subarray
+   * @param right the right index of the subarray
+   */
+  public void sortArray(T[] array, Comparator<T> comp, 
       int left, int right) {
     if (left < right) {
       int middle = left + (right - left) / 2; 
-      sortArray(events, eventComp, left, middle);
-      sortArray(events, eventComp, middle + 1, right);
+      sortArray(array, comp, left, middle);
+      sortArray(array, comp, middle + 1, right);
 
-      merge(events, eventComp, left, middle, right);
+      merge(array, comp, left, middle, right);
     }
   }
 
-  public void sort(T[] events, Comparator<T> eventComp) {
-    sortArray(events, eventComp, 0, events.length - 1);
+  /**
+   * Sort an array using merge sort
+   * Time complexity: O(n * ln(n))
+   *
+   * @param array the array to order
+   * @param comp the comparator to define the ordering
+   */
+  public void sort(T[] array, Comparator<T> comp) {
+    sortArray(array, comp, 0, array.length - 1);
   }
 } 
