@@ -14,9 +14,95 @@
 
 package com.google.sps;
 
+import com.google.sps.algorithms.BinarySearch;
+import com.google.sps.algorithms.MergeSort;
+import com.google.sps.comparator.SortEventsByTime;
+import com.google.sps.predicate.IsDisjoint;
+import com.google.sps.TimeRange;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
 
 public final class FindMeetingQuery {
+  /**
+   * Turns an ordered Collection of events (by time) into an ArrayList of an 
+   *    array that contains the start and end time.
+   * Also, it will remove all of the events with the same start time but will 
+   *    keep the event with the greatest duration (or latest end time) of those 
+   *    with the same start 
+   *    time.
+   * Time Complexity: O(n)
+   *
+   * @param events the Collection of events that will turn into its start and 
+   *     end time
+   * @return An ArrayList that contains an array of start and end times, and 
+   *     will not have any events with the same start time.
+   */
+  public static ArrayList<int[]> eventToTime(Collection<Event> events) 
+      throws Exception {
+    Event[] eventsArray = (Event[]) events.toArray();
+    ArrayList<int[]> eventTimes = new ArrayList<>();
+    TimeRange previousEventTR = TimeRange.fromStartDuration(0, 0);
+
+    for (int i = 0; i < eventsArray.length; i ++) {
+      Event event = eventsArray[i];
+
+      TimeRange eventTR = event.getWhen();
+      int eventTRStart = eventTR.start();
+      int previousEventTRStart = previousEventTR.start();
+      if (eventTRStart > previousEventTRStart) {
+        int[] eventTime = new int[] {eventTR.start(), eventTR.end()};
+        eventTimes.add(eventTime);
+      } else if (eventTRStart == previousEventTRStart) {
+        // if they are the same, keep the one with the longer duration
+        if (eventTR.duration() > previousEventTR.duration()) {
+          int lastIndex = eventTimes.size() - 1;
+          int[] eventTime = new int[] {eventTR.start(), eventTR.end()};
+          eventTimes.add(lastIndex, eventTime);
+        }
+      } else {
+        // This means that this event started before the previous event.
+        // This means that the Collection of events is not ordered
+        throw new Exception("The input of Collection is not in order");
+      }
+    }
+
+    return eventTimes;
+  }
+
+  /**
+   * Returns the times available to have the meeting of a certain duration
+   * Time Complexity: O(n)
+   *
+   * @param times the times when 
+   */
+  public static Collection<TimeRange> timeAvailable(ArrayList<int[]> times, 
+      int duration) {
+    int timesSize = times.size();
+    int endTime = 0;
+    Collection<TimeRange> availableTimes = new ArrayList<TimeRange>();
+    for (int i = 0; i < timesSize; i++) {
+      int[] time = times.get(i);
+      int start = time[0];
+      int end = time[1];
+
+      if (start > endTime) {
+        int availableDuration = start - endTime;
+        if (availableDuration >= duration) {
+          TimeRange availableTime = TimeRange.fromStartDuration(endTime, 
+              availableDuration);
+          availableTimes.add(availableTime);
+        }
+        endTime = end;
+      }
+    }
+
+    return availableTimes;
+  }
+
   /**
    * Returns all possible time periods throughout the day when everybody 
    * attending this meeting is available. 
@@ -29,153 +115,24 @@ public final class FindMeetingQuery {
     throw new UnsupportedOperationException("TODO: Implement this method.");
 
     // check if duration of meeting is longer than a day or a negative number
-    int durationMeeting = request.getDuration();
+    int durationMeeting = Math.toIntExact(request.getDuration());
     if (durationMeeting > 1440 || durationMeeting < 1) {
       // enter error message or throw Exception
     }
     
     // remove all events that do no have the attendees from the meeting request 
     Predicate<Event> isDisjoint = new IsDisjoint(request.getAttendees());
-    events.RemoveIf(isDisjoint);
+    events.removeIf(isDisjoint);
 
     // sort the events that are remaining
-    Collections.sort(events, new SortByTime());
+    MergeSort.sort(events, new SortEventsByTime());
+
+    // Get the times of the event and remove events with the same times
+    // (but keep the longest duration)
+    ArrayList<int[]> times = eventToTime(events);
 
     // Find the time available for this meeting
-    
-    // go through the collection, store the beginning time and end time
-    // skip through the other events with the same start time because of the 
-    //  way that the collection is ordered
+    Collection<TimeRange> availableTimes = timeAvailable(times, durationMeeting);
+    return availableTimes;
   }
 }
-
-/**
- * Represents an object that check if two Collection<String> are disjoint 
- */
-public class IsDisjoint implements Predicate<Event> {
-  private final Collection<String> attendees;
-
-  public isDisjoint(Collection<String> attendees) {
-    this.attendees = attendees;
-  }
-
-  /**
-   * Checks if an event shares an attendee with this class's attendees
-   *
-   * @param other the other event we are comparing with
-   * @return a boolean stating whether this event share an attendee with this 
-   * class's collection of attendees
-   */
-  @Override
-  public boolean isEqual(Event other) {
-    Set<String> eventAttendees = other.getAttendees();
-    int eventAttendeesSize = eventAttendees.size();
-    int attendeesSize = attendees.size();
-    boolean contains = false;
-    if (eventAttendeesSize > attendeesSize) {
-      contains = hasIntersection(eventAttendees, attendees, eventAttendeesSize);
-    } else {
-      contains = hasIntersection(attendees, eventAttendees, attendeesSize);
-    }
-
-    return contains;
-  }
-
-  /**
-   * Checks if there is an intersection between the two collections.
-   * Returns true when there is an element that both collections have
-   * in common.
-   * Time Complexity: O(n*ln(n))
-   * 
-   * @param first the bigger collection of the two
-   * @param second the smaller collection of the two
-   * @return a boolean that says wether there is an intersection or not
-   */ 
-  public boolean hasIntersection(Collection<String> first, 
-      Collection<String> second, int firstSize) {
-    Collections.sort(first, String.CASE_INSENSITIVE_ORDER);
-      
-    Iterator secondIterator = second.iterator();
-    String[] firstArray = first.toArray();
-    for (String str : secondIterator) {
-      // enter binary search
-      int index = BinarySearch.binarySearchString(firstArray, 0, 
-          firstSize - 1, str);
-      if (index >= 0) {
-        return true;
-      }
-    }
-
-    return false;     
-  }
-}
-
-/** 
-  * Sorts events in ascending order based on their start time, and if they
-  * the same start time the one with the longest duration is first.
-  */
-public class SortbyTime implements Comparator<Event> { 
-  /** 
-  * Used for sorting in ascending order of start time and for a tie breaker
-  * in descending order of duration.
-  * Time complexity: O(1)
-  *
-  * @param first the first event
-  * @param second the second event
-  * @return an int that states the ordering of the two events
-  */
-  @Override
-  public int compare(Event first, Event second) { 
-    TimeRange firstTime = first.getWhen();
-    TimeRange secondTime = second.getWhen();
-    int order = TimeRange.ORDER_BY_START(firstTime, secondTime);
-    /** 
-    * if they start at the same time, the one with the longest duration 
-    * shows up first
-    */
-    if (order == 0) {
-      return - Long.compare(firstTime.duration(), secondTime.duration());
-    }
-    return order;
-  } 
-} 
-
-/**
- * Represents a binary search object
- */
-class BinarySearch { 
-    /**
-     * Returns the index of the target in the specified array or return -1
-     * Time complexity: O(ln(n))
-     *
-     * @param stringArr the array that we are searching through
-     * @param left the leftmost index of the subarray we are currently in
-     * @param right the rightmost index of the subarray we are currently in
-     * @param target the strign we are looking for
-     * @return the index of the target or -1
-     */
-    public static int binarySearchString(String[] stringArr, int left, 
-        int right, String target) { 
-        if (r >= left) { 
-            int mid = left + (right - left) / 2; 
-  
-            // If the element is present at the 
-            // middle itself 
-            if (stringArr[mid] == target) 
-                return mid; 
-  
-            // If element is smaller than mid, then 
-            // it can only be present in left subarray 
-            if (stringArr[mid] > target) 
-                return binarySearch(stringArr, left, mid - 1, target); 
-  
-            // Else the element can only be present 
-            // in right subarray 
-            return binarySearch(stringArr, mid + 1, right, target); 
-        } 
-  
-        // We reach here when element is not present 
-        // in array 
-        return -1; 
-    } 
-} 
