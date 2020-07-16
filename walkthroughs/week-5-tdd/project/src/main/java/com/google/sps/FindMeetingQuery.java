@@ -162,7 +162,7 @@ public final class FindMeetingQuery {
    * @param request The meeting that the user wants to create and find time for 
    * @return an array of TimeRange objects
    */
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) throws Exception{
     // throw new UnsupportedOperationException("TODO: Implement this method.");
 
     // check if duration of meeting is longer than a day or a negative number
@@ -199,6 +199,7 @@ public final class FindMeetingQuery {
     } catch (Exception e) {
       String errorMessage = "Error: " + e.getMessage();
       System.err.println(errorMessage);
+      throw e;
     }
 
     // Compare filtered events input to meeting request
