@@ -22,6 +22,7 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -50,6 +51,7 @@ public final class ValidateInput {
    */
   static String getUserInput(HttpServletRequest request, String parameter, 
       int min, int max) throws Exception {
+
     if (max < min) {
       String error = "Max (" + max + ") must be greater than or equal to" + 
           " Min (" + min + ")";
@@ -169,7 +171,7 @@ public final class ValidateInput {
 
   /** 
    * Returns a URL that points to the uploaded file, or throw an exception if 
-   * the user didn't upload a file. 
+   *    the user didn't upload a file. 
    *
    * @param request the request received from the form that contains user input
    * @param parameter the name of the input parameter one is retreiving
@@ -211,5 +213,21 @@ public final class ValidateInput {
     } catch (MalformedURLException e) {
       return imagesService.getServingUrl(options);
     }
+  }
+
+  /** 
+   * Creates an error message 
+   * 
+   * @param e the exception that was thrown
+   * @param response the response that we are going to add an error message to
+   */
+  public static void createErrorMessage(Exception e, 
+      HttpServletResponse response) throws IOException {
+    String errorMessage = "Servlet Error: " + e.getMessage();
+    System.err.println(errorMessage);
+
+    String jsonErrorMessage = new Gson().toJson(errorMessage);
+    response.setContentType("application/json;");
+    response.getWriter().println(jsonErrorMessage);
   }
 } 

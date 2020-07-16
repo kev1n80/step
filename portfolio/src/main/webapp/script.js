@@ -59,14 +59,26 @@ function getComment(numComments, pageNumber, blogNumber) {
 
   console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
-    const commentListElement = document.getElementById('comment-container-' + 
-        blogNumber);
+    console.log(comments);
+    const isError = isErrorMessage(comments);
+    console.log("error: " + isError);    
+    if (isError) {
+      console.log("Servlet error: " + comments);
+      window.alert(comments);
+    } else {
+      const commentListElement = document.getElementById('comment-container-' + 
+          blogNumber);
 
-    console.log("Printing comments for blog post " + blogNumber);
-    commentListElement.innerHTML = '';
-    commentListElement.appendChild(createHElement("Comments", 4));
-    if (comments.length > 0) {
-      comments.forEach((comment) => {
+      console.log("Printing comments for blog post " + blogNumber);
+      commentListElement.innerHTML = '';
+      commentListElement.appendChild(createHElement("Comments", 4));
+      if (comments.length > 0) {
+        comments.forEach((comment) => {
+          commentListElement.appendChild(
+              createCommentElement(comment.content, comment.name, 
+                  comment.imageURL));
+        })
+      } else {
         commentListElement.appendChild(
             createCommentElement(comment.content, comment.name, 
                 comment.imageURL));
@@ -76,6 +88,8 @@ function getComment(numComments, pageNumber, blogNumber) {
       commentListElement.appendChild(
           createPElement("There are no comments", "", ""));
     }
+
+    
   });
 }
 
@@ -159,11 +173,26 @@ function createHElement(text, rank) {
  * @param blogNumber the blog whose comments will be deleted
  */
 function deleteAllComments(blogNumber) {
-  console.log("Deleting all comments");
+  console.log("Deleting all comments for blog " + blogNumber);
   const queryString = '/delete-comment?blog-number=' + blogNumber;
-  fetch(queryString, {method: 'POST'}).then(() => {
-    loadCommentSection(blogNumber);
-  });
+  fetch(queryString, {
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'}
+    })
+      .then(response => response.json())
+      .then((status) => {
+        console.log("response json: " + status);
+        const isError = isErrorMessage(status);
+        if (isError) {
+          // if it doesn't return a success then it is an error
+          console.log(status);
+          window.alert(status);
+        } else {
+          loadCommentSection(blogNumber);      
+        }
+      });
 }
 
 /** 
@@ -178,17 +207,24 @@ function loadCommentPagination(numComments, blogNumber) {
 
   console.log("Fetching pagination for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((maxPageNum) => {
-    const paginationElement = document.getElementById('comment-pagination-' + 
-        blogNumber);
-    console.log("Loading pagination w/ " + numComments + " comments per page");
-    paginationElement.innerHTML = '';
+    const isError = isErrorMessage(maxPageNum);
+    if (isError) {
+      // if it doesn't return a success then it is an error
+      console.log(response);
+      window.alert(response);
+    } else {
+      const paginationElement = document.getElementById('comment-pagination-' + 
+          blogNumber);
+      console.log("Loading pagination w/ " + numComments + " comments per page");
+      paginationElement.innerHTML = '';
       for (let i = 1; i < maxPageNum + 1; i++) {
         paginationElement.appendChild(
             createPageElement(i, numComments, blogNumber));
       }
+    }
   });
 }
-
+      
 /** 
  * Creates an elemet that represents a page. 
  *
@@ -472,24 +508,39 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
   console.log("fetching blobstore url.");
   fetch(queryString)
       .then((response) => {
-        return response.text();
-      })
-      .then((imageUploadUrl) => {
-        console.log("Uploading blog " + blogNumber + 
-            "'s comment form.");
+        return response.json();
+      }).then((imageUploadUrl) => {
+        // check to see if an error was returned
+        const isError = isErrorMessage(imageUploadUrl);
+        if (isError) {
+          console.log(imageUploadUrl);
+          window.alert(imageUploadUrl);
+        } else {
+          console.log("Uploading blog " + blogNumber + 
+              "'s comment form.");
 
-        const loadingId = "blog-form-" + blogNumber + "-loading";
-        toggleDisplay(loadingId);
+          const loadingId = "blog-form-" + blogNumber + "-loading";
+          toggleDisplay(loadingId);
 
-        sendFormData(blogNumber, commentForm, imageUploadUrl);
-        resetBlogCommentInputs(blogNumber);
+          sendFormData(blogNumber, commentForm, imageUploadUrl);
+          resetBlogCommentInputs(blogNumber);
       });
+}
+
+/** 
+ * Returns a boolean stating whether a String is an error message or not
+ *
+ * @param str a string that will be checked to see if it is an error message
+ */
+function isErrorMessage(str) {
+  const errorIntro = "Servlet Error:";
+  return (typeof str == "string" && str.length > 14 && str.substring(0,14) == errorIntro);
 }
 
 /** 
  * Resets the input elements in the blog comment section 
  *
- * @param blogNumber the blog the input elements are associated with
+= * @param blogNumber the blog the input elements are associated with
  */
 function resetBlogCommentInputs(blogNumber) {
   console.log("Reseting blog " + blogNumber + "'s comment form.")
@@ -512,7 +563,7 @@ function resetBlogCommentInputs(blogNumber) {
  */
 function sendFormData(blogNumber, commentForm, imageUploadUrl) {
   console.log("Sending blog " + blogNumber + "'s form data to servlet.");
-  var data = new FormData(commentForm);
+  const data = new FormData(commentForm);
 
   data.append("blog-number", blogNumber);
 
@@ -521,7 +572,7 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
     console.log(key[0] + ', ' + key[1]);
   }
 
-  var req = new XMLHttpRequest();
+  const req = new XMLHttpRequest();
   req.open("POST", imageUploadUrl, true);
   req.onload = function() {
     if (req.status == 200) {

@@ -45,7 +45,7 @@ public class NumCommentsServlet extends HttpServlet {
    * @param request which contains data to retrieve comments
    * @param response
    * @return a list of the number of comments per blog post in the form of json 
-   * (ArrayList<Comment>)
+   *    (ArrayList<Comment>)
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -55,7 +55,7 @@ public class NumCommentsServlet extends HttpServlet {
     
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
-
+    
     // key is the blogNumber and value is the number of comments for that blog
     Map<Integer, Integer> numComments = new HashMap<Integer, Integer> ();
 
@@ -76,8 +76,8 @@ public class NumCommentsServlet extends HttpServlet {
       }
     }
 
-    String jsonnumComments = new Gson().toJson(numComments);
+    String jsonNumComments = new Gson().toJson(numComments);
     response.setContentType("application/json;");
-    response.getWriter().println(jsonnumComments);
+    response.getWriter().println(jsonNumComments);
   }
 }

@@ -54,7 +54,7 @@ public class NewCommentServlet extends HttpServlet {
     
     Enumeration<String> paramNames = request.getParameterNames();
 
-    while(paramNames.hasMoreElements()) {
+    while (paramNames.hasMoreElements()) {
       System.err.println(paramNames.nextElement());
     }
 
@@ -64,7 +64,7 @@ public class NewCommentServlet extends HttpServlet {
       blogNumber = ValidateInput.getUserNum(request, "blog-number", 1, 
           CommentConstants.MAX_NUM_BLOGS);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
 
@@ -73,7 +73,7 @@ public class NewCommentServlet extends HttpServlet {
       content = ValidateInput.getUserString(request, "content", 1, 
           MAX_COMMENT_LEN);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }   
 
@@ -82,7 +82,7 @@ public class NewCommentServlet extends HttpServlet {
       name = ValidateInput.getUserString(request, "name", 1, 
           MAX_NAME_LEN);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }       
 
@@ -90,7 +90,7 @@ public class NewCommentServlet extends HttpServlet {
     try {
       imageURL = ValidateInput.getUploadedFileUrl(request, "image");
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }     
 
@@ -106,8 +106,9 @@ public class NewCommentServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
 
-    // Redirect back to the blog section in the HTML page.
-    String url = "/index.html#blog-post-" + blogNumber;
-    response.sendRedirect(url);
+    // return a message saying that this function call was successful
+    response.setContentType("application/json;");
+    String jsonStatus = new Gson().toJson(CommentConstants.SUCCESS);
+    response.getWriter().println(jsonStatus);
   }
 }

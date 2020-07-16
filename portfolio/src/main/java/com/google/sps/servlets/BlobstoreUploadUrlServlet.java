@@ -16,6 +16,7 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.gson.Gson;
 import com.google.sps.utility.ValidateInput;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -25,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Returns a URL that allows the user to upload a file to  
- * Blobstore. 
+ *    Blobstore. 
  */
 @WebServlet("/blobstore-upload-url")
 public class BlobstoreUploadUrlServlet extends HttpServlet {
@@ -41,14 +42,15 @@ public class BlobstoreUploadUrlServlet extends HttpServlet {
       servletUrl = ValidateInput.getUserString(request, "servlet-url", 1, 
           SERVLET_URL_MAX_CHAR);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      ValidateInput.createErrorMessage(e, response);
       return;
     }    
     System.err.println("Servlet url: " + servletUrl);
     String uploadUrl = blobstoreService.createUploadUrl(servletUrl); 
     System.err.println("Upload url: " + uploadUrl);
 
-    response.setContentType("text/html");
-    response.getWriter().println(uploadUrl);
+    response.setContentType("application/json;");
+    String jsonUploadUrl = new Gson().toJson(uploadUrl);
+    response.getWriter().println(jsonUploadUrl);
   }
 }
