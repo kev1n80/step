@@ -86,7 +86,7 @@ function getComment(numComments, pageNumber, blogNumber) {
     }
     else {
       commentListElement.appendChild(
-          createPElement("There are no comments"));
+          createPElement("There are no comments", "", ""));
     }
 
     
@@ -105,7 +105,7 @@ function createCommentElement(content, name, imageURL) {
 
   const mainElement = createDivElement("comment-main", "");
   mainElement.appendChild(createHElement(name, 5));
-  mainElement.appendChild(createPElement(content));
+  mainElement.appendChild(createPElement(content, "", ""));
   divElement.appendChild(mainElement)
 
   divElement.appendChild(createImgElement(imageURL, name + "'s uploaded image"));
@@ -128,11 +128,15 @@ function createListElement(text) {
  * Creates a <p> element containing text. 
  *
  * @param text the text that will be displayed
+ * @param classAttribute the name of the class of this p element
+ * @param idAttribute the name of the id of this p element 
  * @return returns a p element with the text
  */
-function createPElement(text) {
+function createPElement(text, classAttribute, idAttribute) {
   const pElement = document.createElement('p');
   pElement.innerText = text;
+  pElement.setAttribute("class", classAttribute);
+  pElement.setAttribute("id", idAttribute);
   return pElement;
 }
 
@@ -251,6 +255,7 @@ function createPageElement(pageNumber, numComments, blogNumber) {
 function loadCommentSection(blogNumber) {
   console.log("Loading blog " + blogNumber + "'s comment section.");
   const numComments = document.getElementById("num-comments-" + blogNumber).value;
+  drawChart();
   getComment(numComments, 1, blogNumber);
   loadCommentPagination(numComments, blogNumber);
 }
@@ -398,6 +403,7 @@ function createInputTextElement(nameAttribute, minLengthAttribute,
  * Creates an <input> element of type submit containing a class. 
  *
  * @param classAttribute the name of the class of this div element
+ * this element is clicked
  * @return return an input element of type submit
  */
 function createInputSubmitElement(classAttribute) {
@@ -471,6 +477,17 @@ function createCommentForm(blogNumber) {
       imageInputId));
 
   formElement.appendChild(createInputSubmitElement("blog-form-submit"));
+
+  // Will display when the comments section is waiting to retreive new data
+  const loadingClass = "blog-form-loading";
+  const loadingId = "blog-form-" + blogNumber + "-loading";
+  const loadingPElement = createPElement("Loading...", loadingClass, loadingId);
+  formElement.appendChild(loadingPElement);
+
+  formElement.addEventListener('submit', function(event) {
+    event.preventDefault();
+    fetchBlobstoreUrlAndUpdateForm(blogNumber);
+  }, false);
   
   return formElement;
 }
@@ -485,6 +502,9 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
   const servletUrl = "/new-comment";
   const queryString = "/blobstore-upload-url?servlet-url=" + servletUrl;
 
+  const formId = "blog-" + blogNumber + "-form";
+  const commentForm = document.getElementById(formId);
+
   console.log("fetching blobstore url.");
   fetch(queryString)
       .then((response) => {
@@ -496,20 +516,14 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
           console.log(imageUploadUrl);
           window.alert(imageUploadUrl);
         } else {
-          const formId = "blog-" + blogNumber + "-form";
+          console.log("Uploading blog " + blogNumber + 
+              "'s comment form.");
 
-          const commentForm = document.getElementById(formId);
-          
-          commentForm.addEventListener('submit', function(event) {
-            console.log("Adding event listener to blog " + blogNumber + 
-                "'s comment form.");
-            event.preventDefault();
-            sendFormData(blogNumber, commentForm, imageUploadUrl);
-            fetchBlobstoreUrlAndUpdateForm(blogNumber);
-            resetBlogCommentInputs(blogNumber);
-            loadCommentSection(blogNumber);
-          }, false);    
-        }    
+          const loadingId = "blog-form-" + blogNumber + "-loading";
+          toggleDisplay(loadingId);
+
+          sendFormData(blogNumber, commentForm, imageUploadUrl);
+          resetBlogCommentInputs(blogNumber);
       });
 }
 
@@ -553,6 +567,7 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
 
   data.append("blog-number", blogNumber);
 
+  // prints the input name and value
   for (var key of data.entries()) {
     console.log(key[0] + ', ' + key[1]);
   }
@@ -562,11 +577,17 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
   req.onload = function() {
     if (req.status == 200) {
       console.log("Uploaded!");
+
+      console.log("Reloading comments and chart");
+      loadCommentSection(blogNumber);
+
+      // Remove loading message
+      const loadingId = "blog-form-" + blogNumber + "-loading";
+      toggleDisplay(loadingId);
     } else {
       console.log("Error " + req.status + " occurred when trying to upload your file.<br \/>");
     }
   };
-
   req.send(data);
 }
 
@@ -589,7 +610,6 @@ function createButtonElement(typeAttribute, onclickAttribute, text,
   buttonElement.setAttribute("class", classAttribute);
   return buttonElement;
 }
-
 
 /** 
  * Creates a comments section. 
@@ -630,34 +650,44 @@ function createCommentSection(blogNumber) {
  */
 function loadBlogpostComment(numberOfBlogs) {
   for (var i = 1; i < numberOfBlogs + 1; i++) {
-    console.log("Creating comment section for blog post " + i);
+    console.log("Creating comment section for blog post" + i);
     createCommentSection(i);
-    fetchBlobstoreUrlAndUpdateForm(i);
   }
 }
 
 /** 
  * Toggles the blog post comment section. 
  * 
- * @param numberOfBlogs the number of blogs to create a comment section for 
+ * @param blogNumber the blog this div is associated with 
  */
 function toggleBlogpostComment(blogNumber) {
-  var commentSection = document.getElementById("comment-section-" + blogNumber);
-  if (commentSection.style.display === "inline-flex") {
-    console.log("Comment section " + blogNumber + " is now hidden.")
-    commentSection.style.display = "none";
+  let commentSectionId = "comment-section-" + blogNumber;
+  toggleDisplay(commentSectionId);
+}
+
+/** 
+ * Toggles the display of an element. 
+ * 
+ * @param id used to get an element with this id
+ */
+function toggleDisplay(id) {
+  let element = document.getElementById(id);
+  if (element.style.display === "inline-flex") {
+    console.log("Element with id " + id + " is now hidden.")
+    element.style.display = "none";
   } else {
-    console.log("Comment section " + blogNumber + " is now visible.")
-    commentSection.style.display = "inline-flex";
-  }
+    console.log("Element with id " + id + " is now visible.")
+    element.style.display = "inline-flex";
+  }  
 }
 
 /** Creates a chart and adds it to the page. */
 function drawChart() {
   fetch("/num-comments").then(response => response.json()).then((numComments) => {
     const numCommentsLength = Object.keys(numComments).length;
-    console.log("Number of keys: " + numCommentsLength);
+    let chartElement = document.getElementById('chart-container');
     if (numCommentsLength > 0) {
+      chartElement.style.display = "block";
       console.log("Creating Chart: Number of Comments per Blog ");
       const data = new google.visualization.DataTable();
       data.addColumn('string', 'Blog Number');
@@ -676,9 +706,10 @@ function drawChart() {
       };
 
       const chart = new google.visualization.PieChart(
-          document.getElementById('chart-container'));
+          chartElement);
       chart.draw(data, options);      
     } else {
+      chartElement.style.display = "none";
       console.log("There is no chart, because there are no comments.");
     }
   })
