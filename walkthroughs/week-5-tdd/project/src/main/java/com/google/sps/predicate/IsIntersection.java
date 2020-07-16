@@ -27,10 +27,10 @@ import java.util.Set;
 /**
  * Represents an object that check if two Collection<String> are disjoint 
  */
-public final class IsDisjoint implements Predicate<Event> {
+public final class IsIntersection implements Predicate<Event> {
   private final Collection<String> attendees;
 
-  public IsDisjoint(Collection<String> attendees) {
+  public IsIntersection(Collection<String> attendees) {
     this.attendees = attendees;
   }
 
@@ -46,10 +46,16 @@ public final class IsDisjoint implements Predicate<Event> {
    */ 
   public boolean hasIntersection(Collection<String> first, 
       Collection<String> second, int firstSize) {
-    String[] firstArray = (String[]) first.toArray();
-    MergeSort.sort(firstArray, String.CASE_INSENSITIVE_ORDER);
-      
-    String[] secondArray = (String[]) second.toArray();
+    // Sort the first Array
+    String[] firstArray = new String[first.size()];
+    firstArray = first.toArray(firstArray);
+
+    MergeSort<String> merge = new MergeSort<String>();
+    merge.sort(firstArray, String.CASE_INSENSITIVE_ORDER);
+    
+    // iterate through the second array
+    String[] secondArray = new String[second.size()];
+    secondArray = second.toArray(secondArray);
     
     for (String str : secondArray) {
       // enter binary search
@@ -75,13 +81,13 @@ public final class IsDisjoint implements Predicate<Event> {
     Set<String> eventAttendees = other.getAttendees();
     int eventAttendeesSize = eventAttendees.size();
     int attendeesSize = attendees.size();
-    boolean contains = false;
+    boolean contains;
     if (eventAttendeesSize > attendeesSize) {
       contains = hasIntersection(eventAttendees, attendees, eventAttendeesSize);
     } else {
       contains = hasIntersection(attendees, eventAttendees, attendeesSize);
     }
-
+    System.err.println("Contains: " + contains);
     return contains;
   }
 }

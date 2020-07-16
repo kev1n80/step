@@ -15,6 +15,7 @@
 package com.google.sps.algorithms;
 
 import com.google.sps.Event;
+import java.util.Arrays;
 import java.util.Comparator; 
 
 /**
@@ -25,18 +26,14 @@ public final class MergeSort<T> {
   public void merge(T[] events, Comparator<T> eventComp,
       int left, int middle, int right) {
     // prep by creating the two subarrays
-    int sub1Size = left - middle + 1;
-    int sub2Size = right - middle; 
+    // int sub1Size = middle - left + 1;
+    // int sub2Size = right - middle; 
 
-    T[] sub1 = new T[sub1Size];
-    T[] sub2 = new T[sub2Size];
+    T[] sub1 = Arrays.copyOfRange(events, left, middle);
+    T[] sub2 = Arrays.copyOfRange(events, middle + 1, right);
 
-    for (int i = 0; i < sub1Size; i++) {
-      sub1[i] = events[left + i];
-    }
-    for (int i = 0; i < sub2Size; i++) {
-      sub2[i] = events[middle + 1 + i];
-    }
+    int sub1Size = sub1.length;
+    int sub2Size = sub2.length; 
 
     // merge the two subarrays
     int startIndex = left;
@@ -70,18 +67,18 @@ public final class MergeSort<T> {
     }
   }
 
-  public static void sortArray(T[] events, Comparator<T> eventComp, 
+  public void sortArray(T[] events, Comparator<T> eventComp, 
       int left, int right) {
     if (left < right) {
       int middle = left + (right - left) / 2; 
-      sort(events, eventComp, left, middle);
-      sort(events, eventComp, middle + 1, right);
+      sortArray(events, eventComp, left, middle);
+      sortArray(events, eventComp, middle + 1, right);
 
       merge(events, eventComp, left, middle, right);
     }
   }
 
-  public static void sort(T[] events, Comparator<T> eventComp) {
+  public void sort(T[] events, Comparator<T> eventComp) {
     sortArray(events, eventComp, 0, events.length - 1);
   }
 } 
