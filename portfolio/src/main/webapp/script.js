@@ -59,9 +59,7 @@ function getComment(numComments, pageNumber, blogNumber) {
 
   console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
-    console.log(comments);
     const isError = isErrorMessage(comments);
-    console.log("error: " + isError);    
     if (isError) {
       console.log("Servlet error: " + comments);
       window.alert(comments);
@@ -176,7 +174,6 @@ function deleteAllComments(blogNumber) {
     })
       .then(response => response.json())
       .then((status) => {
-        console.log("response json: " + status);
         const isError = isErrorMessage(status);
         if (isError) {
           // if it doesn't return a success then it is an error
@@ -529,7 +526,14 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
  */
 function isErrorMessage(str) {
   const errorIntro = "Servlet Error:";
-  return (typeof str == "string" && str.length > 14 && str.substring(0,14) == errorIntro);
+  const isString = typeof str === "string";
+  const isLength = str.length > 14;
+  let isSubstring = false;
+  if (isLength) {
+    // the error message (str) comes with quotes
+    isSubstring = str.substring(1,15) === errorIntro;
+  }
+  return (isString && isLength && isSubstring);
 }
 
 /** 
@@ -570,12 +574,18 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
   const req = new XMLHttpRequest();
   req.open("POST", imageUploadUrl, true);
   req.onload = function() {
-    if (req.status == 200) {
-      console.log("Uploaded!");
+    if (req.readyState == 4 && req.status == 200) {
+      const response = req.responseText;
+      const isError = isErrorMessage(response);
+      if (isError) {
+        console.log(response);
+        window.alert(response);
+      } else {
+        console.log("Uploaded!");
 
-      console.log("Reloading comments and chart");
-      loadCommentSection(blogNumber);
-
+        console.log("Reloading comments and chart");
+        loadCommentSection(blogNumber);
+      }
       // Remove loading message
       const loadingId = "blog-form-" + blogNumber + "-loading";
       toggleDisplay(loadingId);

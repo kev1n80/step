@@ -68,15 +68,6 @@ public class NewCommentServlet extends HttpServlet {
       return;
     }    
 
-    String content;
-    try {
-      content = ValidateInput.getUserString(request, "content", 1, 
-          MAX_COMMENT_LEN);
-    } catch (Exception e) {
-      ValidateInput.createErrorMessage(e, response);
-      return;
-    }   
-
     String name;
     try {
       name = ValidateInput.getUserString(request, "name", 1, 
@@ -84,7 +75,16 @@ public class NewCommentServlet extends HttpServlet {
     } catch (Exception e) {
       ValidateInput.createErrorMessage(e, response);
       return;
-    }       
+    }  
+
+    String content;
+    try {
+      content = ValidateInput.getUserString(request, "content", 1, 
+          MAX_COMMENT_LEN);
+    } catch (Exception e) {
+      ValidateInput.createErrorMessage(e, response);
+      return;
+    }        
 
     String imageURL;
     try {
