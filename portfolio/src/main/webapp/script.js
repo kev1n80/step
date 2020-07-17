@@ -527,7 +527,7 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
 function isErrorMessage(str) {
   const errorIntro = "Servlet Error:";
   const isString = typeof str === "string";
-  const isLength = str.length > 14;
+  const isLength = str.length > 15;
   let isSubstring = false;
   if (isLength) {
     // the error message (str) comes with quotes
@@ -574,6 +574,7 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
   const req = new XMLHttpRequest();
   req.open("POST", imageUploadUrl, true);
   req.onload = function() {
+    // when request finished, response is ready, and status is ok
     if (req.readyState == 4 && req.status == 200) {
       const response = req.responseText;
       const isError = isErrorMessage(response);
