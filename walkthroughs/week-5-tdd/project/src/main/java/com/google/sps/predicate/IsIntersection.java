@@ -28,67 +28,49 @@ import java.util.Set;
  * Represents an object that check if two Collection<String> are disjoint 
  */
 public final class IsIntersection implements Predicate<Event> {
-  private final Collection<String> attendees;
+  private final String[] attendees;
 
+  /**
+   * A constructor that stores the attendees string array and orders it
+   * Time Complexity: O(n*ln(n))
+   *
+   * @param attendees the collection of Strings that we will compare with 
+   *    another collection of Strings
+   */ 
   public IsIntersection(Collection<String> attendees) {
-    this.attendees = attendees;
+    String[] attendeesArray = new String[attendees.size()];
+    attendeesArray = attendees.toArray(attendeesArray);
+
+    // order the array
+    MergeSort<String> merge = new MergeSort<String>();
+    merge.sort(attendeesArray, String.CASE_INSENSITIVE_ORDER);
+
+    this.attendees = attendeesArray;
   }
 
   /**
-   * Checks if there is an intersection between the two collections.
-   * Returns true when there is an element that both collections have
-   * in common.
+   * Checks if an event shares an attendee with this class's attendees
    * Time Complexity: O(n*ln(n))
-   * 
-   * @param first the bigger collection of the two
-   * @param second the smaller collection of the two
-   * @return a boolean that says wether there is an intersection or not
-   */ 
-  public boolean hasIntersection(Collection<String> first, 
-      Collection<String> second, int firstSize) {
-    // Sort the first Array
-    String[] firstArray = new String[first.size()];
-    firstArray = first.toArray(firstArray);
+   *
+   * @param other the other event we are comparing with
+   * @return a boolean stating whether this event share an attendee with this 
+   *    class's collection of attendees
+   */
+  @Override
+  public boolean test(Event other) {
+    Set<String> eventAttendees = other.getAttendees();
+    int attendeesSize = attendees.length;
+    boolean contains;
 
-    MergeSort<String> merge = new MergeSort<String>();
-    merge.sort(firstArray, String.CASE_INSENSITIVE_ORDER);
-    
-    // iterate through the second array
-    String[] secondArray = new String[second.size()];
-    secondArray = second.toArray(secondArray);
-    
-    for (String str : secondArray) {
+    for (String eventAttendee : eventAttendees) {
       // enter binary search
-      int index = BinarySearch.binarySearchString(firstArray, 0, 
-          firstSize - 1, str);
+      int index = BinarySearch.binarySearchString(attendees, 0, 
+          attendeesSize - 1, eventAttendee);
       if (index >= 0) {
         return true;
       }
     }
 
-    return false;     
-  }
-
-  /**
-   * Checks if an event shares an attendee with this class's attendees
-   * Time Complexity: O()
-   *
-   * @param other the other event we are comparing with
-   * @return a boolean stating whether this event share an attendee with this 
-   * class's collection of attendees
-   */
-  @Override
-  public boolean test(Event other) {
-    Set<String> eventAttendees = other.getAttendees();
-    int eventAttendeesSize = eventAttendees.size();
-    int attendeesSize = attendees.size();
-    boolean contains;
-    if (eventAttendeesSize > attendeesSize) {
-      contains = hasIntersection(eventAttendees, attendees, eventAttendeesSize);
-    } else {
-      contains = hasIntersection(attendees, eventAttendees, attendeesSize);
-    }
-    System.err.println("Contains: " + contains);
-    return contains;
+    return false;      
   }
 }
