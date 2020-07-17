@@ -13,12 +13,12 @@ import java.util.Comparator;
 
 /** 
   * Sorts events in ascending order based on their start time, and if they
-  * the same start time the one with the longest duration is first.
+  *     are the same start time the one with the longest duration is first.
   */
 public class SortEventsByTime implements Comparator<Event> { 
   /** 
   * Used for sorting in ascending order of start time and for a tie breaker
-  * in descending order of duration.
+  *     in descending order of duration.
   * Time complexity: O(1)
   *
   * @param first the first Event
@@ -32,7 +32,7 @@ public class SortEventsByTime implements Comparator<Event> {
     int order = TimeRange.ORDER_BY_START.compare(firstTime, secondTime);
     /** 
     * if they start at the same time, the one with the longest duration 
-    * shows up first
+    *     shows up first
     */
     if (order == 0) {
       return - Long.compare(firstTime.duration(), secondTime.duration());

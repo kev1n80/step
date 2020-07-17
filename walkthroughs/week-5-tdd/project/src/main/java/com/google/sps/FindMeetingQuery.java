@@ -155,7 +155,7 @@ public final class FindMeetingQuery {
 
   /**
    * Returns all possible time periods throughout the day when everybody 
-   * attending this meeting is available. 
+   *    attending this meeting is available. 
    * Time Complexity: O(n^2 * ln(n))
    * 
    * @param events All events that are occurring  
@@ -192,7 +192,8 @@ public final class FindMeetingQuery {
     merge.sort(eventsArray, new SortEventsByTime());
 
     // Get the times of the event and remove events with the same times
-    // (but keep the longest duration)
+    //    (but keep the longest duration) and the events that are contained in 
+    //    another event
     ArrayList<int[]> times = new ArrayList<int[]>();
     try {
       times = eventToTime(eventsArray);  
@@ -203,7 +204,7 @@ public final class FindMeetingQuery {
     }
 
     // Compare filtered events input to meeting request
-    // Find the time available for this meeting
+    //    Find the time available for this meeting
     Collection<TimeRange> availableTimes = timeAvailable(times, durationMeeting);
     return availableTimes;
   }

@@ -33,23 +33,20 @@ public final class BinarySearch {
         if (right >= left) { 
             int mid = left + (right - left) / 2; 
   
-            // If the element is present at the 
-            // middle itself 
+            // If the element is the middle element, return middle index
             if (stringArr[mid].equals(target)) 
                 return mid; 
   
-            // If element is smaller than mid, then 
-            // it can only be present in left subarray 
+            // If element is smaller than middle element, then search left 
+            //    subarray
             if (stringArr[mid].compareTo(target) > 0) 
                 return binarySearchString(stringArr, left, mid - 1, target); 
   
-            // Else the element can only be present 
-            // in right subarray 
+            // Else the element must be in the right subarray
             return binarySearchString(stringArr, mid + 1, right, target); 
         } 
   
-        // We reach here when element is not present 
-        // in array 
+        // Element is not in array
         return -1; 
     } 
 } 
