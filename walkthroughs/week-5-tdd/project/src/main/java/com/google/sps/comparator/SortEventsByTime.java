@@ -17,25 +17,25 @@ import java.util.Comparator;
   */
 public class SortEventsByTime implements Comparator<Event> { 
   /** 
-  * Used for sorting in ascending order of start time and for a tie breaker
-  *     in descending order of duration.
-  * Time complexity: O(1)
-  *
-  * @param first the first Event
-  * @param second the second Event
-  * @return an int that states the ordering of the two events
-  */
+   * Used for sorting in ascending order of start time and for a tie breaker
+   *     in descending order of duration.
+   * Time complexity: O(1)
+   *
+   * @param first the first Event
+   * @param second the second Event
+   * @return an int that states the ordering of the two events
+   */
   @Override
   public int compare(Event first, Event second) { 
     TimeRange firstTime = first.getWhen();
     TimeRange secondTime = second.getWhen();
     int order = TimeRange.ORDER_BY_START.compare(firstTime, secondTime);
     /** 
-    * if they start at the same time, the one with the longest duration 
-    *     shows up first
-    */
+     * if they start at the same time, the one with the longest duration 
+     *     shows up first
+     */
     if (order == 0) {
-      return - Long.compare(firstTime.duration(), secondTime.duration());
+      return (-1 * Long.compare(firstTime.duration(), secondTime.duration()));
     }
     return order;
   } 

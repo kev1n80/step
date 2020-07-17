@@ -46,30 +46,27 @@ public final class FindMeetingQuery {
   public static ArrayList<int[]> eventToTime(Event[] eventsArray) 
       throws Exception {
     ArrayList<int[]> eventTimes = new ArrayList<>();
-    TimeRange previousEventTR = TimeRange.fromStartDuration(0, 0);
+    TimeRange previousEventTimeRange = TimeRange.fromStartDuration(0, 0);
 
     for (Event event : eventsArray) {
-      TimeRange eventTR = event.getWhen();
-      int eventTRStart = eventTR.start();
-      int previousEventTRStart = previousEventTR.start();
+      TimeRange eventTimeRange = event.getWhen();
+      int eventTimeRangeStart = eventTimeRange.start();
+      int previousEventTimeRangeStart = previousEventTimeRange.start();
       // check if this event starts after the previous event
-      if (eventTRStart > previousEventTRStart) {
+      if (eventTimeRangeStart > previousEventTimeRangeStart) {
         // if the previous event contains this event, don't add this event
-        if (!previousEventTR.contains(eventTR)) {
-          int[] eventTime = new int[] {eventTR.start(), eventTR.end()};
+        if (!previousEventTimeRange.contains(eventTimeRange)) {
+          int[] eventTime = new int[] {eventTimeRange.start(), eventTimeRange.end()};
           eventTimes.add(eventTime);
-          previousEventTR = eventTR;
+          previousEventTimeRange = eventTimeRange;
         }
-      } else if (eventTRStart == previousEventTRStart) {
+      } else if (eventTimeRangeStart == previousEventTimeRangeStart) {
         // if they are the same, keep the one with the longer duration
-        if (eventTR.duration() > previousEventTR.duration()) {
-          int lastIndex = eventTimes.size() - 1;
-          if (eventTimes.size() == 0) {
-            lastIndex = 0;
-          }
-          int[] eventTime = new int[] {eventTRStart, eventTR.end()};
+        if (eventTimeRange.duration() > previousEventTimeRange.duration()) {
+          int lastIndex = Math.max(eventTimes.size() - 1, 0);
+          int[] eventTime = new int[] {eventTimeRangeStart, eventTimeRange.end()};
           eventTimes.add(lastIndex, eventTime);
-          previousEventTR = eventTR; 
+          previousEventTimeRange = eventTimeRange; 
         }
       } else {
         // This means that the Collection of events is not ordered
@@ -149,8 +146,7 @@ public final class FindMeetingQuery {
       }
     }
     Event[] filteredEventsArray = new Event[filteredEvents.size()];
-    filteredEventsArray = filteredEvents.toArray(filteredEventsArray);
-    return filteredEventsArray;
+    return filteredEvents.toArray(filteredEventsArray);
   }
 
   /**
@@ -163,17 +159,14 @@ public final class FindMeetingQuery {
    * @return an array of TimeRange objects
    */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) throws Exception{
-    // throw new UnsupportedOperationException("TODO: Implement this method.");
-
     // check if duration of meeting is longer than a day or a negative number
-    int durationMeeting = Math.toIntExact(request.getDuration());
-    // long durationMeeting = request.getDuration();
-    if (durationMeeting > 1440 || durationMeeting < 0) {
+    int durationMeetingMinutes = Math.toIntExact(request.getDuration());
+    if (durationMeetingMinutes > 1440 || durationMeetingMinutes < 0) {
       System.err.println("EDGE: duration meeting out of scope");
       return new ArrayList<TimeRange>();
     } 
 
-    if (durationMeeting == 0) {
+    if (durationMeetingMinutes == 0) {
       System.err.println("EDGE: duration meeting is 0");
       TimeRange wholeDay = TimeRange.WHOLE_DAY;
       return new ArrayList<TimeRange>(Arrays.asList(wholeDay));
@@ -198,14 +191,13 @@ public final class FindMeetingQuery {
     try {
       times = eventToTime(eventsArray);  
     } catch (Exception e) {
-      String errorMessage = "Error: " + e.getMessage();
-      System.err.println(errorMessage);
       throw e;
     }
 
     // Compare filtered events input to meeting request
     //    Find the time available for this meeting
-    Collection<TimeRange> availableTimes = timeAvailable(times, durationMeeting);
+    Collection<TimeRange> availableTimes = timeAvailable(times, 
+        durationMeetingMinutes);
     return availableTimes;
   }
 }
