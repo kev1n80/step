@@ -59,12 +59,12 @@ public final class IsIntersection implements Predicate<Event> {
   @Override
   public boolean test(Event other) {
     Set<String> eventAttendees = other.getAttendees();
-    int attendeesSize = attendees.length;
+    int attendeesSize = this.attendees.length;
     boolean contains;
 
     for (String eventAttendee : eventAttendees) {
       // enter binary search
-      int index = BinarySearch.binarySearchString(attendees, 0, 
+      int index = BinarySearch.binarySearchString(this.attendees, 0, 
           attendeesSize - 1, eventAttendee);
       if (index >= 0) {
         return true;
@@ -72,5 +72,29 @@ public final class IsIntersection implements Predicate<Event> {
     }
 
     return false;      
+  }
+
+/**
+ * Returns the number of attendees that are attending this event
+ * Time Complexity: O(n*ln(n)) 
+ *
+ * @param other the other event we are comparing with
+ * @return the number of attendees that are attending this event
+ */
+  public int numAttendeesAttendingEvent(Event other) {
+    Set<String> eventAttendees = other.getAttendees();
+    int attendeesSize = this.attendees.length;
+    int numAttendees = 0;
+
+    for (String eventAttendee : eventAttendees) {
+      // enter binary search
+      int index = BinarySearch.binarySearchString(attendees, 0, 
+          attendeesSize - 1, eventAttendee);
+      if (index >= 0) {
+        numAttendees ++;
+      }
+    }
+
+    return numAttendees;     
   }
 }

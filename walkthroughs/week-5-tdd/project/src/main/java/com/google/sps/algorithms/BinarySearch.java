@@ -14,6 +14,8 @@
 
 package com.google.sps.algorithms;
 
+import com.google.sps.TimeRange;
+
 /**
  * Represents a binary search object
  */
@@ -44,6 +46,47 @@ public final class BinarySearch {
   
             // Else the element must be in the right subarray
             return binarySearchString(stringArr, mid + 1, right, target); 
+        } 
+  
+        // Element is not in array
+        return -1; 
+    }
+
+    /**
+     * Returns the index of the target in the specified array or return -1
+     * Time complexity: O(ln(n))
+     *
+     * @param timeRangeArr the array that we are searching through
+     * @param left the leftmost index of the subarray we are currently in
+     * @param right the rightmost index of the subarray we are currently in
+     * @param target the strign we are looking for
+     * @return the index of the target, -1 if the index does not exist, or -2 
+     *     if there is an overlapping between two 
+     */
+    public static int binarySearchTimeRange(TimeRange[] timeRangeArr, int left, 
+        int right, TimeRange target) { 
+        if (right >= left) { 
+            int mid = left + (right - left) / 2; 
+  
+            // If the element is the middle element, return middle index
+            TimeRange midTimeRange = timeRangeArr[mid];
+            if (midTimeRange.equals(target) || midTimeRange.contains(target)) {
+              return mid; 
+            }   
+
+            if (midTimeRange.overlaps) {
+              if (!target.contains(midTimeRange)) {
+                return -2;
+              }
+            }
+  
+            // If element is smaller than middle element, then search left 
+            //    subarray
+            if (TimeRange.ORDER_BY_START.compare(timeRangeArr[mid], target) > 0) 
+                return binarySearchTimeRange(timeRangeArr, left, mid - 1, target); 
+  
+            // Else the element must be in the right subarray
+            return binarySearchTimeRange(timeRangeArr, mid + 1, right, target); 
         } 
   
         // Element is not in array
