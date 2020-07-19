@@ -20,6 +20,7 @@ import com.google.sps.comparator.SortEventsByTime;
 import com.google.sps.comparator.SortEventsByNumAttendees;
 import com.google.sps.comparator.SortTimesAscending;
 import com.google.sps.filterAndSort.FilterAndSort;
+import com.google.sps.predicate.IncludeEventIf;
 import com.google.sps.predicate.IsIntersection;
 import com.google.sps.TimeRange;
 import java.lang.Math;
@@ -120,6 +121,7 @@ public final class FindMeetingQuery {
     int startTime = TimeRange.START_OF_DAY;
     int prevEndTime = TimeRange.START_OF_DAY;
     ArrayList<TimeRange> availableTimes = new ArrayList<TimeRange>();
+
     for (int[] time : times) {
       int start = time[0];
       int end = time[1];
@@ -127,7 +129,12 @@ public final class FindMeetingQuery {
       // Prevents the case when a time range contains another time range.
       // The first time range should be the one with the longest duration since 
       //     it is ordered
-      if (start > startTime || start == TimeRange.START_OF_DAY) {
+      boolean startsAfterPrev = start > startTime;
+      boolean endsAfterPrev = end > prevEndTime;
+      boolean isStartOfDay = start == TimeRange.START_OF_DAY;
+      boolean prevNotContainsCurrent = (startsAfterPrev || isStartOfDay) && 
+          endsAfterPrev;
+      if (prevNotContainsCurrent) {
         if (addAvailableTime(start, prevEndTime, duration, availableTimes)) {
           startTime = start;
         }
@@ -143,8 +150,9 @@ public final class FindMeetingQuery {
   }
 
   public ArrayList<TimeRange> optionalAvailableTimes(
-      ArrayList<int[]> optionalTimes, ArrayList<int[]> mandatoryTimes, 
-      int durationMeetingMinutes) throws Exception {
+      ArrayList<Event> optionalEvents, ArrayList<int[]> optionalTimes, 
+      ArrayList<int[]> mandatoryTimes, int durationMeetingMinutes) 
+      throws Exception {
     ArrayList<int[]> allTimes = (ArrayList<int[]>) optionalTimes.clone();
 
     if (mandatoryTimes.size() > 0) {
@@ -153,17 +161,22 @@ public final class FindMeetingQuery {
       MergeSort<int[]> merge = new MergeSort<int[]>();
       merge.sort(allTimes, new SortTimesAscending());      
     }
-
+    
     // Compare filtered events input to meeting request
     //    Find the time available for this meeting
     ArrayList<TimeRange> availableTimes = timeAvailable(allTimes, 
         durationMeetingMinutes); 
       
-    // while (times.size() > 0 && availableTimes.size() == 0) {
-    //   // remove time with smallest amount of attendees (which should be last) from times then make 
-    //   //     new allTimes
-    //   ArrayList<TimeRange> availableTimes = timeAvailable(allTimes, 
-    //     durationMeetingMinutes);
+    // if (availableTimes.size() == 0) {
+      // Comparator<Event> sortByNumAttendees = new SortEventsByNumAttendees
+      //     (request.getOptionalAttendees());   
+
+      // while (times.size() > 0 && availableTimes.size() == 0) {
+      //   // remove time with smallest amount of attendees (which should be last) from times then make 
+      //   //     new allTimes
+      //   ArrayList<TimeRange> availableTimes = timeAvailable(allTimes, 
+      //     durationMeetingMinutes);
+      // }
     // }
       
     return availableTimes;
@@ -195,47 +208,62 @@ public final class FindMeetingQuery {
     Event[] eventsArray = new Event[events.size()];
     eventsArray = events.toArray(eventsArray);
 
-    FilterAndSort<Event> filterAndSort = new FilterAndSort<Event>();
+    IncludeEventIf<Event> includeEventIf = new IncludeEventIf<Event>();
+    MergeSort<Event> merge = new MergeSort<Event>();
+
     // filter and sort the events that mandatory attendees are attending
     Predicate<Event> isMandatoryIntersection = new IsIntersection
         (request.getAttendees());
-    ArrayList<Event> mandatoryEventsList = filterAndSort.filterAndSort
-        (eventsArray, isMandatoryIntersection, new SortEventsByTime());
+    
+    // Filter
+    ArrayList<Event> filteredMandatoryEvents = includeEventIf.includeEventIf
+        (eventsArray, isMandatoryIntersection);
 
+    // Sort
+    merge.sort(filteredMandatoryEvents, new SortEventsByTime());
+
+    // Turn events into int[]
     ArrayList<int[]> mandatoryTimes = new ArrayList<int[]>();
     try {
-      mandatoryTimes = eventToTime(mandatoryEventsList);  
+      mandatoryTimes = eventToTime(filteredMandatoryEvents);  
     } catch (Exception e) {
       throw e;
     }
-
-    // return timeAvailable(mandatoryTimes, durationMeetingMinutes);
     
     // filter and sort the events that optional attendees are attending  
     Predicate<Event> isOptionalIntersection = new IsIntersection
-        (request.getOptionalAttendees());
-    Comparator<Event> sortByNumAttendees = new SortEventsByNumAttendees
-        (request.getOptionalAttendees());          
-    ArrayList<Event> optionalEventsList = filterAndSort.filterAndSort
-        (eventsArray, isOptionalIntersection, sortByNumAttendees);   
+        (request.getOptionalAttendees());   
 
+    // Filter
+    ArrayList<Event> filteredOptionalEvents = includeEventIf.includeEventIf
+        (eventsArray, isOptionalIntersection);
+
+    // Sort
+    merge.sort(filteredOptionalEvents, new SortEventsByTime()); 
+     
+    // Turn events into int[]
     ArrayList<int[]> optionalTimes = new ArrayList<int[]>();
     try {
-      optionalTimes = eventToTime(optionalEventsList);  
+      optionalTimes = eventToTime(filteredOptionalEvents);  
     } catch (Exception e) {
       throw e;
     }    
 
     ArrayList<TimeRange> availableOptionalTimes;
     try {
-      availableOptionalTimes = optionalAvailableTimes(optionalTimes, mandatoryTimes, durationMeetingMinutes);
+      availableOptionalTimes = optionalAvailableTimes(filteredOptionalEvents, 
+          optionalTimes, mandatoryTimes, durationMeetingMinutes);
     } catch (Exception e) {
       throw e;
     }
 
-    // if (availableOptionalTimes.size() == 0) {
-    //   return timeAvailable(mandatoryTimes, durationMeetingMinutes);
-    // }
+    if (availableOptionalTimes.size() == 0 && mandatoryTimes.size() > 0) {
+      ArrayList<TimeRange> availableMandatoryTimes = timeAvailable
+          (mandatoryTimes, durationMeetingMinutes);
+      if (availableMandatoryTimes.size() > 0) {
+        return availableMandatoryTimes;
+      }
+    }
 
     return availableOptionalTimes;
   }
