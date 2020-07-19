@@ -39,6 +39,16 @@ public class FilterAndSort<T> {
     return filteredObjs;
   }
 
+  /**
+  * Filter and sorts an array of objects based on the comparator and predicate 
+  *     given
+  * Time Complexity: Depends on the time complexity of pred and comp
+  *
+  * @param list the list to be filtered and sorted
+  * @param pred the condition for the filter 
+  * @param comp the comparator used to sort
+  * @return a filtered and sorted array
+  */  
   public ArrayList<T> filterAndSort(ArrayList<T> list, Predicate<T> pred, 
       Comparator<T> comp) throws Exception {
     
