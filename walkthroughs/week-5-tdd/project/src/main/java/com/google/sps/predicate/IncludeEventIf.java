@@ -39,5 +39,14 @@ public class IncludeEventIf<T> {
     }
     return filteredObjs;
   }
-
+  
+  public ArrayList<T> includeEventIf(ArrayList<T> list, Predicate<T> pred) {
+    ArrayList<T> filteredObjs = new ArrayList<T>();
+    for (T obj : list) {
+      if (pred.test(obj)) {
+        filteredObjs.add(obj);
+      }
+    }
+    return filteredObjs;
+  }
 }

@@ -40,7 +40,7 @@ public class SortEventsByNumAttendees implements Comparator<Event> {
 
   /** 
    * Return the number of attendees attending this event
-   * Time complexity: 
+   * Time complexity: O(n*ln(n))
    *
    * @param event an Eventx
    * @return an int that states the number of attendees attending the event

@@ -38,4 +38,16 @@ public class FilterAndSort<T> {
 
     return filteredObjs;
   }
+
+  public ArrayList<T> filterAndSort(ArrayList<T> list, Predicate<T> pred, 
+      Comparator<T> comp) throws Exception {
+    
+    IncludeEventIf<T> includeEventIf = new IncludeEventIf<T>();
+    ArrayList<T> filteredObjs = includeEventIf.includeEventIf(list, pred);
+
+    MergeSort<T> merge = new MergeSort<T>();
+    merge.sort(filteredObjs, comp);
+
+    return filteredObjs;
+  }  
 }
