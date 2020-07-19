@@ -36,9 +36,11 @@ public final class MergeSort<T> {
    */
   public void merge(ArrayList<T> objs, Comparator<T> comp,
       int left, int middle, int right) {
-    // prep by creating the two subarrays
-    List<T> sub1 = objs.subList(left, middle);
-    List<T> sub2 = objs.subList(middle + 1, right);
+    // prep by creating a view of the two subarrays on the clone of that 
+    //     arraylist
+    ArrayList<T> objsClone = (ArrayList<T>) objs.clone();
+    List<T> sub1 = objsClone.subList(left, middle);
+    List<T> sub2 = objsClone.subList(middle, right);
 
     int sub1Size = sub1.size();
     int sub2Size = sub2.size(); 
@@ -47,6 +49,7 @@ public final class MergeSort<T> {
     int startIndex = left;
     int i = 0;
     int j = 0;
+
     while (i < sub1Size && j < sub2Size) {
       T first = sub1.get(i);
       T second = sub2.get(j);
@@ -103,6 +106,6 @@ public final class MergeSort<T> {
    * @param comp the comparator to define the ordering
    */
   public void sort(ArrayList<T> objs, Comparator<T> comp) {
-    sortarrayList(objs, comp, 0, objs.size() - 1);
+    sortarrayList(objs, comp, 0, objs.size());
   }
 } 
