@@ -46,7 +46,7 @@ public final class FindMeetingQueryTest {
   private static final int TIME_1000AM = TimeRange.getTimeInMinutes(10, 0);
   private static final int TIME_1015AM = TimeRange.getTimeInMinutes(10, 15);
   private static final int TIME_1030AM = TimeRange.getTimeInMinutes(10, 30);
-  private static final int TIME_1045AM = TimeRange.getTimeInMinutes(10, 15);
+  private static final int TIME_1045AM = TimeRange.getTimeInMinutes(10, 45);
   private static final int TIME_1100AM = TimeRange.getTimeInMinutes(11, 00);
 
   private static final int DURATION_15_MINUTES = 15;
@@ -534,7 +534,7 @@ public final class FindMeetingQueryTest {
   @Test
   public void optionalAttendeesNoGaps() {
     // Have two optional attendees and no mandatory attendees.
-    // They have sveral gaps in their schedules
+    // They have sveral gaps in their schedules.
     //
     // Optional: |--A--|   |--A--|   |---B---|
     // Day     : |---------------------------|
