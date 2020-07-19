@@ -15,8 +15,9 @@
 package com.google.sps.algorithms;
 
 import com.google.sps.Event;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator; 
+import java.util.List;
 
 /**
  * Represents a merge sort object
@@ -27,81 +28,81 @@ public final class MergeSort<T> {
    * Merges two subarrays into an ordered array
    * Time Complexity: O(n)
    * 
-   * @param array the arraylist we will order 
+   * @param objs the arraylist we will order 
    * @param comp the comparator that  
    * @param left the leftmost index of the sub array
    * @param middle the middle index of the subarray
    * @param right the right index of the subarray
    */
-  public void merge(T[] array, Comparator<T> comp,
+  public void merge(ArrayList<T> objs, Comparator<T> comp,
       int left, int middle, int right) {
     // prep by creating the two subarrays
-    T[] sub1 = Arrays.copyOfRange(array, left, middle);
-    T[] sub2 = Arrays.copyOfRange(array, middle + 1, right);
+    List<T> sub1 = objs.subList(left, middle);
+    List<T> sub2 = objs.subList(middle + 1, right);
 
-    int sub1Size = sub1.length;
-    int sub2Size = sub2.length; 
+    int sub1Size = sub1.size();
+    int sub2Size = sub2.size(); 
 
     // merge the two subarrays
     int startIndex = left;
     int i = 0;
     int j = 0;
     while (i < sub1Size && j < sub2Size) {
-      T first = sub1[i];
-      T second = sub2[j];
+      T first = sub1.get(i);
+      T second = sub2.get(j);
       int order = comp.compare(first, second);
       if (order < 0) {
         i++;
-        array[startIndex] = first;
+        objs.set(startIndex, first);
       } else {
         j++;
-        array[startIndex] = second;
+        objs.set(startIndex, second);
       }
       startIndex++;
     }
 
     // merge the leftover
     while (i < sub1Size) {
-      array[startIndex] = sub1[i];
+      objs.set(startIndex, sub1.get(i));
       i++;
       startIndex++;
     }
 
     while (j < sub2Size) {
-      array[startIndex] = sub2[j];
+      objs.set(startIndex, sub2.get(j));
       j++;
       startIndex++;
     }
   }
 
   /**
-   * Sort an array using merge sort
+   * Sort an arrayList using merge sort
    * Time complexity: O(n * ln(n))
    *
-   * @param array the array to order
+   * @param objs the arrayList to order
    * @param comp the comparator to define the ordering
    * @param left the left index of the subarray
    * @param right the right index of the subarray
    */
-  public void sortArray(T[] array, Comparator<T> comp, 
+  public void sortarrayList(ArrayList<T> objs, Comparator<T> comp, 
       int left, int right) {
     if (left < right) {
       int middle = left + (right - left) / 2; 
-      sortArray(array, comp, left, middle);
-      sortArray(array, comp, middle + 1, right);
+      sortarrayList(objs, comp, left, middle);
+      sortarrayList(objs, comp, middle + 1, right);
 
-      merge(array, comp, left, middle, right);
+      merge(objs, comp, left, middle, right);
     }
   }
 
   /**
-   * Sort an array using merge sort
+   * Sort an arrayList using merge sort
    * Time complexity: O(n * ln(n))
    *
-   * @param array the array to order
+   * @param objs the arrayList to order
    * @param comp the comparator to define the ordering
    */
-  public void sort(T[] array, Comparator<T> comp) {
-    sortArray(array, comp, 0, array.length - 1);
+  public void sort(ArrayList<T> objs, Comparator<T> comp) {
+    sortarrayList(objs, comp, 0, objs.size() - 1);
   }
 } 
