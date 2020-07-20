@@ -87,7 +87,9 @@ public class SortEventsByNumAttendees implements Comparator<Event> {
     int order = Long.compare(firstNumAttendees, secondNumAttendees);
 
     if (order == 0) {
-      return (-1 * Long.compare(firstNumAttendees, secondNumAttendees));
+      int firstTimeRangeStart = first.getWhen().duration();
+      int secondTimeRangeStart = second.getWhen().duration();
+      return (-1 * Long.compare(firstTimeRangeStart, secondTimeRangeStart));
     }
     return order;
   } 

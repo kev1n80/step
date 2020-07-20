@@ -20,7 +20,7 @@ import com.google.sps.comparator.SortEventsByTime;
 import com.google.sps.comparator.SortEventsByNumAttendees;
 import com.google.sps.comparator.SortTimesAscending;
 import com.google.sps.filterAndSort.FilterAndSort;
-import com.google.sps.predicate.IncludeEventIf;
+import com.google.sps.predicate.IncludeIf;
 import com.google.sps.predicate.IsIntersection;
 import com.google.sps.TimeRange;
 import java.lang.Math;
@@ -170,6 +170,15 @@ public final class FindMeetingQuery {
     return availableTimes;
   }
 
+  /**
+   * Returns the times available when accounting for the optional attendees
+   * Time Complexity: O(n*ln(n))
+   * 
+   * @param optionalEvents the events the optional attendees are attending
+   * @param optionalTimes the times the optional attendees are attending events
+   * @param mandatoryTimes the times the mandatory attendees are attending events
+   * @param durationMeetingMinutes the duration of the meeting request in minutes
+   */
   public ArrayList<TimeRange> optionalAvailableTimes(
       ArrayList<Event> optionalEvents, ArrayList<int[]> optionalTimes, 
       ArrayList<int[]> mandatoryTimes, int durationMeetingMinutes) 
@@ -216,7 +225,7 @@ public final class FindMeetingQuery {
     Event[] eventsArray = new Event[events.size()];
     eventsArray = events.toArray(eventsArray);
 
-    IncludeEventIf<Event> includeEventIf = new IncludeEventIf<Event>();
+    IncludeIf<Event> includeIf = new IncludeIf<Event>();
     MergeSort<Event> merge = new MergeSort<Event>();
 
     // filter and sort the events that mandatory attendees are attending
@@ -224,7 +233,7 @@ public final class FindMeetingQuery {
         (request.getAttendees());
     
     // Filter
-    ArrayList<Event> filteredMandatoryEvents = includeEventIf.includeEventIf
+    ArrayList<Event> filteredMandatoryEvents = includeIf.includeIf
         (eventsArray, isMandatoryIntersection);
 
     // Sort
@@ -243,7 +252,7 @@ public final class FindMeetingQuery {
         (request.getOptionalAttendees());   
 
     // Filter
-    ArrayList<Event> filteredOptionalEvents = includeEventIf.includeEventIf
+    ArrayList<Event> filteredOptionalEvents = includeIf.includeIf
         (eventsArray, isOptionalIntersection);
 
     // Sort
