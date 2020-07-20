@@ -59,9 +59,7 @@ function getComment(numComments, pageNumber, blogNumber) {
 
   console.log("Fetching comments for blog post " + blogNumber);
   fetch(queryString).then(response => response.json()).then((comments) => {
-    console.log(comments);
     const isError = isErrorMessage(comments);
-    console.log("error: " + isError);    
     if (isError) {
       console.log("Servlet error: " + comments);
       window.alert(comments);
@@ -80,16 +78,9 @@ function getComment(numComments, pageNumber, blogNumber) {
         })
       } else {
         commentListElement.appendChild(
-            createCommentElement(comment.content, comment.name, 
-                comment.imageURL));
-      })
+            createPElement("There are no comments", "", ""));
+      }
     }
-    else {
-      commentListElement.appendChild(
-          createPElement("There are no comments", "", ""));
-    }
-
-    
   });
 }
 
@@ -183,7 +174,6 @@ function deleteAllComments(blogNumber) {
     })
       .then(response => response.json())
       .then((status) => {
-        console.log("response json: " + status);
         const isError = isErrorMessage(status);
         if (isError) {
           // if it doesn't return a success then it is an error
@@ -509,7 +499,8 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
   fetch(queryString)
       .then((response) => {
         return response.json();
-      }).then((imageUploadUrl) => {
+      })
+      .then((imageUploadUrl) => {
         // check to see if an error was returned
         const isError = isErrorMessage(imageUploadUrl);
         if (isError) {
@@ -524,6 +515,7 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
 
           sendFormData(blogNumber, commentForm, imageUploadUrl);
           resetBlogCommentInputs(blogNumber);
+        }
       });
 }
 
@@ -534,7 +526,14 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
  */
 function isErrorMessage(str) {
   const errorIntro = "Servlet Error:";
-  return (typeof str == "string" && str.length > 14 && str.substring(0,14) == errorIntro);
+  const isString = typeof str === "string";
+  const isLength = str.length > 15;
+  let isSubstring = false;
+  if (isLength) {
+    // the error message (str) comes with quotes
+    isSubstring = str.substring(1,15) === errorIntro;
+  }
+  return (isString && isLength && isSubstring);
 }
 
 /** 
@@ -575,18 +574,30 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
   const req = new XMLHttpRequest();
   req.open("POST", imageUploadUrl, true);
   req.onload = function() {
+    // when response is ready and status is ok
     if (req.status == 200) {
-      console.log("Uploaded!");
+      const response = req.responseText;
+      const isError = isErrorMessage(response);
+      if (isError) {
+        console.log(response);
+        window.alert(response);
+      } else {
+        console.log("Uploaded!");
 
-      console.log("Reloading comments and chart");
-      loadCommentSection(blogNumber);
-
+        console.log("Reloading comments and chart");
+        loadCommentSection(blogNumber);
+      }
       // Remove loading message
       const loadingId = "blog-form-" + blogNumber + "-loading";
       toggleDisplay(loadingId);
     } else {
-      console.log("Error " + req.status + " occurred when trying to upload your file.<br \/>");
+      console.log("Error " + req.status + " occurred when trying to upload your comment.<br \/>");
     }
+  };
+  req.onerror = function() {
+    const error = "An error occurred during the transaction,";
+    console.log(error);
+    window.alert(error);
   };
   req.send(data);
 }
