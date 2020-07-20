@@ -21,7 +21,7 @@ import com.google.sps.comparator.SortEventsByNumAttendees;
 import com.google.sps.comparator.SortTimesByNumOptionalAttendees;
 import com.google.sps.comparator.SortTimesAscending;
 import com.google.sps.filterAndSort.FilterAndSort;
-import com.google.sps.predicate.EventInTimeRange;
+import com.google.sps.predicate.IsInTimeRange;
 import com.google.sps.predicate.IncludeIf;
 import com.google.sps.predicate.IsIntersection;
 import com.google.sps.TimeRange;
@@ -273,8 +273,8 @@ public final class FindMeetingQuery {
     }
     int timeRangeIndex = 1;
 
-    int[] first;
-    int firstDurationBefore;
+    int[] first = new int[]{0, 0, 0};
+    int firstDurationBefore = 0;
     int[] prev = new int[]{0, 0, 0, 0};
     int[] accumulation = new int[]{0, 0, 0, 0};
 
@@ -373,23 +373,40 @@ public final class FindMeetingQuery {
   public ArrayList<TimeRange> availableTimeWithMostOptionalAttendees (
       ArrayList<Event> filteredOptionalEvents, 
       ArrayList<TimeRange> availableMandatoryTimes, 
-      Collection<String> optionalAttendees, int durationMeetingMinutes) {
+      Collection<String> optionalAttendees, int durationMeetingMinutes) 
+      throws Exception {
+    System.err.println("Efficient Algorithm: ");
+    System.err.println("availableMandatoryTimes: ");
+    for (TimeRange tr : availableMandatoryTimes) {
+      System.err.println("- " + tr.toString());
+    }
+
     // Filter the events to only include event occuring during the available 
     //     mandatory times.
-    Predicate<Event> eventInTimeRange = new EventInTimeRange(
+    Predicate<Event> inTimeRange = new IsInTimeRange(
         availableMandatoryTimes);
     IncludeIf<Event> includeIf = new IncludeIf<Event>();
     ArrayList<Event> filteredEvents = includeIf.includeIf(
-        filteredOptionalEvents, eventInTimeRange);
+        filteredOptionalEvents, inTimeRange);
     
     // Turn arraylist of events to an arraylist of int[] with information 
     ArrayList<int[]> eventTimes = eventToTimeWithAttendeesList(
         filteredOptionalEvents, optionalAttendees);
 
+    System.err.println("filteredOptionalEvents: ");
+    for (int[] in : eventTimes) {
+      System.err.println("- (" + in[0] + ", " + in[1] + ", " + in[2] + ", " + in[3]);
+    }
+
     // Group times in order to satisfy the meeting request in that their 
     //     duration satisfies the meeting request duration.
     ArrayList<int[]> availableTimes = groupTimesToSatisfyMeetingRequest(
         eventTimes, availableMandatoryTimes, durationMeetingMinutes);
+
+    System.err.println("availableTimes: ");
+    for (int[] in : availableTimes) {
+      System.err.println("- (" + in[0] + ", " + in[1] + ", " + in[2] + ", " + in[3]);
+    }        
 
     // Sort the int[] ascending based on the number of optional attendees
     MergeSort<int[]> merge = new MergeSort<int[]>();
@@ -408,7 +425,13 @@ public final class FindMeetingQuery {
       }      
     }
 
-    return timeToTimeRange(availableTimesEfficient);
+    ArrayList<TimeRange> availableTimeRanges = new ArrayList<TimeRange>();
+    try {
+      availableTimeRanges = timeToTimeRange(availableTimesEfficient);
+    } catch (Exception e) {
+      throw e;
+    }
+    return availableTimeRanges;
   }
 
   /**
@@ -491,10 +514,17 @@ public final class FindMeetingQuery {
     if (availableOptionalTimes.size() == 0 && mandatoryTimes.size() > 0) {
       ArrayList<TimeRange> availableMandatoryTimes = timeAvailable
           (mandatoryTimes, durationMeetingMinutes);
-      ArrayList<TimeRange> efficientAvailableMeetings =   
+      ArrayList<TimeRange> efficientAvailableMeetings = new 
+          ArrayList<TimeRange>();
+      try {
+        efficientAvailableMeetings =   
           availableTimeWithMostOptionalAttendees(filteredOptionalEvents,  
           availableMandatoryTimes, request.getOptionalAttendees(), 
           durationMeetingMinutes);
+      } catch (Exception e) {
+        throw e;
+      }
+      System.err.println();
       if (availableMandatoryTimes.size() > 0 && 
           efficientAvailableMeetings.size() == 0) {
         return availableMandatoryTimes;
@@ -502,7 +532,7 @@ public final class FindMeetingQuery {
         return efficientAvailableMeetings;
       }
     }
-
+    
     return availableOptionalTimes;
   }
 }

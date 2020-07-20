@@ -566,4 +566,84 @@ public final class FindMeetingQueryTest {
 
     Assert.assertEquals(expected, actual);
   }  
+
+  @Test
+  public void optionalAndMandatoryAttendeesNoGaps() {
+    System.err.println("optionalAndMandatoryAttendeesNoGaps");
+    // Have two optional attendees and no mandatory attendees.
+    // They have sveral gaps in their schedules.
+    //
+    // Mandatory:|--C--|
+    // Optional:           |--A--|   |---B---|
+    // Day     : |---------------------------|
+    // Options :   
+
+    Collection<Event> events = Arrays.asList(
+        new Event("Event 1", TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0900AM, false),
+            Arrays.asList(PERSON_C)),
+        new Event("Event 2", TimeRange.fromStartDuration(TIME_0930AM, DURATION_30_MINUTES),
+            Arrays.asList(PERSON_A)),
+        new Event("Event 3", TimeRange.fromStartEnd(TIME_1015AM, TimeRange.END_OF_DAY, true),
+            Arrays.asList(PERSON_B)));
+
+    MeetingRequest request =
+        new MeetingRequest(Arrays.asList(PERSON_A), DURATION_60_MINUTES);
+    request.addOptionalAttendee(PERSON_A);
+    request.addOptionalAttendee(PERSON_B);
+
+    Collection<TimeRange> actual;
+    try{
+      actual = query.query(events, request);
+    } catch (Exception e) {
+      String errorMessage = "ERROR: " + e.getMessage();
+      System.err.println(errorMessage);
+      Assert.assertEquals("no exception thrown", errorMessage);
+      return;
+    }    
+    Collection<TimeRange> expected = Arrays.asList(TimeRange.fromStartDuration(TIME_0900AM, TimeRange.END_OF_DAY));
+
+    Assert.assertEquals(expected, actual);
+  }    
+
+  @Test
+  public void optionalAndMandatoryOverlappingEvents() {
+    System.err.println("optionalAndMandatoryOverlappingEvents");
+    // Have an event for each person, but have their events overlap. We should only see two options.
+    //
+    // Events  : |--C--|
+    // Optional:       |--AB--|
+    //                     |--B--|
+    // Day     : |---------------------|
+    // Options : |--1--|         |--2--|
+
+    Collection<Event> events = Arrays.asList(
+        new Event("Event 1", TimeRange.fromStartDuration(TIME_0830AM, DURATION_60_MINUTES),
+            Arrays.asList(PERSON_A, PERSON_B)),
+        new Event("Event 2", TimeRange.fromStartDuration(TIME_0900AM, DURATION_60_MINUTES),
+            Arrays.asList(PERSON_B)),
+        new Event("Event 3", TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0830AM, false),
+            Arrays.asList(PERSON_C)),
+        new Event("Event 4", TimeRange.fromStartEnd(TIME_1030AM, TimeRange.END_OF_DAY, false),
+            Arrays.asList(PERSON_C)));
+
+    MeetingRequest request =
+        new MeetingRequest(Arrays.asList(PERSON_C), DURATION_30_MINUTES);
+    request.addOptionalAttendee(PERSON_A);
+    request.addOptionalAttendee(PERSON_B);
+
+    Collection<TimeRange> actual;
+    try{
+      actual = query.query(events, request);
+    } catch (Exception e) {
+      String errorMessage = "ERROR: " + e.getMessage();
+      System.err.println(errorMessage);
+      Assert.assertEquals("no exception thrown", errorMessage);
+      return;
+    }
+
+    Collection<TimeRange> expected =
+        Arrays.asList(TimeRange.fromStartEnd(TIME_0930AM, TIME_1030AM, false));
+
+    Assert.assertEquals(expected, actual);
+  }  
 }
