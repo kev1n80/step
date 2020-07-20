@@ -574,8 +574,8 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
   const req = new XMLHttpRequest();
   req.open("POST", imageUploadUrl, true);
   req.onload = function() {
-    // when request finished, response is ready, and status is ok
-    if (req.readyState == 4 && req.status == 200) {
+    // when response is ready and status is ok
+    if (req.status == 200) {
       const response = req.responseText;
       const isError = isErrorMessage(response);
       if (isError) {
@@ -591,8 +591,13 @@ function sendFormData(blogNumber, commentForm, imageUploadUrl) {
       const loadingId = "blog-form-" + blogNumber + "-loading";
       toggleDisplay(loadingId);
     } else {
-      console.log("Error " + req.status + " occurred when trying to upload your file.<br \/>");
+      console.log("Error " + req.status + " occurred when trying to upload your comment.<br \/>");
     }
+  };
+  req.onerror = function() {
+    const error = "An error occurred during the transaction,";
+    console.log(error);
+    window.alert(error);
   };
   req.send(data);
 }
