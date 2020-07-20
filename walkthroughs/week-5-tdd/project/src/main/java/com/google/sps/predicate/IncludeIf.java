@@ -20,17 +20,17 @@ import java.util.function.Predicate;
  * @param comp the comparator used to sort
  * @return a filtered and sorted array
  */
-public class IncludeEventIf<T> {
+public class IncludeIf<T> {
   /**
    * Returns an array with all of the objects that meet the requirements set in 
    *    the predicate.
    * Time Complexity: O(n * Time Complexity of pred.test(n))
    *
    * @param array the array of objects that we are going to filter through
-   * @param pred the predicate that will decide whether or not to keep an event
+   * @param pred the predicate that will decide whether or not to keep an object
    * @return an array of objects that meet the requirements set in the predicate
    */
-  public ArrayList<T> includeEventIf(T[] array, Predicate<T> pred) {
+  public ArrayList<T> includeIf(T[] array, Predicate<T> pred) {
     ArrayList<T> filteredObjs = new ArrayList<T>();
     for (T obj : array) {
       if (pred.test(obj)) {
@@ -40,7 +40,7 @@ public class IncludeEventIf<T> {
     return filteredObjs;
   }
   
-  public ArrayList<T> includeEventIf(ArrayList<T> list, Predicate<T> pred) {
+  public ArrayList<T> includeIf(ArrayList<T> list, Predicate<T> pred) {
     ArrayList<T> filteredObjs = new ArrayList<T>();
     for (T obj : list) {
       if (pred.test(obj)) {

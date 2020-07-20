@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Comparator; 
 import java.util.function.Predicate;
 import com.google.sps.algorithms.MergeSort;
-import com.google.sps.predicate.IncludeEventIf;
+import com.google.sps.predicate.IncludeIf;
 
 /**
  * Represents a FilterAndSort object
@@ -30,8 +30,8 @@ public class FilterAndSort<T> {
   public ArrayList<T> filterAndSort(T[] array, Predicate<T> pred, 
       Comparator<T> comp) throws Exception {
     
-    IncludeEventIf<T> includeEventIf = new IncludeEventIf<T>();
-    ArrayList<T> filteredObjs = includeEventIf.includeEventIf(array, pred);
+    IncludeIf<T> includeIf = new IncludeIf<T>();
+    ArrayList<T> filteredObjs = includeIf.includeIf(array, pred);
 
     MergeSort<T> merge = new MergeSort<T>();
     merge.sort(filteredObjs, comp);
@@ -52,8 +52,8 @@ public class FilterAndSort<T> {
   public ArrayList<T> filterAndSort(ArrayList<T> list, Predicate<T> pred, 
       Comparator<T> comp) throws Exception {
     
-    IncludeEventIf<T> includeEventIf = new IncludeEventIf<T>();
-    ArrayList<T> filteredObjs = includeEventIf.includeEventIf(list, pred);
+    IncludeIf<T> includeIf = new IncludeIf<T>();
+    ArrayList<T> filteredObjs = includeIf.includeIf(list, pred);
 
     MergeSort<T> merge = new MergeSort<T>();
     merge.sort(filteredObjs, comp);
