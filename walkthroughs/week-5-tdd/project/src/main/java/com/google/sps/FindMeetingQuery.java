@@ -43,13 +43,13 @@ public final class FindMeetingQuery {
    * Also, it will remove an event that is contained within another event.
    * Time Complexity: O(n)
    *
-   * @param eventsArray the Collection of events that will turn into its start and 
-   *     end time
+   * @param eventsArray the Collection of events that will turn into its start 
+   *     and end time
    * @return An ArrayList that contains an array of start and end times, and 
    *     will not have any events with the same start time.
    */
-  public static ArrayList<int[]> eventToTime(ArrayList<Event> eventsArray) 
-      throws Exception {
+  public static ArrayList<int[]> eventToFilteredTime(ArrayList<Event> 
+      eventsArray) throws Exception {
     ArrayList<int[]> eventTimes = new ArrayList<>();
     TimeRange previousEventTimeRange = TimeRange.fromStartDuration(0, 0);
 
@@ -81,6 +81,27 @@ public final class FindMeetingQuery {
 
     return eventTimes;
   }
+
+  /**
+   * Turns an ordered Collection of events (by time) into an ArrayList of an 
+   *    array that contains the start and end time.
+   * Time Complexity: O(n)
+   *
+   * @param eventsArray the Collection of events that will turn into its start 
+   *     and end time
+   * @return An ArrayList that contains an array of start and end times
+   */
+  public static ArrayList<int[]> eventToTime(ArrayList<Event> eventsArray) 
+      throws Exception {
+    ArrayList<int[]> eventTimes = new ArrayList<>();
+
+    for (Event event : eventsArray) {
+      TimeRange eventTimeRange = event.getWhen();
+      eventTimes.add(new int[] {eventTimeRange.start(), eventTimeRange.end()});
+    }
+
+    return eventTimes;
+  }  
 
   /**
    * Adds a time to the arraylist if there is enough time between when the 
@@ -154,30 +175,17 @@ public final class FindMeetingQuery {
       ArrayList<int[]> mandatoryTimes, int durationMeetingMinutes) 
       throws Exception {
     ArrayList<int[]> allTimes = (ArrayList<int[]>) optionalTimes.clone();
-
+    
+    MergeSort<int[]> merge = new MergeSort<int[]>();
     if (mandatoryTimes.size() > 0) {
       allTimes.addAll(mandatoryTimes);
-
-      MergeSort<int[]> merge = new MergeSort<int[]>();
       merge.sort(allTimes, new SortTimesAscending());      
     }
-    
+
     // Compare filtered events input to meeting request
     //    Find the time available for this meeting
     ArrayList<TimeRange> availableTimes = timeAvailable(allTimes, 
         durationMeetingMinutes); 
-      
-    // if (availableTimes.size() == 0) {
-      // Comparator<Event> sortByNumAttendees = new SortEventsByNumAttendees
-      //     (request.getOptionalAttendees());   
-
-      // while (times.size() > 0 && availableTimes.size() == 0) {
-      //   // remove time with smallest amount of attendees (which should be last) from times then make 
-      //   //     new allTimes
-      //   ArrayList<TimeRange> availableTimes = timeAvailable(allTimes, 
-      //     durationMeetingMinutes);
-      // }
-    // }
       
     return availableTimes;
   }  
@@ -225,7 +233,7 @@ public final class FindMeetingQuery {
     // Turn events into int[]
     ArrayList<int[]> mandatoryTimes = new ArrayList<int[]>();
     try {
-      mandatoryTimes = eventToTime(filteredMandatoryEvents);  
+      mandatoryTimes = eventToFilteredTime(filteredMandatoryEvents);  
     } catch (Exception e) {
       throw e;
     }
@@ -244,7 +252,7 @@ public final class FindMeetingQuery {
     // Turn events into int[]
     ArrayList<int[]> optionalTimes = new ArrayList<int[]>();
     try {
-      optionalTimes = eventToTime(filteredOptionalEvents);  
+      optionalTimes = eventToFilteredTime(filteredOptionalEvents);  
     } catch (Exception e) {
       throw e;
     }    
@@ -257,6 +265,8 @@ public final class FindMeetingQuery {
       throw e;
     }
 
+    // If there are no available times for all mandatory and optional attendees
+    //     then return all of the available times for mandatory attendees
     if (availableOptionalTimes.size() == 0 && mandatoryTimes.size() > 0) {
       ArrayList<TimeRange> availableMandatoryTimes = timeAvailable
           (mandatoryTimes, durationMeetingMinutes);
