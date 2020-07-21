@@ -18,6 +18,7 @@ import com.google.sps.Event;
 import com.google.sps.TimeRange;
 import com.google.sps.algorithms.BinarySearch;
 import com.google.sps.algorithms.MergeSort;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -38,12 +39,15 @@ public final class IsIntersection implements Predicate<Event> {
    *    another collection of Strings
    */ 
   public IsIntersection(Collection<String> attendees) {
-    String[] attendeesArray = new String[attendees.size()];
-    attendeesArray = attendees.toArray(attendeesArray);
+    ArrayList<String> attendeesList = Collections.list(Collections.enumeration
+        (attendees));
 
     // order the array
     MergeSort<String> merge = new MergeSort<String>();
-    merge.sort(attendeesArray, String.CASE_INSENSITIVE_ORDER);
+    merge.sort(attendeesList, String.CASE_INSENSITIVE_ORDER);
+
+    String[] attendeesArray = new String[attendeesList.size()];
+    attendeesArray = attendeesList.toArray(attendeesArray);
 
     this.attendees = attendeesArray;
   }
@@ -59,18 +63,40 @@ public final class IsIntersection implements Predicate<Event> {
   @Override
   public boolean test(Event other) {
     Set<String> eventAttendees = other.getAttendees();
-    int attendeesSize = attendees.length;
     boolean contains;
 
     for (String eventAttendee : eventAttendees) {
       // enter binary search
-      int index = BinarySearch.binarySearchString(attendees, 0, 
-          attendeesSize - 1, eventAttendee);
+      int index = BinarySearch.binarySearchString(this.attendees, 0, 
+          attendees.length - 1, eventAttendee);
       if (index >= 0) {
         return true;
       }
     }
 
     return false;      
+  }
+
+/**
+ * Returns the number of attendees that are attending this event
+ * Time Complexity: O(n*ln(n)) 
+ *
+ * @param other the other event we are comparing with
+ * @return the number of attendees that are attending this event
+ */
+  public int numAttendeesAttendingEvent(Event other) {
+    Set<String> eventAttendees = other.getAttendees();
+    int numAttendees = 0;
+
+    for (String eventAttendee : eventAttendees) {
+      // enter binary search
+      int index = BinarySearch.binarySearchString(attendees, 0, 
+          attendees.length - 1, eventAttendee);
+      if (index >= 0) {
+        numAttendees ++;
+      }
+    }
+
+    return numAttendees;     
   }
 }

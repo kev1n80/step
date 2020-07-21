@@ -14,6 +14,8 @@
 
 package com.google.sps.algorithms;
 
+import com.google.sps.TimeRange;
+
 /**
  * Represents a binary search object
  */
@@ -48,5 +50,5 @@ public final class BinarySearch {
   
         // Element is not in array
         return -1; 
-    } 
+    }
 } 
