@@ -498,20 +498,21 @@ function fetchBlobstoreUrlAndUpdateForm(blogNumber) {
   console.log("fetching blobstore url.");
   fetch(queryString)
       .then((response) => {
+        const loadingId = "blog-form-" + blogNumber + "-loading";
+        toggleDisplay(loadingId);
         return response.json();
       })
       .then((imageUploadUrl) => {
         // check to see if an error was returned
         const isError = isErrorMessage(imageUploadUrl);
         if (isError) {
+          const loadingId = "blog-form-" + blogNumber + "-loading";
+          toggleDisplay(loadingId);
           console.log(imageUploadUrl);
           window.alert(imageUploadUrl);
         } else {
           console.log("Uploading blog " + blogNumber + 
               "'s comment form.");
-
-          const loadingId = "blog-form-" + blogNumber + "-loading";
-          toggleDisplay(loadingId);
 
           sendFormData(blogNumber, commentForm, imageUploadUrl);
           resetBlogCommentInputs(blogNumber);
