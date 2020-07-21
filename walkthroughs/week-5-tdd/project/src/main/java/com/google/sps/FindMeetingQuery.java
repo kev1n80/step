@@ -44,13 +44,13 @@ public final class FindMeetingQuery {
    * Time Complexity: O(n)
    *
    * @param eventsArray the Collection of events that will turn into its start 
-   *     and end time
-   * @return An ArrayList that contains an array of start and end times, and 
-   *     will not have any events with the same start time.
+   *     and end time in minutes
+   * @return An ArrayList that contains an array of start and end times in 
+   *     minutes, and will not have any events with the same start time.
    */
-  public static ArrayList<int[]> eventToFilteredTime(ArrayList<Event> 
+  public static ArrayList<int[]> eventToFilteredTimeMinutes(ArrayList<Event> 
       eventsArray) throws Exception {
-    ArrayList<int[]> eventTimes = new ArrayList<>();
+    ArrayList<int[]> eventTimesMinutes = new ArrayList<>();
     TimeRange previousEventTimeRange = TimeRange.fromStartDuration(0, 0);
 
     for (Event event : eventsArray) {
@@ -62,15 +62,15 @@ public final class FindMeetingQuery {
         // if the previous event contains this event, don't add this event
         if (!previousEventTimeRange.contains(eventTimeRange)) {
           int[] eventTime = new int[] {eventTimeRange.start(), eventTimeRange.end()};
-          eventTimes.add(eventTime);
+          eventTimesMinutes.add(eventTime);
           previousEventTimeRange = eventTimeRange;
         }
       } else if (eventTimeRangeStart == previousEventTimeRangeStart) {
         // if they are the same, keep the one with the longer duration
         if (eventTimeRange.duration() > previousEventTimeRange.duration()) {
-          int lastIndex = Math.max(eventTimes.size() - 1, 0);
+          int lastIndex = Math.max(eventTimesMinutes.size() - 1, 0);
           int[] eventTime = new int[] {eventTimeRangeStart, eventTimeRange.end()};
-          eventTimes.add(lastIndex, eventTime);
+          eventTimesMinutes.add(lastIndex, eventTime);
           previousEventTimeRange = eventTimeRange; 
         }
       } else {
@@ -79,7 +79,7 @@ public final class FindMeetingQuery {
       }
     }
 
-    return eventTimes;
+    return eventTimesMinutes;
   }
 
   /**
@@ -89,18 +89,19 @@ public final class FindMeetingQuery {
    *
    * @param eventsArray the Collection of events that will turn into its start 
    *     and end time
-   * @return An ArrayList that contains an array of start and end times
+   * @return An ArrayList that contains an array of start and end times in 
+   *     minutes
    */
-  public static ArrayList<int[]> eventToTime(ArrayList<Event> eventsArray) 
+  public static ArrayList<int[]> eventToTimeMinutes(ArrayList<Event> eventsArray) 
       throws Exception {
-    ArrayList<int[]> eventTimes = new ArrayList<>();
+    ArrayList<int[]> eventTimesMinutes = new ArrayList<>();
 
     for (Event event : eventsArray) {
       TimeRange eventTimeRange = event.getWhen();
-      eventTimes.add(new int[] {eventTimeRange.start(), eventTimeRange.end()});
+      eventTimesMinutes.add(new int[] {eventTimeRange.start(), eventTimeRange.end()});
     }
 
-    return eventTimes;
+    return eventTimesMinutes;
   }  
 
   /**
@@ -111,14 +112,14 @@ public final class FindMeetingQuery {
    *
    * @param start the start time of the current event
    * @param prevEnd the start time of the previous event
-   * @param duration the duration of the meeting request
+   * @param duration the duration of the meeting request in minutes
    * @param availableTimes the arraylist that we can add a time to
    */
-  public static boolean addAvailableTime(int start, int prevEnd, int duration,
-      ArrayList<TimeRange> availableTimes) {
+  public static boolean addAvailableTime(int start, int prevEnd, 
+      int durationMinutes, ArrayList<TimeRange> availableTimes) {
     if (start > prevEnd) {
       int availableDuration = start - prevEnd;
-      if (availableDuration >= duration) {
+      if (availableDuration >= durationMinutes) {
         TimeRange availableTime = TimeRange.fromStartDuration(prevEnd, 
             availableDuration);
         availableTimes.add(availableTime);
@@ -129,71 +130,80 @@ public final class FindMeetingQuery {
   }
 
   /**
-   * Returns the times available to have the meeting of a certain duration
+   * Returns the times available to have the meeting of a certain duration 
+   *     (minutes)
    * Time Complexity: O(n)
    *
-   * @param times Contains an ordered arraylist of an array of start and end 
-   *     times this array should be ordered and contain no duplicate start times
-   * @param duration the duration of time the meeting request lasts
-   * @return an arraylist of times available whose duration are >= duration
+   * @param times Is an ordered arraylist of an array of start and end 
+   *     times in minutes. 
+   *     This array should be ordered and contain no duplicate start times
+   * @param duration the duration of time in minutes the meeting request lasts
+   * @return an arraylist of times in minutes available whose duration are >= 
+   *     duration.
    */
-  public ArrayList<TimeRange> timeAvailable(ArrayList<int[]> times, 
-      int duration) {
-    int startTime = TimeRange.START_OF_DAY;
-    int prevEndTime = TimeRange.START_OF_DAY;
+  public ArrayList<TimeRange> timeRangeAvailable(ArrayList<int[]> timesMinutes, 
+      int durationMinutes) {
+    int startTimeMinutes = TimeRange.START_OF_DAY;
+    int prevEndTimeMinutes = TimeRange.START_OF_DAY;
     ArrayList<TimeRange> availableTimes = new ArrayList<TimeRange>();
 
-    for (int[] time : times) {
-      int start = time[0];
-      int end = time[1];
+    for (int[] timeMinutes : timesMinutes) {
+      int start = timeMinutes[0];
+      int end = timeMinutes[1];
       
       // Prevents the case when a time range contains another time range.
       // The first time range should be the one with the longest duration since 
       //     it is ordered
-      boolean startsAfterPrev = start > startTime;
-      boolean endsAfterPrev = end > prevEndTime;
+      boolean startsAfterPrev = start > startTimeMinutes;
+      boolean endsAfterPrev = end > prevEndTimeMinutes;
       boolean isStartOfDay = start == TimeRange.START_OF_DAY;
       boolean prevNotContainsCurrent = (startsAfterPrev || isStartOfDay) && 
           endsAfterPrev;
       if (prevNotContainsCurrent) {
-        if (addAvailableTime(start, prevEndTime, duration, availableTimes)) {
-          startTime = start;
+        if (addAvailableTime(start, prevEndTimeMinutes, durationMinutes, 
+          availableTimes)) {
+          startTimeMinutes = start;
         }
 
-        prevEndTime = end;
+        prevEndTimeMinutes = end;
       }
     }
 
     int endOfDay = TimeRange.END_OF_DAY + 1;
-    addAvailableTime(endOfDay, prevEndTime, duration, availableTimes);
+    addAvailableTime(endOfDay, prevEndTimeMinutes, durationMinutes, 
+        availableTimes);
 
     return availableTimes;
   }
 
   /**
-   * Returns the times available when accounting for the optional attendees
+   * Returns the times in minutes available when accounting for the optional 
+   *     attendees
    * Time Complexity: O(n*ln(n))
    * 
    * @param optionalEvents the events the optional attendees are attending
-   * @param optionalTimes the times the optional attendees are attending events
-   * @param mandatoryTimes the times the mandatory attendees are attending events
-   * @param durationMeetingMinutes the duration of the meeting request in minutes
+   * @param optionalTimesMinutes the times in minutes the optional attendees are 
+   *     attending events
+   * @param mandatoryTimesMinutes the times in minutes the mandatory attendees 
+   *     are attending events
+   * @param durationMeetingMinutes the duration of the meeting request in 
+   *     minutes
    */
-  public ArrayList<TimeRange> optionalAvailableTimes(
-      ArrayList<Event> optionalEvents, ArrayList<int[]> optionalTimes, 
-      ArrayList<int[]> mandatoryTimes, int durationMeetingMinutes) 
+  public ArrayList<TimeRange> optionalAvailableTimeRanges(
+      ArrayList<Event> optionalEvents, ArrayList<int[]> optionalTimesMinutes, 
+      ArrayList<int[]> mandatoryTimesMinutes, int durationMeetingMinutes) 
       throws Exception {
-    ArrayList<int[]> allTimes = (ArrayList<int[]>) optionalTimes.clone();
+    ArrayList<int[]> allTimes = (ArrayList<int[]>) optionalTimesMinutes.clone();
     
     MergeSort<int[]> merge = new MergeSort<int[]>();
-    if (mandatoryTimes.size() > 0) {
-      allTimes.addAll(mandatoryTimes);
+    if (mandatoryTimesMinutes.size() > 0) {
+      allTimes.addAll(mandatoryTimesMinutes);
       merge.sort(allTimes, new SortTimesAscending());      
     }
 
     // Compare filtered events input to meeting request
     //    Find the time available for this meeting
-    ArrayList<TimeRange> availableTimes = timeAvailable(allTimes, 
+    ArrayList<TimeRange> availableTimes = timeRangeAvailable(allTimes, 
         durationMeetingMinutes); 
       
     return availableTimes;
@@ -209,15 +219,16 @@ public final class FindMeetingQuery {
    * @return an array of TimeRange objects
    */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) throws Exception {
-    // check if duration of meeting is longer than a day or a negative number
+    // Check if duration of meeting in minutes is longer than a day or a 
+    //     negative number.
     int durationMeetingMinutes = Math.toIntExact(request.getDuration());
     if (durationMeetingMinutes > 1440 || durationMeetingMinutes < 0) {
-      System.err.println("EDGE: duration meeting out of scope");
+      System.err.println("EDGE: duration of meeting in minutes is out of scope");
       return new ArrayList<TimeRange>();
     } 
 
     if (durationMeetingMinutes == 0) {
-      System.err.println("EDGE: duration meeting is 0");
+      System.err.println("EDGE: duration meeting in minutes is 0");
       TimeRange wholeDay = TimeRange.WHOLE_DAY;
       return new ArrayList<TimeRange>(Arrays.asList(wholeDay));
     }
@@ -239,13 +250,8 @@ public final class FindMeetingQuery {
     // Sort
     merge.sort(filteredMandatoryEvents, new SortEventsByTime());
 
-    // Turn events into int[]
-    ArrayList<int[]> mandatoryTimes = new ArrayList<int[]>();
-    try {
-      mandatoryTimes = eventToFilteredTime(filteredMandatoryEvents);  
-    } catch (Exception e) {
-      throw e;
-    }
+    ArrayList<int[]> mandatoryTimesMinutes = eventToFilteredTimeMinutes(
+        filteredMandatoryEvents);  
     
     // filter and sort the events that optional attendees are attending  
     Predicate<Event> isOptionalIntersection = new IsIntersection
@@ -257,28 +263,20 @@ public final class FindMeetingQuery {
 
     // Sort
     merge.sort(filteredOptionalEvents, new SortEventsByTime()); 
-     
-    // Turn events into int[]
-    ArrayList<int[]> optionalTimes = new ArrayList<int[]>();
-    try {
-      optionalTimes = eventToFilteredTime(filteredOptionalEvents);  
-    } catch (Exception e) {
-      throw e;
-    }    
+      
+    ArrayList<int[]> optionalTimes = eventToFilteredTimeMinutes(
+        filteredOptionalEvents); 
 
-    ArrayList<TimeRange> availableOptionalTimes;
-    try {
-      availableOptionalTimes = optionalAvailableTimes(filteredOptionalEvents, 
-          optionalTimes, mandatoryTimes, durationMeetingMinutes);
-    } catch (Exception e) {
-      throw e;
-    }
+    ArrayList<TimeRange> availableOptionalTimes = optionalAvailableTimeRanges
+        (filteredOptionalEvents, optionalTimes, mandatoryTimesMinutes, 
+        durationMeetingMinutes);
 
     // If there are no available times for all mandatory and optional attendees
-    //     then return all of the available times for mandatory attendees
-    if (availableOptionalTimes.size() == 0 && mandatoryTimes.size() > 0) {
-      ArrayList<TimeRange> availableMandatoryTimes = timeAvailable
-          (mandatoryTimes, durationMeetingMinutes);
+    //     then return all of the available times in minutes for mandatory 
+    //     attendees.
+    if (availableOptionalTimes.size() == 0 && mandatoryTimesMinutes.size() > 0) {
+      ArrayList<TimeRange> availableMandatoryTimes = timeRangeAvailable
+          (mandatoryTimesMinutes, durationMeetingMinutes);
       if (availableMandatoryTimes.size() > 0) {
         return availableMandatoryTimes;
       }

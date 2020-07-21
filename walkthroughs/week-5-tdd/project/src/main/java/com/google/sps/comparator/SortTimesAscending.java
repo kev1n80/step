@@ -19,23 +19,23 @@ public class SortTimesAscending implements Comparator<int[]> {
    *     in descending order of duration (or latest end time).
    * Time complexity: O(1)
    *
-   * @param first the first Time or int[]
-   * @param second the second Time or int[]
+   * @param first the first Time or int[] in minutes
+   * @param second the second Time or int[] in minutes
    * @return an int that states the ordering of the two events
    */
   @Override
   public int compare(int[] first, int[] second) { 
-    int firstStartTime = first[0];
-    int secondStartTime = second[0];
-    int order = Long.compare(firstStartTime, secondStartTime);
+    int firstStartTimeMinutes = first[0];
+    int secondStartTimeMinutes = second[0];
+    int order = Long.compare(firstStartTimeMinutes, secondStartTimeMinutes);
     /** 
      * if they start at the same time, the one with the longest duration (or 
      *     the latest end time) shows up first
      */
     if (order == 0) {
-      int firstEndTime = first[1];
-      int secondEndTime = second[1];
-      return (-1 * Long.compare(firstEndTime, secondEndTime));
+      int firstEndTimeMinutes = first[1];
+      int secondEndTimeMinutes = second[1];
+      return (-1 * Long.compare(firstEndTimeMinutes, secondEndTimeMinutes));
     }
     return order;
   } 

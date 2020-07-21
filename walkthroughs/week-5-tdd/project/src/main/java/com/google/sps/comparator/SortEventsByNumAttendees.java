@@ -30,12 +30,9 @@ public class SortEventsByNumAttendees implements Comparator<Event> {
 
     // order the array
     MergeSort<String> merge = new MergeSort<String>();
-    merge.sort(attendeesList, String.CASE_INSENSITIVE_ORDER);
+    merge.sort(attendeesList, String.CASE_INSENSITIVE_ORDER); 
 
-    String[] attendeesArray = new String[attendeesList.size()];
-    attendeesArray = attendeesList.toArray(attendeesArray);    
-
-    this.attendees = attendeesArray;
+    this.attendees = attendeesList.toArray(new String[attendeesList.size()]);
   }
 
   /** 
@@ -46,8 +43,6 @@ public class SortEventsByNumAttendees implements Comparator<Event> {
    * @return an int that states the number of attendees attending the event
    */
   public int numAttendees(Event event) {
-    boolean contains;
-
     Set<String> eventAttendees = event.getAttendees();
 
     int numAttendeesAtEvent = 0;
